@@ -13,12 +13,16 @@ import javax.persistence.Table;
 
 
 /**
- *
+ * Subclase de Cliente.
+ * 
+ * Tiene solo los atributos que puede tener un cliente
+ * frecuente
+ * 
  * @author Alejandra Leal Armenta, 262719
  */
 
 @Entity
-@Table(name = "clientes_empresariales")
+@Table(name = "clientes_frecuentes")
 @DiscriminatorValue("FRECUENTE")
 @PrimaryKeyJoinColumn(name = "id_cliente")
 public class ClienteFrecuente extends Cliente implements Serializable{
@@ -66,8 +70,4 @@ public class ClienteFrecuente extends Cliente implements Serializable{
     public void setPuntos(Integer puntos) {
         this.puntos = puntos;
     }
-    
-    
-    
-
 }

@@ -4,6 +4,7 @@
  */
 
 package entidades;
+import java.io.Serializable;
 import java.lang.annotation.Inherited;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -17,14 +18,17 @@ import javax.persistence.Table;
 
 
 /**
- *
+ * Clase padre cliente.
+ * 
+ * tiene todos los atirbutos que cualquier cliente de cualquier tipo debe de tener
+ * 
  * @author Alejandra Leal Armenta, 262719
  */
 @Entity
 @Table(name = "clientes")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo_cliente")
-public class Cliente {
+public class Cliente implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cliente")
@@ -36,7 +40,7 @@ public class Cliente {
     @Column(name = "apellidoPaterno", nullable = false, length = 100)
     private String apellidoPaterno;
     
-    @Column(name = "apellidoMaterno", nullable = false, length = 100)
+    @Column(name = "apellidoMaterno", nullable = true, length = 100)
     private String apellidoMaterno;
     
     @Column(name = "numTelefono", nullable = false, length = 10)
