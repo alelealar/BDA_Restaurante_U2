@@ -4,16 +4,22 @@
  */
 package pantallas;
 
+import controlador.CoordinadorInterfaces;
+
 /**
  *
  * @author Home
  */
 public class frmInicio extends javax.swing.JFrame {
 
+    private final CoordinadorInterfaces coordinador;
+
     /**
      * Creates new form frmInicio
+     * @param coordinador
      */
-    public frmInicio() {
+    public frmInicio(CoordinadorInterfaces coordinador) {
+        this.coordinador = coordinador;
         initComponents();
     }
 
@@ -33,6 +39,7 @@ public class frmInicio extends javax.swing.JFrame {
         btnSoyAdmin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocationByPlatform(true);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -119,50 +126,17 @@ public class frmInicio extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSoyAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSoyAdminActionPerformed
-        // TODO add your handling code here:
+        coordinador.mostrarFormularioClientes();
     }//GEN-LAST:event_btnSoyAdminActionPerformed
 
     private void btnSoyMeseroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSoyMeseroActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnSoyMeseroActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(frmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(frmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(frmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(frmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new frmInicio().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSoyAdmin;
