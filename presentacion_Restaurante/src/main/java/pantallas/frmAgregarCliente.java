@@ -5,14 +5,19 @@
 package pantallas;
 
 import controlador.CoordinadorInterfaces;
+import javax.swing.JOptionPane;
+import objetosNegocio.ClienteBO;
 
 /**
  *
- * @author Home
+ * @author Brian Kaleb Sandoval Rodriguez - 262741
+ * @author Alejandra Leal Armenta - 262719
+ * @author Maria Jose Valdez Iglesias - 262775
  */
 public class frmAgregarCliente extends javax.swing.JFrame {
 
     private final CoordinadorInterfaces coordinador;
+    //private final ClienteBO clienteBO;
 
     /**
      * Creates new form frmClientes
@@ -51,18 +56,18 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtNombres = new javax.swing.JTextField();
-        txtNombres1 = new javax.swing.JTextField();
+        txtApellidoP = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jSeparator6 = new javax.swing.JSeparator();
         jSeparator7 = new javax.swing.JSeparator();
-        txtNombres2 = new javax.swing.JTextField();
+        txtApellidoM = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jSeparator8 = new javax.swing.JSeparator();
         jSeparator9 = new javax.swing.JSeparator();
-        txtNombres3 = new javax.swing.JTextField();
+        txtCorreo = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        txtNombres4 = new javax.swing.JTextField();
+        txtTelefono = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         btnAtras = new javax.swing.JButton();
         btnAgregarCliente = new javax.swing.JButton();
@@ -221,7 +226,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 26)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Clientes Registrados");
+        jLabel3.setText("Agregar Cliente");
 
         txtNombres.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
         txtNombres.setBorder(null);
@@ -231,11 +236,11 @@ public class frmAgregarCliente extends javax.swing.JFrame {
             }
         });
 
-        txtNombres1.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
-        txtNombres1.setBorder(null);
-        txtNombres1.addActionListener(new java.awt.event.ActionListener() {
+        txtApellidoP.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
+        txtApellidoP.setBorder(null);
+        txtApellidoP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombres1ActionPerformed(evt);
+                txtApellidoPActionPerformed(evt);
             }
         });
 
@@ -243,11 +248,11 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel4.setText("Apellido Paterno");
 
-        txtNombres2.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
-        txtNombres2.setBorder(null);
-        txtNombres2.addActionListener(new java.awt.event.ActionListener() {
+        txtApellidoM.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
+        txtApellidoM.setBorder(null);
+        txtApellidoM.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombres2ActionPerformed(evt);
+                txtApellidoMActionPerformed(evt);
             }
         });
 
@@ -255,11 +260,11 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel5.setText("Apellido Paterno (opcional)");
 
-        txtNombres3.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
-        txtNombres3.setBorder(null);
-        txtNombres3.addActionListener(new java.awt.event.ActionListener() {
+        txtCorreo.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
+        txtCorreo.setBorder(null);
+        txtCorreo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombres3ActionPerformed(evt);
+                txtCorreoActionPerformed(evt);
             }
         });
 
@@ -267,11 +272,11 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel6.setText("Correo electrónico (opcional)");
 
-        txtNombres4.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
-        txtNombres4.setBorder(null);
-        txtNombres4.addActionListener(new java.awt.event.ActionListener() {
+        txtTelefono.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
+        txtTelefono.setBorder(null);
+        txtTelefono.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombres4ActionPerformed(evt);
+                txtTelefonoActionPerformed(evt);
             }
         });
 
@@ -305,52 +310,54 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel7)
-                            .addComponent(txtNombres4)
-                            .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(29, 29, 29)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtNombres3, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jSeparator9)))
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel4)
-                                .addComponent(txtNombres1, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
-                                .addComponent(jSeparator6))
-                            .addGap(29, 29, 29)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel4Layout.createSequentialGroup()
-                                    .addComponent(jLabel5)
-                                    .addGap(0, 3, Short.MAX_VALUE))
-                                .addComponent(txtNombres2)
-                                .addComponent(jSeparator7)))
-                        .addComponent(txtNombres)
-                        .addComponent(jSeparator2)
-                        .addComponent(jLabel2)))
-                .addContainerGap(33, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(55, 55, 55)
                 .addComponent(btnAgregarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(86, 86, 86))
-            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                    .addContainerGap(158, Short.MAX_VALUE)
-                    .addComponent(jLabel3)
-                    .addGap(136, 136, 136)))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel7)
+                                    .addComponent(txtTelefono)
+                                    .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(29, 29, 29)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(txtCorreo, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jSeparator9)))
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel4Layout.createSequentialGroup()
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jLabel4)
+                                        .addComponent(txtApellidoP, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
+                                        .addComponent(jSeparator6))
+                                    .addGap(29, 29, 29)
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                            .addComponent(jLabel5)
+                                            .addGap(0, 3, Short.MAX_VALUE))
+                                        .addComponent(txtApellidoM)
+                                        .addComponent(jSeparator7)))
+                                .addComponent(txtNombres)
+                                .addComponent(jSeparator2)
+                                .addComponent(jLabel2))))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(171, 171, 171)
+                        .addComponent(jLabel3)))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(100, 100, 100)
+                .addGap(42, 42, 42)
+                .addComponent(jLabel3)
+                .addGap(26, 26, 26)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtNombres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -361,13 +368,13 @@ public class frmAgregarCliente extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNombres2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtApellidoM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNombres1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtApellidoP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator6, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(48, 48, 48)
@@ -375,13 +382,13 @@ public class frmAgregarCliente extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNombres3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator9, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNombres4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(53, 53, 53)
@@ -389,11 +396,6 @@ public class frmAgregarCliente extends javax.swing.JFrame {
                     .addComponent(btnAtras, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
                     .addComponent(btnAgregarCliente, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE))
                 .addGap(69, 69, 69))
-            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel4Layout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(jLabel3)
-                    .addContainerGap(495, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -462,30 +464,112 @@ public class frmAgregarCliente extends javax.swing.JFrame {
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
         // TODO add your handling code here:
+        
+        if(!txtNombres.getText().isEmpty() || !txtApellidoP.getText().isEmpty() || !txtApellidoM.getText().isEmpty() || !txtCorreo.getText().isEmpty() || !txtTelefono.getText().isEmpty()){
+            int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de que desea regresar? Esto cancelará el proceso y la información se perderá.", "Regresar a Menú Clientes", JOptionPane.YES_NO_OPTION);
+            if(opcion == JOptionPane.NO_OPTION){
+                return;
+            }
+        }
+     
+        coordinador.mostrarFormularioClientes();
+        txtNombres.setText("");
+        txtApellidoP.setText("");
+        txtApellidoM.setText("");
+        txtCorreo.setText("");
+        txtTelefono.setText("");
     }//GEN-LAST:event_btnAtrasActionPerformed
 
-    private void txtNombres1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombres1ActionPerformed
+    private void txtApellidoPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtApellidoPActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombres1ActionPerformed
+    }//GEN-LAST:event_txtApellidoPActionPerformed
 
-    private void txtNombres2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombres2ActionPerformed
+    private void txtApellidoMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtApellidoMActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombres2ActionPerformed
+    }//GEN-LAST:event_txtApellidoMActionPerformed
 
     private void txtNombresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombresActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNombresActionPerformed
 
-    private void txtNombres3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombres3ActionPerformed
+    private void txtCorreoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCorreoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombres3ActionPerformed
+    }//GEN-LAST:event_txtCorreoActionPerformed
 
-    private void txtNombres4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombres4ActionPerformed
+    private void txtTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTelefonoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombres4ActionPerformed
+    }//GEN-LAST:event_txtTelefonoActionPerformed
 
     private void btnAgregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClienteActionPerformed
         // TODO add your handling code here:
+        String nombres;
+        String apellidoP;
+        String apellidoM;
+        String telefono;
+        String correo;
+        
+        // validaciones del nombre(s)
+        if(txtNombres.getText().isEmpty() || txtNombres.getText().isBlank()){
+            JOptionPane.showMessageDialog(this, "El campo 'Nombres' no puede estar vacío.");
+            return;
+        } else if (!txtNombres.getText().matches("^[\\p{L} \\.]+$")){
+            JOptionPane.showMessageDialog(this, "El campo 'Nombres' solo acepta letras, acentos, espacios y puntos.");
+            return;
+        } else {
+            nombres = txtNombres.getText();
+        }
+        
+        // validaciones del apellido paterno
+        if(txtApellidoP.getText().isEmpty() || txtApellidoP.getText().isBlank()){
+            JOptionPane.showMessageDialog(this, "El campo 'Apellido Paterno' no puede estar vacío.");
+            return;
+        } else if (!txtApellidoP.getText().matches("^[\\p{L} \\.]+$")){
+            JOptionPane.showMessageDialog(this, "El campo 'Apellido Paterno' solo acepta letras, acentos, espacios y puntos.");
+            return;
+        } else {
+            apellidoP = txtApellidoP.getText();
+        }
+        
+        // apellido materno
+        if(txtApellidoM.getText().isEmpty() || txtApellidoM.getText().isBlank()){
+            apellidoM = "";
+        } else if (!txtApellidoM.getText().matches("^[\\p{L} \\.]+$")){
+            JOptionPane.showMessageDialog(this, "El campo 'Apellido Materno' solo acepta letras, acentos, espacios y puntos.");
+            return;
+        } else {
+            apellidoM = txtApellidoM.getText();
+        }
+        
+        // telefono
+        if(txtTelefono.getText().isEmpty() || txtTelefono.getText().isBlank()){
+            JOptionPane.showMessageDialog(this, "El campo 'Teléfono' no puede estar vacío.");
+            return;
+        } else if(!txtTelefono.getText().matches("^\\d{10}$")){
+            JOptionPane.showMessageDialog(this, "El campo 'Teléfono' solo acepta dígitos y una longitud de 10 caracteres.");
+            return;
+        } else {
+            telefono = txtTelefono.getText().trim();
+        }
+        
+        // correo
+        if(txtCorreo.getText().isEmpty() || txtCorreo.getText().isBlank()){
+            correo = "";
+        } else if(!txtCorreo.getText().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
+            JOptionPane.showMessageDialog(this, "Formato de correo inválido.");
+            return;
+        } else {
+            correo = txtCorreo.getText().trim();
+        }
+        
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de agregar al cliente?" + nombres + apellidoP + apellidoM, "Confirmar Acción", JOptionPane.YES_NO_OPTION);
+        if(opcion == JOptionPane.NO_OPTION){
+            return;
+        }
+        
+        /* 
+        aquí pos ya falta que el coordinador le hable a la BO pero me ondié xq
+        se supone que tendremos uno static o cada frm crea su propio par d controladores?
+        */
     }//GEN-LAST:event_btnAgregarClienteActionPerformed
 
 
@@ -519,10 +603,10 @@ public class frmAgregarCliente extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JLabel lblClientes;
+    private javax.swing.JTextField txtApellidoM;
+    private javax.swing.JTextField txtApellidoP;
+    private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtNombres;
-    private javax.swing.JTextField txtNombres1;
-    private javax.swing.JTextField txtNombres2;
-    private javax.swing.JTextField txtNombres3;
-    private javax.swing.JTextField txtNombres4;
+    private javax.swing.JTextField txtTelefono;
     // End of variables declaration//GEN-END:variables
 }

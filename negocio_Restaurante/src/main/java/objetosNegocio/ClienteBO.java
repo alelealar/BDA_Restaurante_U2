@@ -70,7 +70,18 @@ public class ClienteBO implements IClienteBO {
      */
     @Override
     public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try{
+            validarDatos(clienteDTO);
+            
+            Cliente clienteEntidad = ClienteAdapter.dtoAEntidad(clienteDTO);
+            clienteDAO.actualizarCliente(clienteEntidad);
+            
+            LOG.info(() -> "El cliente fue actualizado correctamente: " + clienteDTO.toString());
+            
+        } catch(PersistenciaException ex){
+            LOG.warning(() -> "No fue posible actualizar al cliente: " + clienteDTO.toString());
+            throw new NegocioException("No fue posible actualizar al cliente: " + clienteDTO.toString(), ex);
+        }
     }
 
     /**
@@ -82,7 +93,21 @@ public class ClienteBO implements IClienteBO {
      */
     @Override
     public ClienteDTO buscarClientePorId(Long id) throws NegocioException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try{
+            
+            Cliente cliente = clienteDAO.buscarClientePorId(id);
+            
+            if(cliente == null){
+                throw new NegocioException("El cliente con ID=" + id + " no fue encontrado en el sistema.");
+            }
+            
+            LOG.info(() -> "Cliente con ID=" + id + " encontrado.");
+            return ClienteAdapter.entidadADTO(cliente);
+        
+        } catch(PersistenciaException ex){
+            LOG.warning(() -> "No fue posible encontrar al cliente con ID: " + id);
+            throw new NegocioException("No fue posible encontrar al cliente con ID: " + id, ex);
+        }
     }
 
     /**
@@ -93,7 +118,19 @@ public class ClienteBO implements IClienteBO {
      */
     @Override
     public void eliminarCliente(Long id) throws NegocioException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try{
+            boolean eliminado = clienteDAO.eliminarCliente(id);
+            
+            if(!eliminado){
+                throw new NegocioException("El cliente que quiere eliminar ya no se encuentra en el sistema.");
+            }
+            
+            LOG.info(() -> "El cliente con ID=" + id + " fue eliminado correctamente.");
+            
+        } catch(PersistenciaException ex){
+            LOG.warning(() -> "No se pudo eliminar al cliente con ID: " + id);
+            throw new NegocioException("No se pudo eliminar al cliente con ID: " + id, ex);
+        }
     }
 
     /**
@@ -115,17 +152,28 @@ public class ClienteBO implements IClienteBO {
             throw new NegocioException("El apellido paterno del cliente es obligatorio.");
         }
 
-        if (clienteDto.getApellidoMaterno() == null || clienteDto.getApellidoMaterno().trim().isEmpty()) {
-            throw new NegocioException("El apellido materno del cliente es obligatorio.");
+        // válida si el apellido M es nulo/vació/en blanco, y si lo es establece que es nulo
+        if (clienteDto.getApellidoMaterno() == null || clienteDto.getApellidoMaterno().isEmpty() || clienteDto.getApellidoMaterno().isBlank()){
+                clienteDto.setApellidoMaterno(null);
         }
 
         if (clienteDto.getTelefono() == null || clienteDto.getTelefono().trim().isEmpty()) {
             throw new NegocioException("El telefono del cliente es obligatorio.");
         }
-
-        if (clienteDto.getCorreo() == null || 
-            !clienteDto.getCorreo().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-            throw new NegocioException("El formato del correo no es válido.");
+        
+        // válida si el correo es nulo/vació/en blanco, y si lo es establece que es nulo
+        if (clienteDto.getCorreo() == null || clienteDto.getCorreo().isEmpty() || clienteDto.getCorreo().isBlank()){
+            clienteDto.setCorreo(null);
+            // si no lo es, pues en ese caso válida el formato
+        } else if (clienteDto.getCorreo().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
+           throw new NegocioException("El formato del correo no es válido.");
         }
+        
+        // la dejo porque no la quiero borrar aún pero según yo el correo es opcional.
+        // - majojojo
+//        if (clienteDto.getCorreo() == null || 
+//            !clienteDto.getCorreo().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+//            throw new NegocioException("El formato del correo no es válido.");
+//        }
     }
 }
