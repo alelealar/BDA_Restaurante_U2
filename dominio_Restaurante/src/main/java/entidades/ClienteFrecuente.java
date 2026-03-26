@@ -26,47 +26,114 @@ import javax.persistence.Table;
 @DiscriminatorValue("FRECUENTE")
 @PrimaryKeyJoinColumn(name = "id_cliente")
 public class ClienteFrecuente extends Cliente implements Serializable{
+    /**
+     * Número de visitas realizadas por el cliente frecuente.
+     */
     private Integer numVisitas;
+
+    /**
+     * Total de dinero gastado por el cliente frecuente.
+     */
     private Double totalGastado;
+
+    /**
+     * Puntos acumulados por el cliente frecuente.
+     */
     private Integer puntos;
 
-    public ClienteFrecuente(Integer numVisitas, Double totalGastado, Integer puntos, Long id, String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String correo) {
+    /**
+     * Constructor completo que inicializa tanto los atributos heredados
+     * como los propios de ClienteFrecuente.
+     *
+     * @param numVisitas número de visitas del cliente
+     * @param totalGastado total gastado por el cliente
+     * @param puntos puntos acumulados
+     * @param id identificador del cliente
+     * @param nombres nombres del cliente
+     * @param apellidoPaterno apellido paterno
+     * @param apellidoMaterno apellido materno
+     * @param telefono número telefónico
+     * @param correo correo electrónico
+     */
+    public ClienteFrecuente(Integer numVisitas, Double totalGastado, Integer puntos,
+                            Long id, String nombres, String apellidoPaterno,
+                            String apellidoMaterno, String telefono, String correo) {
         super(id, nombres, apellidoPaterno, apellidoMaterno, telefono, correo);
         this.numVisitas = numVisitas;
         this.totalGastado = totalGastado;
         this.puntos = puntos;
     }
 
+    /**
+     * Constructor que inicializa solo los atributos propios de ClienteFrecuente.
+     *
+     * @param numVisitas número de visitas del cliente
+     * @param totalGastado total gastado por el cliente
+     * @param puntos puntos acumulados
+     */
     public ClienteFrecuente(Integer numVisitas, Double totalGastado, Integer puntos) {
         this.numVisitas = numVisitas;
         this.totalGastado = totalGastado;
         this.puntos = puntos;
     }
 
+    /**
+     * Constructor vacío requerido por JPA.
+     */
     public ClienteFrecuente() {
         super();
     }
 
+    /**
+     * Obtiene el número de visitas del cliente frecuente.
+     *
+     * @return número de visitas
+     */
     public Integer getNumVisitas() {
         return numVisitas;
     }
 
+    /**
+     * Establece el número de visitas del cliente frecuente.
+     *
+     * @param numVisitas nuevo número de visitas
+     */
     public void setNumVisitas(Integer numVisitas) {
         this.numVisitas = numVisitas;
     }
 
+    /**
+     * Obtiene el total gastado por el cliente frecuente.
+     *
+     * @return total gastado
+     */
     public Double getTotalGastado() {
         return totalGastado;
     }
 
+    /**
+     * Establece el total gastado por el cliente frecuente.
+     *
+     * @param totalGastado nuevo total gastado
+     */
     public void setTotalGastado(Double totalGastado) {
         this.totalGastado = totalGastado;
     }
 
+    /**
+     * Obtiene los puntos acumulados del cliente frecuente.
+     *
+     * @return puntos del cliente
+     */
     public Integer getPuntos() {
         return puntos;
     }
 
+    /**
+     * Establece los puntos del cliente frecuente.
+     *
+     * @param puntos nuevos puntos
+     */
     public void setPuntos(Integer puntos) {
         this.puntos = puntos;
     }

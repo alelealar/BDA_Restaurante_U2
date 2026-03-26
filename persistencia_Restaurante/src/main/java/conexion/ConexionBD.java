@@ -23,8 +23,8 @@ public class ConexionBD {
      * Se inicializa una única vez y se utiliza para crear conexiones a la base
      * de datos.
      */
-    private static final EntityManagerFactory entityManagerFactory
-            = Persistence.createEntityManagerFactory("ConexionPU");
+    private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("ConexionPU");
+            
 
     /**
      * Constructor privado para evitar la instanciación de la clase.

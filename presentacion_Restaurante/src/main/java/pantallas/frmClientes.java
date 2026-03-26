@@ -5,6 +5,10 @@
 package pantallas;
 
 import controlador.CoordinadorInterfaces;
+import dtos.ClienteDTO;
+import excepciones.NegocioException;
+import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -56,10 +60,15 @@ public class frmClientes extends javax.swing.JFrame {
         btnAtras = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
         btnAgregar = new javax.swing.JButton();
-        btnEliminar2 = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -255,6 +264,11 @@ public class frmClientes extends javax.swing.JFrame {
         btnActualizar.setForeground(new java.awt.Color(255, 255, 255));
         btnActualizar.setText("Actualizar");
         btnActualizar.setBorder(null);
+        btnActualizar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnActualizarMouseClicked(evt);
+            }
+        });
         btnActualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnActualizarActionPerformed(evt);
@@ -266,20 +280,30 @@ public class frmClientes extends javax.swing.JFrame {
         btnAgregar.setForeground(new java.awt.Color(255, 255, 255));
         btnAgregar.setText("Agregar");
         btnAgregar.setBorder(null);
+        btnAgregar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAgregarMouseClicked(evt);
+            }
+        });
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAgregarActionPerformed(evt);
             }
         });
 
-        btnEliminar2.setBackground(new java.awt.Color(163, 0, 0));
-        btnEliminar2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        btnEliminar2.setForeground(new java.awt.Color(255, 255, 255));
-        btnEliminar2.setText("Eliminar");
-        btnEliminar2.setBorder(null);
-        btnEliminar2.addActionListener(new java.awt.event.ActionListener() {
+        btnEliminar.setBackground(new java.awt.Color(163, 0, 0));
+        btnEliminar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        btnEliminar.setForeground(new java.awt.Color(255, 255, 255));
+        btnEliminar.setText("Eliminar");
+        btnEliminar.setBorder(null);
+        btnEliminar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEliminarMouseClicked(evt);
+            }
+        });
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminar2ActionPerformed(evt);
+                btnEliminarActionPerformed(evt);
             }
         });
 
@@ -310,7 +334,7 @@ public class frmClientes extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnEliminar2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(15, 15, 15))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -332,7 +356,7 @@ public class frmClientes extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnAtras, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                                 .addComponent(btnAgregar, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-                                .addComponent(btnEliminar2, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)))
+                                .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)))
                         .addContainerGap())))
         );
 
@@ -391,12 +415,12 @@ public class frmClientes extends javax.swing.JFrame {
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        coordinador.mostrarFormularioAgregarClientes();
+        
     }//GEN-LAST:event_btnAgregarActionPerformed
 
-    private void btnEliminar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminar2ActionPerformed
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnEliminar2ActionPerformed
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
         // TODO add your handling code here:
@@ -417,12 +441,73 @@ public class frmClientes extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtBusquedaKeyReleased
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        cargarTable();
+    }//GEN-LAST:event_formWindowOpened
+
+    private void btnActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarMouseClicked
+        int fila = tblClientes.getSelectedRow();
+
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un cliente");
+            return;
+        }
+
+        ClienteDTO cliente = (ClienteDTO) tblClientes.getValueAt(fila, 0);
+        coordinador.mostrarFormularioEditarCliente(cliente);
+    }//GEN-LAST:event_btnActualizarMouseClicked
+
+    private void btnAgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarMouseClicked
+        coordinador.mostrarFormularioAgregarClientes();
+    }//GEN-LAST:event_btnAgregarMouseClicked
+
+    private void btnEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEliminarMouseClicked
+        int fila = tblClientes.getSelectedRow();
+        ClienteDTO cliente = (ClienteDTO) tblClientes.getValueAt(fila, 0);
+        int opcion = JOptionPane.showConfirmDialog(this, "Eliminar al cliente "+cliente.getNombres()+"?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        
+        if (opcion == JOptionPane.YES_OPTION) {
+            try{
+                coordinador.eliminarCliente(cliente);
+            } catch(NegocioException ex){
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+            } 
+        }
+        cargarTable();
+    }//GEN-LAST:event_btnEliminarMouseClicked
+    
+    /**
+     * Actualiza la tabla de los clientes
+     */
+    public void cargarTable(){
+        try{
+            List<ClienteDTO> lista = coordinador.obtenerClientes();
+            
+            DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
+            model.setRowCount(0);
+            
+            for(ClienteDTO c: lista){
+                String correo = c.getCorreo();
+                if(c.getCorreo() == null){
+                    correo = "sin correo";
+                }
+                model.addRow(new Object[]{
+                    c,  
+                    c.getTelefono(),
+                    correo,
+                    c.getFechaRegistro()
+                });
+            }
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnAtras;
-    private javax.swing.JButton btnEliminar2;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

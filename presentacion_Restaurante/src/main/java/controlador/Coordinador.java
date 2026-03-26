@@ -4,7 +4,12 @@
  */
 package controlador;
 
+import dtos.ClienteDTO;
+import dtos.ClienteNuevoDTO;
+import excepciones.NegocioException;
+import java.util.List;
 import objetosNegocio.ClienteBO;
+import pantallas.frmAgregarCliente;
 
 /**
  * Implementación del Coordinador de operaciones de las clases Bussiones Object
@@ -25,4 +30,36 @@ public class Coordinador {
     public Coordinador(){
         this.clienteBO = new ClienteBO();
     }
+    
+    /**
+     * Metodo que llama al BO (capa de negocio) para agregar un cliente.
+     * @param cliente DTO con la información del cliente a registrar
+ *   * @throws NegocioException si ocurre un error en la capa de negocio
+     */
+    public void agregarCliente(ClienteNuevoDTO cliente) throws NegocioException{
+        clienteBO.registrarCliente(cliente);
+    }
+    
+    /**
+     * Metodo que llama al BO (capa de negocio) para pedirle los datos de negocio y mostrarlos
+     * en la tabla.
+     * @return 
+     * @throws NegocioException 
+     */
+    public List<ClienteDTO> obtenerClientes() throws NegocioException {
+        return clienteBO.obtenerClientes();
+    }
+    
+    public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException{
+        clienteBO.actualizarCliente(clienteDTO);
+    }
+    
+    public ClienteDTO buscarClientePorId(Long id) throws NegocioException {
+        return clienteBO.buscarClientePorId(id);
+    }
+    
+    public void eliminarCliente(ClienteDTO c) throws NegocioException{
+         clienteBO.eliminarCliente(c.getId());
+    }
+    
 }

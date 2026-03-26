@@ -1,7 +1,9 @@
 package interfaces;
 
 import dtos.ClienteDTO;
+import dtos.ClienteNuevoDTO;
 import excepciones.NegocioException;
+import java.util.List;
 
 /**
  * Interfaz que define las operaciones de la lógica de negocio (BO)
@@ -21,22 +23,20 @@ import excepciones.NegocioException;
 public interface IClienteBO {
 
     /**
-     * Registra un nuevo cliente en el sistema.
+     * Registra un nuevo cliente en el sistema.Este método valida la información del cliente antes de enviarla
+ a la capa de persistencia.
      *
-     * Este método valida la información del cliente antes de enviarla
-     * a la capa de persistencia.
      *
-     * @param clienteDTO objeto ClienteDTO con los datos del cliente a registrar
+     * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente a registrar
      * @throws NegocioException si ocurre un error en las reglas de negocio
      */
-    public void registrarCliente(ClienteDTO clienteDTO) throws NegocioException;
+    public void registrarCliente(ClienteNuevoDTO clienteDTO) throws NegocioException;
 
     /**
-     * Actualiza la información de un cliente existente.
+     * Actualiza la información de un cliente existente.Este método valida los datos antes de realizar la actualización.
      *
-     * Este método valida los datos antes de realizar la actualización.
      *
-     * @param clienteDTO objeto ClienteDTO con la información actualizada
+     * @param clienteDTO objeto ClienteNuevoDTO con la información actualizada
      * @throws NegocioException si ocurre un error en las reglas de negocio
      */
     public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException;
@@ -45,7 +45,7 @@ public interface IClienteBO {
      * Busca un cliente en el sistema a partir de su identificador.
      *
      * @param id identificador del cliente
-     * @return objeto ClienteDTO con la información del cliente buscado
+     * @return objeto ClienteNuevoDTO con la información del cliente buscado
      * @throws NegocioException si ocurre un error durante la búsqueda
      */
     public ClienteDTO buscarClientePorId(Long id) throws NegocioException;
@@ -57,4 +57,12 @@ public interface IClienteBO {
      * @throws NegocioException si ocurre un error durante la eliminación
      */
     public void eliminarCliente(Long id) throws NegocioException;
+    
+    /**
+     * Obtiene a todos los clientes registrados en la BD
+     * 
+     * @return lista con todos los clientes
+     * @throws NegocioException 
+     */
+    public List<ClienteDTO> obtenerClientes() throws NegocioException;
 }

@@ -2,6 +2,7 @@ package interfaces;
 
 import entidades.Cliente;
 import excepciones.PersistenciaException;
+import java.util.List;
 
 /**
  * Interfaz que define las operaciones básicas para la gestión de clientes en la
@@ -67,5 +68,35 @@ public interface IClienteDAO {
      * @throws PersistenciaException si ocurre un error durante la búsqueda
      */
     public Cliente buscarClientePorId(Long id) throws PersistenciaException;
-
+    
+    
+    /**
+    * Obtiene la lista completa de clientes registrados en la base de datos.
+    *
+    * Este método permite recuperar todos los clientes almacenados en el sistema,
+    * facilitando su visualización en interfaces como tablas o listados dentro
+    * de la aplicación.
+    *
+    * @return lista de clientes registrados
+    * @throws PersistenciaException si ocurre un error durante la consulta
+    */
+    public List<Cliente> obtenerClientes() throws PersistenciaException;
+    
+    /**
+     * Valida si hay correos duplicados
+     * @param corr
+     * @param ID
+     * @return
+     * @throws PersistenciaException 
+     */
+    public boolean existeCorreo(String corr, Long ID) throws PersistenciaException;
+    
+    /**
+     * Valida si hay numeros de telefono duplicados
+     * @param tel
+     * @param ID
+     * @return
+     * @throws PersistenciaException 
+     */
+    public boolean existeTelefono(String tel, Long ID) throws PersistenciaException;
 }

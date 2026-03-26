@@ -4,7 +4,11 @@
  */
 package pantallas;
 
+import controlador.Coordinador;
 import controlador.CoordinadorInterfaces;
+import dtos.ClienteDTO;
+import dtos.ClienteNuevoDTO;
+import excepciones.NegocioException;
 import javax.swing.JOptionPane;
 import objetosNegocio.ClienteBO;
 
@@ -17,7 +21,8 @@ import objetosNegocio.ClienteBO;
 public class frmAgregarCliente extends javax.swing.JFrame {
 
     private final CoordinadorInterfaces coordinador;
-    //private final ClienteBO clienteBO;
+    private ClienteDTO cliente;
+    private boolean actualizando = false;
 
     /**
      * Creates new form frmClientes
@@ -25,7 +30,28 @@ public class frmAgregarCliente extends javax.swing.JFrame {
     public frmAgregarCliente(CoordinadorInterfaces coordinador) {
         this.coordinador = coordinador;
         initComponents();
-
+        this.actualizando = false;
+    }
+    
+    public void setClienteParaEditar(ClienteDTO cliente){
+        this.cliente = cliente;
+        this.actualizando = true;
+        cargarDatos();
+        btnAgregarCliente.setText("Actualizar");
+        lblTituloForm.setText("Actualizar Cliente");
+    }
+    
+    public void cargarDatos(){
+        if(cliente == null){
+            return;
+        }
+        
+        txtNombres.setText(cliente.getNombres());
+        txtApellidoP.setText(cliente.getApellidoPaterno());
+        txtApellidoM.setText(cliente.getApellidoMaterno());
+        txtTelefono.setText(cliente.getTelefono());
+        txtCorreo.setText(cliente.getCorreo());
+        
     }
 
     /**
@@ -54,7 +80,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         jButton7 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        lblTituloForm = new javax.swing.JLabel();
         txtNombres = new javax.swing.JTextField();
         txtApellidoP = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -224,9 +250,9 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel2.setText("Nombres");
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 26)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Agregar Cliente");
+        lblTituloForm.setFont(new java.awt.Font("Tahoma", 0, 26)); // NOI18N
+        lblTituloForm.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTituloForm.setText("Agregar Cliente");
 
         txtNombres.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
         txtNombres.setBorder(null);
@@ -300,6 +326,11 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         btnAgregarCliente.setForeground(new java.awt.Color(255, 255, 255));
         btnAgregarCliente.setText("Agregar");
         btnAgregarCliente.setBorder(null);
+        btnAgregarCliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAgregarClienteMouseClicked(evt);
+            }
+        });
         btnAgregarCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAgregarClienteActionPerformed(evt);
@@ -349,14 +380,14 @@ public class frmAgregarCliente extends javax.swing.JFrame {
                                 .addComponent(jLabel2))))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(171, 171, 171)
-                        .addComponent(jLabel3)))
+                        .addComponent(lblTituloForm)))
                 .addContainerGap(33, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(42, 42, 42)
-                .addComponent(jLabel3)
+                .addComponent(lblTituloForm)
                 .addGap(26, 26, 26)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -463,7 +494,6 @@ public class frmAgregarCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
-        // TODO add your handling code here:
         
         if(!txtNombres.getText().isEmpty() || !txtApellidoP.getText().isEmpty() || !txtApellidoM.getText().isEmpty() || !txtCorreo.getText().isEmpty() || !txtTelefono.getText().isEmpty()){
             int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de que desea regresar? Esto cancelará el proceso y la información se perderá.", "Regresar a Menú Clientes", JOptionPane.YES_NO_OPTION);
@@ -478,6 +508,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         txtApellidoM.setText("");
         txtCorreo.setText("");
         txtTelefono.setText("");
+        this.dispose();
     }//GEN-LAST:event_btnAtrasActionPerformed
 
     private void txtApellidoPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtApellidoPActionPerformed
@@ -507,6 +538,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         String apellidoM;
         String telefono;
         String correo;
+        String mensaje;
         
         // validaciones del nombre(s)
         if(txtNombres.getText().isEmpty() || txtNombres.getText().isBlank()){
@@ -561,16 +593,54 @@ public class frmAgregarCliente extends javax.swing.JFrame {
             correo = txtCorreo.getText().trim();
         }
         
-        int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de agregar al cliente?" + nombres + apellidoP + apellidoM, "Confirmar Acción", JOptionPane.YES_NO_OPTION);
+        if(actualizando == false){
+            mensaje = "¿Seguro de agregar al cliente?";
+        } else{
+            mensaje = "¿Seguro de actualizar al cliente?";
+        }
+        
+        int opcion = JOptionPane.showConfirmDialog(this, mensaje + nombres + apellidoP + apellidoM, "Confirmar Acción", JOptionPane.YES_NO_OPTION);
         if(opcion == JOptionPane.NO_OPTION){
             return;
         }
+        
+        try{
+            if(actualizando) {
+                
+                ClienteDTO original = coordinador.buscarClientePorId(cliente.getId());
+                cliente.setNombres(nombres);
+                cliente.setApellidoPaterno(apellidoP);
+                cliente.setApellidoMaterno(apellidoM);
+                cliente.setTelefono(telefono);
+                cliente.setCorreo(correo);
+                cliente.setFechaRegistro(original.getFechaRegistro());
+
+                
+                coordinador.actualizarCliente(cliente);
+
+                JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente");
+            } else{
+                ClienteNuevoDTO dto = new ClienteNuevoDTO(nombres, apellidoP, apellidoM, telefono, correo);
+                coordinador.agregarCliente(dto);
+                JOptionPane.showMessageDialog(this, "Cliente agregado correctamente");
+            }
+        } catch(NegocioException ex){
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        coordinador.refrescarTableFormClientes();
+        coordinador.mostrarFormularioClientes();
+        this.dispose();
         
         /* 
         aquí pos ya falta que el coordinador le hable a la BO pero me ondié xq
         se supone que tendremos uno static o cada frm crea su propio par d controladores?
         */
     }//GEN-LAST:event_btnAgregarClienteActionPerformed
+
+    private void btnAgregarClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarClienteMouseClicked
+        coordinador.mostrarFormularioAgregarClientes();
+    }//GEN-LAST:event_btnAgregarClienteMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -584,7 +654,6 @@ public class frmAgregarCliente extends javax.swing.JFrame {
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -603,6 +672,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JLabel lblClientes;
+    private javax.swing.JLabel lblTituloForm;
     private javax.swing.JTextField txtApellidoM;
     private javax.swing.JTextField txtApellidoP;
     private javax.swing.JTextField txtCorreo;

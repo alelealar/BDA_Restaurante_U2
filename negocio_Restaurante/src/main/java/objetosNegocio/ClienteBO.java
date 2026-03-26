@@ -3,11 +3,14 @@ package objetosNegocio;
 import adaptadores.ClienteAdapter;
 import daos.ClienteDAO;
 import dtos.ClienteDTO;
+import dtos.ClienteNuevoDTO;
 import entidades.Cliente;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import interfaces.IClienteBO;
 import interfaces.IClienteDAO;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -37,21 +40,23 @@ public class ClienteBO implements IClienteBO {
     private static final Logger LOG = Logger.getLogger(ClienteBO.class.getName());
 
     /**
-     * Registra un nuevo cliente en el sistema.
+     * Registra un nuevo cliente en el sistema.Valida los datos del cliente, convierte el DTO a entidad y delega
+     * la operación al DAO.
      *
-     * Valida los datos del cliente, convierte el DTO a entidad y delega
-     * la operación al DAO. Maneja errores de persistencia y los transforma
-     * en excepciones de negocio.
+     * Maneja errores de persistencia y los transforma en excepciones de negocio.
      *
-     * @param clienteDTO objeto ClienteDTO con los datos del cliente
+     * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente
      * @throws NegocioException si ocurre un error en la validación o persistencia
      */
     @Override
-    public void registrarCliente(ClienteDTO clienteDTO) throws NegocioException {
+    public void registrarCliente(ClienteNuevoDTO clienteDTO) throws NegocioException {
         try {
-            validarDatos(clienteDTO);
-
+            validarDatosNuevoDTO(clienteDTO);
+            if (clienteDTO.getCorreo() == null || clienteDTO.getCorreo().trim().isEmpty()) {
+                clienteDTO.setCorreo("sin correo");
+            }
             Cliente clienteEntidad = ClienteAdapter.dtoAEntidad(clienteDTO);
+            clienteEntidad.setFechaRegistro(LocalDate.now());
             clienteDAO.guardarCliente(clienteEntidad);
 
             LOG.info(() -> "El cliente fue agregado correctamente: " + clienteDTO.toString());
@@ -65,13 +70,18 @@ public class ClienteBO implements IClienteBO {
     /**
      * Actualiza la información de un cliente existente.
      *
-     * @param clienteDTO objeto ClienteDTO con la información actualizada
+     * @param clienteDTO objeto ClienteNuevoDTO con la información actualizada
      * @throws NegocioException si ocurre un error durante la operación
      */
     @Override
     public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException {
         try{
-            validarDatos(clienteDTO);
+            validarDatosDTO(clienteDTO);
+            
+            if (clienteDTO.getCorreo() == null || clienteDTO.getCorreo().trim().isEmpty()) {
+                clienteDTO.setCorreo(null);
+            }
+            System.out.println("FECHA DTO: " + clienteDTO.getFechaRegistro());
             
             Cliente clienteEntidad = ClienteAdapter.dtoAEntidad(clienteDTO);
             clienteDAO.actualizarCliente(clienteEntidad);
@@ -88,7 +98,7 @@ public class ClienteBO implements IClienteBO {
      * Busca un cliente por su identificador.
      *
      * @param id identificador del cliente
-     * @return ClienteDTO con la información del cliente
+     * @return ClienteNuevoDTO con la información del cliente
      * @throws NegocioException si ocurre un error durante la búsqueda
      */
     @Override
@@ -132,18 +142,37 @@ public class ClienteBO implements IClienteBO {
             throw new NegocioException("No se pudo eliminar al cliente con ID: " + id, ex);
         }
     }
+    
+    /**
+     * Obtiene a todos los clientes registrados en la BD
+     * 
+     * @return lista con todos los clientes
+     * @throws NegocioException 
+     */
+    @Override
+    public List<ClienteDTO> obtenerClientes() throws NegocioException {
+        try{
+            List<Cliente> clientes = clienteDAO.obtenerClientes();
+            
+            LOG.info("Los clientes se obtuvieron correctamente");
+            
+            return ClienteAdapter.listaEntidadADTO(clientes);
+            
+        } catch(PersistenciaException ex){
+            LOG.warning("No se encontraron los clientes");
+            throw new NegocioException("No fue posible obtener a los clientes", ex);
+        }
+    }
 
     /**
-     * Valida los datos del cliente antes de ser procesados.
-     *
-     * Verifica que los campos obligatorios no estén vacíos y que el
+     * Valida los datos del cliente antes de ser procesados.Verifica que los campos obligatorios no estén vacíos y que el
      * correo tenga un formato válido.
      *
-     * @param clienteDto objeto ClienteDTO a validar
+     *
+     * @param clienteDto objeto ClienteNuevoDTO a validar
      * @throws NegocioException si algún dato no cumple con las reglas de negocio
      */
-    private void validarDatos(ClienteDTO clienteDto) throws NegocioException {
-
+    private void validarDatosNuevoDTO(ClienteNuevoDTO clienteDto) throws NegocioException {
         if (clienteDto.getNombres() == null || clienteDto.getNombres().trim().isEmpty()) {
             throw new NegocioException("El nombre del cliente es obligatorio.");
         }
@@ -152,28 +181,70 @@ public class ClienteBO implements IClienteBO {
             throw new NegocioException("El apellido paterno del cliente es obligatorio.");
         }
 
-        // válida si el apellido M es nulo/vació/en blanco, y si lo es establece que es nulo
-        if (clienteDto.getApellidoMaterno() == null || clienteDto.getApellidoMaterno().isEmpty() || clienteDto.getApellidoMaterno().isBlank()){
-                clienteDto.setApellidoMaterno(null);
+        if (clienteDto.getTelefono() == null || clienteDto.getTelefono().trim().isEmpty()) {
+            throw new NegocioException("El teléfono del cliente es obligatorio.");
+        }
+
+        if (clienteDto.getApellidoMaterno() == null || clienteDto.getApellidoMaterno().trim().isEmpty()) {
+            clienteDto.setApellidoMaterno(null);
+        }
+
+        if (clienteDto.getCorreo() != null && !clienteDto.getCorreo().trim().isEmpty()) {
+            if (!clienteDto.getCorreo().trim().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                throw new NegocioException("El formato del correo no es válido.");
+            }
+        }
+
+    }
+    
+    /**
+     * Valida los datos del cliente antes de ser procesados.Verifica que los campos obligatorios no estén vacíos y que el
+     * correo tenga un formato válido.
+     *
+     *
+     * @param clienteDto objeto ClienteNuevoDTO a validar
+     * @throws NegocioException si algún dato no cumple con las reglas de negocio
+     */
+    private void validarDatosDTO(ClienteDTO clienteDto) throws NegocioException {
+        if (clienteDto.getNombres() == null || clienteDto.getNombres().trim().isEmpty()) {
+            throw new NegocioException("El nombre del cliente es obligatorio.");
+        }
+
+        if (clienteDto.getApellidoPaterno() == null || clienteDto.getApellidoPaterno().trim().isEmpty()) {
+            throw new NegocioException("El apellido paterno del cliente es obligatorio.");
         }
 
         if (clienteDto.getTelefono() == null || clienteDto.getTelefono().trim().isEmpty()) {
-            throw new NegocioException("El telefono del cliente es obligatorio.");
+            throw new NegocioException("El teléfono del cliente es obligatorio.");
+        }
+
+        if (clienteDto.getApellidoMaterno() == null || clienteDto.getApellidoMaterno().trim().isEmpty()) {
+            clienteDto.setApellidoMaterno(null);
+        }
+
+        if (clienteDto.getCorreo() != null && !clienteDto.getCorreo().trim().isEmpty()) {
+            if (!clienteDto.getCorreo().trim().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                throw new NegocioException("El formato del correo no es válido.");
+            }
+        }
+
+        try {
+
+            if (clienteDto.getCorreo() != null && !clienteDto.getCorreo().trim().isEmpty()) {
+                if (clienteDAO.existeCorreo(clienteDto.getCorreo(), clienteDto.getId())) {
+                    throw new NegocioException("El correo ya está registrado");
+                }
+            }
+
+            if (clienteDAO.existeTelefono(clienteDto.getTelefono(), clienteDto.getId())) {
+                throw new NegocioException("El teléfono ya está registrado");
+            }
+
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Error al validar cliente", e);
         }
         
-        // válida si el correo es nulo/vació/en blanco, y si lo es establece que es nulo
-        if (clienteDto.getCorreo() == null || clienteDto.getCorreo().isEmpty() || clienteDto.getCorreo().isBlank()){
-            clienteDto.setCorreo(null);
-            // si no lo es, pues en ese caso válida el formato
-        } else if (clienteDto.getCorreo().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
-           throw new NegocioException("El formato del correo no es válido.");
-        }
-        
-        // la dejo porque no la quiero borrar aún pero según yo el correo es opcional.
-        // - majojojo
-//        if (clienteDto.getCorreo() == null || 
-//            !clienteDto.getCorreo().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-//            throw new NegocioException("El formato del correo no es válido.");
-//        }
     }
+    
+    
 }

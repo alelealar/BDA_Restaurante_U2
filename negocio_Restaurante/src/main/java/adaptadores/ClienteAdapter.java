@@ -1,7 +1,10 @@
 package adaptadores;
 
 import dtos.ClienteDTO;
+import dtos.ClienteNuevoDTO;
 import entidades.Cliente;
+import excepciones.NegocioException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +26,11 @@ import java.util.List;
 public class ClienteAdapter {
 
     /**
-     * Convierte un objeto Cliente (entidad) a un objeto ClienteDTO.
+     * Convierte un objeto Cliente (entidad) a un objeto ClienteNuevoDTO.
      *
      * @param cliente objeto Cliente a convertir
-     * @return objeto ClienteDTO con los datos del cliente, o null si el
-     * parámetro es null
+     * @return objeto ClienteNuevoDTO con los datos del cliente, o null si el
+ parámetro es null
      */
     public static ClienteDTO entidadADTO(Cliente cliente) {
         if (cliente == null) {
@@ -40,41 +43,52 @@ public class ClienteAdapter {
                 cliente.getApellidoPaterno(),
                 cliente.getApellidoMaterno(),
                 cliente.getTelefono(),
-                cliente.getCorreo()
+                cliente.getCorreo(),
+                cliente.getFechaRegistro()
         );
     }
 
     /**
-     * Convierte un objeto ClienteDTO a un objeto Cliente (entidad).
+     * Convierte un objeto ClienteNuevoDTO a un objeto Cliente (entidad).
      *
-     * @param clienteDto objeto ClienteDTO a convertir
+     * @param clienteDto objeto ClienteNuevoDTO a convertir
      * @return objeto Cliente con los datos del DTO, o null si el parámetro es
      * null
      */
-    public static Cliente dtoAEntidad(ClienteDTO clienteDto) {
-        if (clienteDto == null) {
-            return null;
+    public static Cliente dtoAEntidad(Object dto) throws NegocioException {
+        if (dto == null) return null;
+        
+        if (dto instanceof ClienteNuevoDTO c) {
+            return new Cliente(
+                    null,
+                    c.getNombres(),
+                    c.getApellidoPaterno(),
+                    c.getApellidoMaterno(),
+                    c.getTelefono(),
+                    c.getCorreo()
+            );
         }
 
-        return new Cliente(
-                clienteDto.getId(),
-                clienteDto.getNombres(),
-                clienteDto.getApellidoPaterno(),
-                clienteDto.getApellidoMaterno(),
-                clienteDto.getTelefono(),
-                clienteDto.getCorreo()
-        );
+        if (dto instanceof ClienteDTO c) {
+            return new Cliente(
+                    c.getId(),
+                    c.getNombres(),
+                    c.getApellidoPaterno(),
+                    c.getApellidoMaterno(),
+                    c.getTelefono(),
+                    c.getCorreo()
+            );
+        }
+        throw new NegocioException("DTO no aceptado: " + dto.getClass());
     }
 
     /**
      * Convierte una lista de objetos Cliente (entidades) a una lista de
-     * ClienteDTO.
+     * ClienteDTO.Recorre la lista de entidades y transforma cada elemento en su representación DTO.
      *
-     * Recorre la lista de entidades y transforma cada elemento en su
-     * representación DTO.
      *
      * @param clientes lista de objetos Cliente
-     * @return lista de objetos ClienteDTO
+     * @return lista de objetos ClienteNuevoDTO
      */
     public static List<ClienteDTO> listaEntidadADTO(List<Cliente> clientes) {
         List<ClienteDTO> listaDtos = new ArrayList<>();
