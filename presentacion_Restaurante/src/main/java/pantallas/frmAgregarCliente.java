@@ -284,7 +284,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel5.setText("Apellido Paterno (opcional)");
+        jLabel5.setText("Apellido Materno (opcional)");
 
         txtCorreo.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
         txtCorreo.setBorder(null);
@@ -533,6 +533,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
 
     private void btnAgregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClienteActionPerformed
         // TODO add your handling code here:
+        
         String nombres;
         String apellidoP;
         String apellidoM;
@@ -599,7 +600,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
             mensaje = "¿Seguro de actualizar al cliente?";
         }
         
-        int opcion = JOptionPane.showConfirmDialog(this, mensaje + nombres + apellidoP + apellidoM, "Confirmar Acción", JOptionPane.YES_NO_OPTION);
+        int opcion = JOptionPane.showConfirmDialog(this, mensaje + " " + nombres + " " + apellidoP + " " + apellidoM, "Confirmar Acción", JOptionPane.YES_NO_OPTION);
         if(opcion == JOptionPane.NO_OPTION){
             return;
         }
@@ -619,10 +620,12 @@ public class frmAgregarCliente extends javax.swing.JFrame {
                 coordinador.actualizarCliente(cliente);
 
                 JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente");
+                limpiar();
             } else{
                 ClienteNuevoDTO dto = new ClienteNuevoDTO(nombres, apellidoP, apellidoM, telefono, correo);
                 coordinador.agregarCliente(dto);
                 JOptionPane.showMessageDialog(this, "Cliente agregado correctamente");
+                limpiar();
             }
         } catch(NegocioException ex){
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -642,6 +645,14 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         coordinador.mostrarFormularioAgregarClientes();
     }//GEN-LAST:event_btnAgregarClienteMouseClicked
 
+    
+    private void limpiar(){
+        txtNombres.setText("");
+        txtApellidoP.setText("");
+        txtApellidoM.setText("");
+        txtTelefono.setText("");
+        txtCorreo.setText("");
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarCliente;
