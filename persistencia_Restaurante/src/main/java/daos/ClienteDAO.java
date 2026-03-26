@@ -43,8 +43,12 @@ public class ClienteDAO implements IClienteDAO {
             em.getTransaction().commit();
             return cliente;
         } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw new PersistenciaException("No fue posible guardar al cliente " + cliente.getNombres(), e);
+            //valida que haya una transaccion activa para poder hacer el rollback, porque no tira la excepcion sin esto
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException(
+                    "No fue posible guardar al cliente " + cliente.getNombres());
         } finally {
             em.close();
         }
@@ -67,22 +71,20 @@ public class ClienteDAO implements IClienteDAO {
         try {
             em.getTransaction().begin();
             Cliente clienteBD = em.find(Cliente.class, cliente.getId());
-            
+
             if (clienteBD == null) {
                 throw new PersistenciaException("Cliente no encontrado");
             }
-            
-            clienteBD.setNombres(cliente.getNombres());
-            clienteBD.setApellidoPaterno(cliente.getApellidoPaterno());
-            clienteBD.setApellidoMaterno(cliente.getApellidoMaterno());
-            clienteBD.setTelefono(cliente.getTelefono());
-            clienteBD.setCorreo(cliente.getCorreo());
-            
+
+            Cliente actualizado = em.merge(cliente);
+
             em.getTransaction().commit();
-            return clienteBD;
-            
+            return actualizado;
+
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw new PersistenciaException("No fue posible actualizar al cliente " + cliente.getNombres(), e);
         } finally {
             em.close();
@@ -116,7 +118,9 @@ public class ClienteDAO implements IClienteDAO {
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw new PersistenciaException("No fue posible eliminar al cliente con id " + id, e);
         } finally {
             em.close();
@@ -144,28 +148,27 @@ public class ClienteDAO implements IClienteDAO {
             em.close();
         }
     }
-    
-    
+
     /**
-    * Obtiene la lista completa de clientes registrados en la base de datos.
-    *
-    * Este método permite recuperar todos los clientes almacenados en el sistema,
-    * facilitando su visualización en interfaces como tablas o listados dentro
-    * de la aplicación.
-    *
-    * @return lista de clientes registrados
-    * @throws PersistenciaException si ocurre un error durante la consulta
-    */
+     * Obtiene la lista completa de clientes registrados en la base de datos.
+     *
+     * Este método permite recuperar todos los clientes almacenados en el
+     * sistema, facilitando su visualización en interfaces como tablas o
+     * listados dentro de la aplicación.
+     *
+     * @return lista de clientes registrados
+     * @throws PersistenciaException si ocurre un error durante la consulta
+     */
     @Override
-    public List<Cliente> obtenerClientes() throws PersistenciaException{
+    public List<Cliente> obtenerClientes() throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
-        
-        try{
+
+        try {
             String JPQL = "SELECT c FROM Cliente c";
             TypedQuery<Cliente> query = em.createQuery(JPQL, Cliente.class);
             return query.getResultList();
-            
-        } catch(Exception e){
+
+        } catch (Exception e) {
             throw new PersistenciaException("No fue posible consultar a los clientes");
         } finally {
             em.close();
@@ -174,17 +177,18 @@ public class ClienteDAO implements IClienteDAO {
 
     /**
      * Valida si hay correos duplicados
+     *
      * @param corr
      * @param ID
      * @return
-     * @throws PersistenciaException 
+     * @throws PersistenciaException
      */
     @Override
     public boolean existeCorreo(String corr, Long ID) throws PersistenciaException {
-        
+
         EntityManager em = ConexionBD.crearConexion();
         try {
-            String JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.correo = :correo AND c.id != :id" ;
+            String JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.correo = :correo AND c.id != :id";
             TypedQuery<Long> query = em.createQuery(JPQL, Long.class);
             query.setParameter("correo", corr);
             query.setParameter("id", ID);
@@ -201,21 +205,22 @@ public class ClienteDAO implements IClienteDAO {
 
     /**
      * Valida si hay numeros de telefono duplicados
+     *
      * @param tel
      * @param ID
      * @return
-     * @throws PersistenciaException 
+     * @throws PersistenciaException
      */
     @Override
     public boolean existeTelefono(String tel, Long ID) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
-        
+
         try {
             String JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :telefono AND c.id != :id";
             TypedQuery<Long> query = em.createQuery(JPQL, Long.class);
             query.setParameter("telefono", tel);
             query.setParameter("id", ID);
-            
+
             return query.getSingleResult() > 0;
 
         } catch (Exception e) {
@@ -226,5 +231,4 @@ public class ClienteDAO implements IClienteDAO {
         }
     }
 
-    
 }
