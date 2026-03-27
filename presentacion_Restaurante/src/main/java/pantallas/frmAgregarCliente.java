@@ -549,7 +549,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "El campo 'Nombres' solo acepta letras, acentos, espacios y puntos.");
             return;
         } else {
-            nombres = txtNombres.getText();
+            nombres = txtNombres.getText().trim();
         }
         
         // validaciones del apellido paterno
@@ -560,7 +560,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "El campo 'Apellido Paterno' solo acepta letras, acentos, espacios y puntos.");
             return;
         } else {
-            apellidoP = txtApellidoP.getText();
+            apellidoP = txtApellidoP.getText().trim();
         }
         
         // apellido materno
@@ -570,7 +570,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "El campo 'Apellido Materno' solo acepta letras, acentos, espacios y puntos.");
             return;
         } else {
-            apellidoM = txtApellidoM.getText();
+            apellidoM = txtApellidoM.getText().trim();
         }
         
         // telefono
@@ -595,12 +595,12 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         }
         
         if(actualizando == false){
-            mensaje = "¿Seguro de agregar al cliente?";
+            mensaje = "¿Seguro de agregar al cliente " + nombres + " " + apellidoP + " " + apellidoM + "?";
         } else{
-            mensaje = "¿Seguro de actualizar al cliente?";
+            mensaje = "¿Seguro de actualizar al cliente " + nombres + " " + apellidoP + " " + apellidoM + "?";
         }
         
-        int opcion = JOptionPane.showConfirmDialog(this, mensaje + " " + nombres + " " + apellidoP + " " + apellidoM, "Confirmar Acción", JOptionPane.YES_NO_OPTION);
+        int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Confirmar Acción", JOptionPane.YES_NO_OPTION);
         if(opcion == JOptionPane.NO_OPTION){
             return;
         }

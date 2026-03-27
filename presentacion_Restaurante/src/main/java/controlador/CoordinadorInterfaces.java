@@ -52,7 +52,7 @@ public class CoordinadorInterfaces {
     }
 
     /**
-     * mustra el formulario de agregar clientes
+     * muestra el formulario de agregar clientes
      */
     public void mostrarFormularioAgregarClientes() {
         if (formAgregarClientes == null) {
@@ -60,6 +60,14 @@ public class CoordinadorInterfaces {
         }
         formClientes.setVisible(false);
         formAgregarClientes.setVisible(true);
+    }
+    
+    public void regresarInicio(){
+        if(formInicio == null){
+            formInicio = new frmInicio(this);
+        }
+        formClientes.setVisible(false);
+        formInicio.setVisible(true);
     }
     
     /**

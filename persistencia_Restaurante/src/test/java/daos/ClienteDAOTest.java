@@ -5,6 +5,7 @@ import excepciones.PersistenciaException;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Clase de pruebas unitarias para ClienteDAO.
@@ -23,6 +24,26 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ClienteDAOTest {
 
     /**
+     * Método para que borré todo y no tengamos que modificando las pruebas 
+     * cada vez que las queramos correr dado a los atributos que son únicos en 
+     * la base de datos.
+     */
+    @BeforeEach
+    public void limpiarDatos() {
+        ClienteDAO dao = new ClienteDAO();
+        
+        try{
+            List<Cliente> clientes = dao.obtenerClientes();
+            for (Cliente c : clientes) {
+                dao.eliminarCliente(c.getId());
+            }
+        } catch(PersistenciaException pe){
+            System.out.println("Falló al preparar las pruebas, ERROR=" + pe.getMessage());
+        }
+    }
+    
+    
+    /**
      * Prueba del método guardarCliente.
      *
      * Verifica que: - Se guarde correctamente un cliente - Se lance excepción
@@ -32,16 +53,16 @@ public class ClienteDAOTest {
     public void testGuardarCliente() throws Exception {
         ClienteDAO dao = new ClienteDAO();
 
-        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441556878", "brian@gmail.com");
+        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6444576879", "brian30@gmail.com");
 
         Cliente clienteObtenido = dao.guardarCliente(cliente);
 
         assertNotNull(clienteObtenido.getId());
         assertEquals("Brian", clienteObtenido.getNombres());
-        assertEquals("brian@gmail.com", clienteObtenido.getCorreo());
+        assertEquals("brian30@gmail.com", clienteObtenido.getCorreo());
 
         // Caso que debe fallar (teléfono duplicado)
-        Cliente cliente2 = new Cliente("Alejandra", "Leal", "Armenta", "6441556878", "ale@gmail.com");
+        Cliente cliente2 = new Cliente("Alejandra", "Leal", "Armenta", "6444576879", "aleale2@gmail.com");
 
         assertThrows(PersistenciaException.class,
                 () -> dao.guardarCliente(cliente2)
@@ -59,7 +80,7 @@ public class ClienteDAOTest {
     public void testActualizarCliente() throws Exception {
         ClienteDAO dao = new ClienteDAO();
 
-        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441568788", "kaleb@gmail.com");
+        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441568789", "kaleb2@gmail.com");
         Cliente clienteGuardado = dao.guardarCliente(cliente);
 
         clienteGuardado.setNombres("Kaleb");
@@ -87,7 +108,7 @@ public class ClienteDAOTest {
     public void testEliminarCliente() throws Exception {
         ClienteDAO dao = new ClienteDAO();
 
-        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441556878", "brian@gmail.com");
+        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441556877", "brian3@gmail.com");
         Cliente clienteGuardado = dao.guardarCliente(cliente);
 
         boolean eliminado = dao.eliminarCliente(clienteGuardado.getId());
@@ -110,7 +131,7 @@ public class ClienteDAOTest {
     public void testBuscarClientePorId() throws Exception {
         ClienteDAO dao = new ClienteDAO();
 
-        Cliente cliente = new Cliente("Alejandra", "Leal", "Armenta", "6441556879", "ale@gmail.com");
+        Cliente cliente = new Cliente("Alejandra", "Leal", "Armenta", "6441556875", "ale3@gmail.com");
         Cliente clienteGuardado = dao.guardarCliente(cliente);
 
         Cliente encontrado = dao.buscarClientePorId(clienteGuardado.getId());
@@ -133,8 +154,8 @@ public class ClienteDAOTest {
     public void testObtenerClientes() throws Exception {
         ClienteDAO dao = new ClienteDAO();
 
-        Cliente cliente1 = new Cliente("Brian", "Sandoval", "Rodriguez", "6441556880", "brian2@gmail.com");
-        Cliente cliente2 = new Cliente("Maria Jose", "Valdez", "Iglesias", "6441556881", "maria@gmail.com");
+        Cliente cliente1 = new Cliente("Brian", "Sandoval", "Rodriguez", "6441556882", "brian4@gmail.com");
+        Cliente cliente2 = new Cliente("Maria Jose", "Valdez", "Iglesias", "6441556883", "maria2@gmail.com");
 
         dao.guardarCliente(cliente1);
         dao.guardarCliente(cliente2);
