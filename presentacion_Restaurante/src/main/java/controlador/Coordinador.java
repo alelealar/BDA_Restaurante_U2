@@ -7,6 +7,7 @@ package controlador;
 import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
 import excepciones.NegocioException;
+import interfaces.IClienteBO;
 import java.util.List;
 import objetosNegocio.ClienteBO;
 import pantallas.frmAgregarCliente;
@@ -25,10 +26,10 @@ import pantallas.frmAgregarCliente;
 public class Coordinador {
     
     // Capa de Negocio BOs
-    private ClienteBO clienteBO;
+    private final IClienteBO clienteBO;
     
     public Coordinador(){
-        this.clienteBO = new ClienteBO();
+        this.clienteBO = ClienteBO.getInstance();
     }
     
     /**

@@ -3,9 +3,9 @@ package daos;
 import entidades.Cliente;
 import excepciones.PersistenciaException;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
+
 
 /**
  * Clase de pruebas unitarias para ClienteDAO.
@@ -164,4 +164,66 @@ public class ClienteDAOTest {
 
         assertTrue(clientes.size() >= 2);
     }
+    
+    /**
+     * Prueba del método obtenerClientes vacio.
+     */
+    @Test
+    public void testObtenerClientesVacio() throws Exception {
+        ClienteDAO dao = new ClienteDAO();
+
+        List<Cliente> clientes = dao.obtenerClientes();
+
+        assertTrue(clientes.isEmpty());
+    }
+    
+    /**
+    * Prueba del método existeTelefono.
+    *
+    * Verifica que:
+    * - No se considere duplicado cuando el teléfono pertenece al mismo cliente
+    * - No se considere duplicado cuando el teléfono es único
+    * - Se detecte correctamente cuando otro cliente tiene el mismo teléfono
+    */
+    @Test
+    public void testExisteTelefono() throws PersistenciaException{
+        ClienteDAO dao = new ClienteDAO();
+        Cliente cliente1 = new Cliente("Brian", "Sandoval", "Rodriguez", "6444576879", "brian30@gmail.com");
+        Cliente guardado1= dao.guardarCliente(cliente1);
+        
+        assertFalse(dao.existeTelefono("6444576879", guardado1.getId()));
+        
+        Cliente cliente2 = new Cliente("Maria Jose", "Valdez", "Iglesias", "6441556883", "maria2@gmail.com");
+        Cliente guardado2= dao.guardarCliente(cliente2);
+        
+        assertFalse(dao.existeTelefono("6441556883", guardado2.getId()));
+        
+        assertTrue(dao.existeTelefono("6441556883", guardado1.getId()));   
+    }
+    
+    
+    /**
+     * Prueba del método existeCorreo.
+     *
+     * Verifica que:
+     * - No se considere duplicado cuando el correo pertenece al mismo cliente
+     * - No se considere duplicado cuando el correo es único
+     * - Se detecte correctamente cuando otro cliente tiene el mismo correo
+     */
+    @Test
+    public void testExisteCorreo() throws PersistenciaException{
+        ClienteDAO dao = new ClienteDAO();
+        Cliente cliente1 = new Cliente("Brian", "Sandoval", "Rodriguez", "6444576879", "brian30@gmail.com");
+        Cliente guardado1= dao.guardarCliente(cliente1);
+        
+        assertFalse(dao.existeCorreo("brian30@gmail.com", guardado1.getId()));
+        
+        Cliente cliente2 = new Cliente("Maria Jose", "Valdez", "Iglesias", "6441556883", "maria2@gmail.com");
+        Cliente guardado2= dao.guardarCliente(cliente2);
+        
+        assertFalse(dao.existeCorreo("maria2@gmail.com", guardado2.getId()));
+        
+        assertTrue(dao.existeCorreo("maria2@gmail.com", guardado1.getId()));   
+    }
+
 }

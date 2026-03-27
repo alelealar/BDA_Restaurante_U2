@@ -4,13 +4,13 @@
  */
 package pantallas;
 
-import controlador.Coordinador;
+
 import controlador.CoordinadorInterfaces;
 import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
 import excepciones.NegocioException;
 import javax.swing.JOptionPane;
-import objetosNegocio.ClienteBO;
+import validaciones.ValidadorCampos;
 
 /**
  *
@@ -26,6 +26,7 @@ public class frmAgregarCliente extends javax.swing.JFrame {
 
     /**
      * Creates new form frmClientes
+     * @param coordinador
      */
     public frmAgregarCliente(CoordinadorInterfaces coordinador) {
         this.coordinador = coordinador;
@@ -541,57 +542,57 @@ public class frmAgregarCliente extends javax.swing.JFrame {
         String correo;
         String mensaje;
         
-        // validaciones del nombre(s)
-        if(txtNombres.getText().isEmpty() || txtNombres.getText().isBlank()){
+        // nombres
+        nombres = txtNombres.getText().trim();
+
+        if (ValidadorCampos.nombreVacio(nombres)) {
             JOptionPane.showMessageDialog(this, "El campo 'Nombres' no puede estar vacío.");
             return;
-        } else if (!txtNombres.getText().matches("^[\\p{L} \\.]+$")){
+        } else if (!ValidadorCampos.nombreValido(nombres)) {
             JOptionPane.showMessageDialog(this, "El campo 'Nombres' solo acepta letras, acentos, espacios y puntos.");
             return;
-        } else {
-            nombres = txtNombres.getText().trim();
         }
-        
-        // validaciones del apellido paterno
-        if(txtApellidoP.getText().isEmpty() || txtApellidoP.getText().isBlank()){
+
+        // apellido paterno
+        apellidoP = txtApellidoP.getText().trim();
+
+        if (ValidadorCampos.apellidoPVacio(apellidoP)) {
             JOptionPane.showMessageDialog(this, "El campo 'Apellido Paterno' no puede estar vacío.");
             return;
-        } else if (!txtApellidoP.getText().matches("^[\\p{L} \\.]+$")){
+        } else if (!ValidadorCampos.apellidoPValido(apellidoP)) {
             JOptionPane.showMessageDialog(this, "El campo 'Apellido Paterno' solo acepta letras, acentos, espacios y puntos.");
             return;
-        } else {
-            apellidoP = txtApellidoP.getText().trim();
         }
-        
+
         // apellido materno
-        if(txtApellidoM.getText().isEmpty() || txtApellidoM.getText().isBlank()){
+        apellidoM = txtApellidoM.getText().trim();
+
+        if (apellidoM.isEmpty()) {
             apellidoM = "";
-        } else if (!txtApellidoM.getText().matches("^[\\p{L} \\.]+$")){
+        } else if (!ValidadorCampos.apellidoMValido(apellidoM)) {
             JOptionPane.showMessageDialog(this, "El campo 'Apellido Materno' solo acepta letras, acentos, espacios y puntos.");
             return;
-        } else {
-            apellidoM = txtApellidoM.getText().trim();
         }
-        
+
         // telefono
-        if(txtTelefono.getText().isEmpty() || txtTelefono.getText().isBlank()){
+        telefono = txtTelefono.getText().trim();
+
+        if (ValidadorCampos.telefonoVacio(telefono)) {
             JOptionPane.showMessageDialog(this, "El campo 'Teléfono' no puede estar vacío.");
             return;
-        } else if(!txtTelefono.getText().matches("^\\d{10}$")){
+        } else if (!ValidadorCampos.telefonoValido(telefono)) {
             JOptionPane.showMessageDialog(this, "El campo 'Teléfono' solo acepta dígitos y una longitud de 10 caracteres.");
             return;
-        } else {
-            telefono = txtTelefono.getText().trim();
         }
-        
+
         // correo
-        if(txtCorreo.getText().isEmpty() || txtCorreo.getText().isBlank()){
+        correo = txtCorreo.getText().trim();
+
+        if (correo.isEmpty()) {
             correo = "";
-        } else if(!txtCorreo.getText().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
+        } else if (!ValidadorCampos.correoValido(correo)) {
             JOptionPane.showMessageDialog(this, "Formato de correo inválido.");
             return;
-        } else {
-            correo = txtCorreo.getText().trim();
         }
         
         if(actualizando == false){
@@ -621,24 +622,21 @@ public class frmAgregarCliente extends javax.swing.JFrame {
 
                 JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente");
                 limpiar();
+                coordinador.mostrarFormularioClientes();
+                this.dispose();
             } else{
                 ClienteNuevoDTO dto = new ClienteNuevoDTO(nombres, apellidoP, apellidoM, telefono, correo);
                 coordinador.agregarCliente(dto);
                 JOptionPane.showMessageDialog(this, "Cliente agregado correctamente");
                 limpiar();
+                coordinador.mostrarFormularioClientes();
+                this.dispose();
             }
         } catch(NegocioException ex){
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         
         coordinador.refrescarTableFormClientes();
-        coordinador.mostrarFormularioClientes();
-        this.dispose();
-        
-        /* 
-        aquí pos ya falta que el coordinador le hable a la BO pero me ondié xq
-        se supone que tendremos uno static o cada frm crea su propio par d controladores?
-        */
     }//GEN-LAST:event_btnAgregarClienteActionPerformed
 
     private void btnAgregarClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarClienteMouseClicked

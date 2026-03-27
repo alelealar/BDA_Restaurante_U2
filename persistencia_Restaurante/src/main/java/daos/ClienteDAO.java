@@ -22,7 +22,21 @@ import javax.persistence.TypedQuery;
  * @author Maria Jose Valdez Iglesias - 00000262775
  */
 public class ClienteDAO implements IClienteDAO {
-
+    
+    private static ClienteDAO instancia;
+    
+    public ClienteDAO(){
+        
+    }
+    
+    public static ClienteDAO getInstance(){
+        if(instancia == null){
+            instancia = new ClienteDAO();
+        }
+        return instancia;
+    }
+    
+    
     /**
      * Guarda un nuevo cliente en la base de datos.
      *
@@ -36,8 +50,8 @@ public class ClienteDAO implements IClienteDAO {
     @Override
     public Cliente guardarCliente(Cliente cliente) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
-
         try {
+
             em.getTransaction().begin();
             em.persist(cliente);
             em.getTransaction().commit();
@@ -47,8 +61,7 @@ public class ClienteDAO implements IClienteDAO {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException(
-                    "No fue posible guardar al cliente " + cliente.getNombres());
+            throw new PersistenciaException("No fue posible guardar al cliente " + cliente.getNombres(), e);             
         } finally {
             em.close();
         }
@@ -76,10 +89,14 @@ public class ClienteDAO implements IClienteDAO {
                 throw new PersistenciaException("Cliente no encontrado");
             }
 
-            Cliente actualizado = em.merge(cliente);
+            clienteBD.setNombres(cliente.getNombres());
+            clienteBD.setApellidoPaterno(cliente.getApellidoPaterno());
+            clienteBD.setApellidoMaterno(cliente.getApellidoMaterno());
+            clienteBD.setTelefono(cliente.getTelefono());
+            clienteBD.setCorreo(cliente.getCorreo());
 
             em.getTransaction().commit();
-            return actualizado;
+            return clienteBD;
 
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
@@ -174,61 +191,65 @@ public class ClienteDAO implements IClienteDAO {
             em.close();
         }
     }
-
-    /**
-     * Valida si hay correos duplicados
-     *
-     * @param corr
-     * @param ID
-     * @return
-     * @throws PersistenciaException
-     */
     @Override
-    public boolean existeCorreo(String corr, Long ID) throws PersistenciaException {
-
+    public boolean existeTelefono(String telefono, Long ID) throws PersistenciaException{
         EntityManager em = ConexionBD.crearConexion();
-        try {
-            String JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.correo = :correo AND c.id != :id";
-            TypedQuery<Long> query = em.createQuery(JPQL, Long.class);
-            query.setParameter("correo", corr);
-            query.setParameter("id", ID);
+        try{
+           //validar telefono existente
+           String JPQL;
+           TypedQuery<Long> query;
 
-            return query.getSingleResult() > 0;
+           if(ID == null){
+               JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :tel";
+               query = em.createQuery(JPQL, Long.class);
+               query.setParameter("tel", telefono);
+           } else {
+               JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :tel AND c.id != :id";
+               query = em.createQuery(JPQL, Long.class);
+               query.setParameter("tel", telefono);
+               query.setParameter("id", ID);
+           }
+           
+           Long conteo = query.getSingleResult();
+           return conteo > 0;
 
         } catch (Exception e) {
-            throw new PersistenciaException("Error al validar correo", e);
+            throw new PersistenciaException("Error al verificar el telefono", e);
 
         } finally {
             em.close();
         }
     }
-
-    /**
-     * Valida si hay numeros de telefono duplicados
-     *
-     * @param tel
-     * @param ID
-     * @return
-     * @throws PersistenciaException
-     */
+    
     @Override
-    public boolean existeTelefono(String tel, Long ID) throws PersistenciaException {
+    public boolean existeCorreo(String correo, Long ID) throws PersistenciaException{
         EntityManager em = ConexionBD.crearConexion();
-
         try {
-            String JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :telefono AND c.id != :id";
-            TypedQuery<Long> query = em.createQuery(JPQL, Long.class);
-            query.setParameter("telefono", tel);
-            query.setParameter("id", ID);
+            String JPQL;
+            TypedQuery<Long> query;
 
-            return query.getSingleResult() > 0;
+            if (ID == null) {
+                // ✔️ INSERT
+                JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.correo = :correo";
+                query = em.createQuery(JPQL, Long.class);
+                query.setParameter("correo", correo);
+
+            } else {
+                // ✔️ UPDATE
+                JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.correo = :correo AND c.id != :id";
+                query = em.createQuery(JPQL, Long.class);
+                query.setParameter("correo", correo);
+                query.setParameter("id", ID);
+            }
+
+            Long conteo = query.getSingleResult();
+            return conteo > 0;
 
         } catch (Exception e) {
-            throw new PersistenciaException("Error al validar teléfono", e);
+            throw new PersistenciaException("Error al verificar el correo", e);
 
         } finally {
             em.close();
         }
     }
-
 }

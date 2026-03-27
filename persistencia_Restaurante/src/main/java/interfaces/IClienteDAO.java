@@ -83,20 +83,20 @@ public interface IClienteDAO {
     public List<Cliente> obtenerClientes() throws PersistenciaException;
     
     /**
-     * Valida si hay correos duplicados
-     * @param corr
+     * Valida que el telefono no exista en alguno de los regitros
+     * @param telefono
      * @param ID
-     * @return
+     * @return 
      * @throws PersistenciaException 
      */
-    public boolean existeCorreo(String corr, Long ID) throws PersistenciaException;
+    public boolean existeTelefono(String telefono, Long ID) throws PersistenciaException;
     
     /**
-     * Valida si hay numeros de telefono duplicados
-     * @param tel
+     * Valida que el correo no exista en alguno de los regitros
+     * @param correo
      * @param ID
-     * @return
+     * @return 
      * @throws PersistenciaException 
      */
-    public boolean existeTelefono(String tel, Long ID) throws PersistenciaException;
+    public boolean existeCorreo(String correo, Long ID) throws PersistenciaException;
 }

@@ -28,11 +28,22 @@ import java.util.logging.Logger;
  * @author Maria Jose Valdez Iglesias - 00000262775
  */
 public class ClienteBO implements IClienteBO {
+    
+    private static ClienteBO instancia;
+    
+    public ClienteBO(){
+    }
+    public static ClienteBO getInstance(){
+        if(instancia == null){
+            instancia = new ClienteBO();
+        }
+        return instancia;
+    }
 
     /**
      * Objeto DAO utilizado para interactuar con la base de datos.
      */
-    private final IClienteDAO clienteDAO = new ClienteDAO();
+    private final IClienteDAO clienteDAO = ClienteDAO.getInstance();
 
     /**
      * Logger para registrar eventos y errores del sistema.
@@ -57,13 +68,20 @@ public class ClienteBO implements IClienteBO {
             }
             Cliente clienteEntidad = ClienteAdapter.dtoAEntidad(clienteDTO);
             clienteEntidad.setFechaRegistro(LocalDate.now());
+            if (clienteDAO.existeCorreo(clienteEntidad.getCorreo(), clienteEntidad.getId())) {
+                throw new NegocioException("El correo ya está registrado");
+            }
+
+            if (clienteDAO.existeTelefono(clienteEntidad.getTelefono(), clienteEntidad.getId())) {
+                throw new NegocioException("El teléfono ya está registrado");
+            }
             clienteDAO.guardarCliente(clienteEntidad);
 
             LOG.info(() -> "El cliente fue agregado correctamente: " + clienteDTO.toString());
 
         } catch (PersistenciaException ex) {
             LOG.warning(() -> "No fue posible agregar al cliente: " + clienteDTO.toString());
-            throw new NegocioException("No fue posible agregar al cliente: " + clienteDTO.toString(), ex);
+            throw new NegocioException("No fue posible agregar al cliente", ex);
         }
     }
 
@@ -84,13 +102,20 @@ public class ClienteBO implements IClienteBO {
             System.out.println("FECHA DTO: " + clienteDTO.getFechaRegistro());
             
             Cliente clienteEntidad = ClienteAdapter.dtoAEntidad(clienteDTO);
+            if (clienteDAO.existeCorreo(clienteEntidad.getCorreo(), clienteEntidad.getId())) {
+                throw new NegocioException("El correo ya está registrado");
+            }
+
+            if (clienteDAO.existeTelefono(clienteEntidad.getTelefono(), clienteEntidad.getId())) {
+                throw new NegocioException("El teléfono ya está registrado");
+            }
             clienteDAO.actualizarCliente(clienteEntidad);
             
             LOG.info(() -> "El cliente fue actualizado correctamente: " + clienteDTO.toString());
             
         } catch(PersistenciaException ex){
             LOG.warning(() -> "No fue posible actualizar al cliente: " + clienteDTO.toString());
-            throw new NegocioException("No fue posible actualizar al cliente: " + clienteDTO.toString(), ex);
+            throw new NegocioException("ERROR: "+ex.getMessage());
         }
     }
 
@@ -226,24 +251,7 @@ public class ClienteBO implements IClienteBO {
             if (!clienteDto.getCorreo().trim().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                 throw new NegocioException("El formato del correo no es válido.");
             }
-        }
-
-        try {
-
-            if (clienteDto.getCorreo() != null && !clienteDto.getCorreo().trim().isEmpty()) {
-                if (clienteDAO.existeCorreo(clienteDto.getCorreo(), clienteDto.getId())) {
-                    throw new NegocioException("El correo ya está registrado");
-                }
-            }
-
-            if (clienteDAO.existeTelefono(clienteDto.getTelefono(), clienteDto.getId())) {
-                throw new NegocioException("El teléfono ya está registrado");
-            }
-
-        } catch (PersistenciaException e) {
-            throw new NegocioException("Error al validar cliente", e);
-        }
-        
+        }    
     }
     
     

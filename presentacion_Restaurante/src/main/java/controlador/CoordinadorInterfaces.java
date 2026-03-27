@@ -4,7 +4,6 @@ import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
 import excepciones.NegocioException;
 import java.util.List;
-import objetosNegocio.ClienteBO;
 import pantallas.frmAgregarCliente;
 import pantallas.frmClientes;
 import pantallas.frmInicio;
@@ -22,8 +21,6 @@ public class CoordinadorInterfaces {
     private frmAgregarCliente formAgregarClientes;
     private Coordinador coordinadorNegocio;
     
-    private ClienteBO clienteBO;
-
     public CoordinadorInterfaces() {
         this.coordinadorNegocio = new Coordinador();
     }
