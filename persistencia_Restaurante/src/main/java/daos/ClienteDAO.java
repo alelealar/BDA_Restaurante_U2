@@ -229,13 +229,11 @@ public class ClienteDAO implements IClienteDAO {
             TypedQuery<Long> query;
 
             if (ID == null) {
-                // ✔️ INSERT
                 JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.correo = :correo";
                 query = em.createQuery(JPQL, Long.class);
                 query.setParameter("correo", correo);
 
             } else {
-                // ✔️ UPDATE
                 JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.correo = :correo AND c.id != :id";
                 query = em.createQuery(JPQL, Long.class);
                 query.setParameter("correo", correo);

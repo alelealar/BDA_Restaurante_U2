@@ -99,7 +99,6 @@ public class ClienteBO implements IClienteBO {
             if (clienteDTO.getCorreo() == null || clienteDTO.getCorreo().trim().isEmpty()) {
                 clienteDTO.setCorreo(null);
             }
-            System.out.println("FECHA DTO: " + clienteDTO.getFechaRegistro());
             
             Cliente clienteEntidad = ClienteAdapter.dtoAEntidad(clienteDTO);
             if (clienteDAO.existeCorreo(clienteEntidad.getCorreo(), clienteEntidad.getId())) {

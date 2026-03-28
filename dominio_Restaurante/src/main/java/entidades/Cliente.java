@@ -25,7 +25,9 @@ import javax.persistence.Table;
  * 
  * tiene todos los atirbutos que cualquier cliente de cualquier tipo debe de tener
  * 
- * @author Alejandra Leal Armenta, 262719
+ * @author Brian Kaleb Sandoval Rodriguez - 262741
+ * @author Alejandra Leal Armenta - 262719
+ * @author Maria Jose Valdez Iglesias - 262775
  */
 @Entity
 @Table(name = "clientes")

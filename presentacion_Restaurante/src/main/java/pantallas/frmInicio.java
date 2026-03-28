@@ -9,7 +9,9 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Home
+ * @author Brian Kaleb Sandoval Rodriguez - 262741
+ * @author Alejandra Leal Armenta - 262719
+ * @author Maria Jose Valdez Iglesias - 262775
  */
 public class frmInicio extends javax.swing.JFrame {
 
