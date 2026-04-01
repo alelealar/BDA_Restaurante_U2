@@ -74,10 +74,11 @@ public class FrmIngredientes extends javax.swing.JFrame {
         btnAtras = new javax.swing.JButton();
         btnAnadirIngrediente = new javax.swing.JButton();
         btnRestarStock = new javax.swing.JButton();
-        btnAgregarStock = new javax.swing.JButton();
+        btnActualizarIngrediente = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        scrollMenuLateral = new javax.swing.JScrollPane();
         pnlSeleccion = new javax.swing.JPanel();
+        btnAgregarStock = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -254,9 +255,16 @@ public class FrmIngredientes extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         tblIngredientes.setGridColor(new java.awt.Color(255, 255, 255));
@@ -310,6 +318,30 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         });
 
+        btnActualizarIngrediente.setBackground(new java.awt.Color(0, 110, 153));
+        btnActualizarIngrediente.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        btnActualizarIngrediente.setForeground(new java.awt.Color(255, 255, 255));
+        btnActualizarIngrediente.setText("Actualizar");
+        btnActualizarIngrediente.setBorder(null);
+        btnActualizarIngrediente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnActualizarIngredienteMouseClicked(evt);
+            }
+        });
+        btnActualizarIngrediente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarIngredienteActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Buscar");
+
+        scrollMenuLateral.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        pnlSeleccion.setBackground(new java.awt.Color(204, 204, 204));
+        pnlSeleccion.setLayout(new javax.swing.BoxLayout(pnlSeleccion, javax.swing.BoxLayout.Y_AXIS));
+        scrollMenuLateral.setViewportView(pnlSeleccion);
+
         btnAgregarStock.setBackground(new java.awt.Color(0, 153, 102));
         btnAgregarStock.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         btnAgregarStock.setForeground(new java.awt.Color(255, 255, 255));
@@ -326,14 +358,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("Buscar");
-
-        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        pnlSeleccion.setBackground(new java.awt.Color(204, 204, 204));
-        pnlSeleccion.setLayout(new javax.swing.BoxLayout(pnlSeleccion, javax.swing.BoxLayout.LINE_AXIS));
-        jScrollPane2.setViewportView(pnlSeleccion);
-
         javax.swing.GroupLayout panPrincipalLayout = new javax.swing.GroupLayout(panPrincipal);
         panPrincipal.setLayout(panPrincipalLayout);
         panPrincipalLayout.setHorizontalGroup(
@@ -344,24 +368,27 @@ public class FrmIngredientes extends javax.swing.JFrame {
                 .addGap(48, 48, 48)
                 .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panPrincipalLayout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(275, 275, 275)
-                        .addComponent(lblTitulo))
-                    .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(panPrincipalLayout.createSequentialGroup()
-                            .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnAgregarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(btnRestarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(panPrincipalLayout.createSequentialGroup()
-                            .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panPrincipalLayout.createSequentialGroup()
+                                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(306, 306, 306)
+                                .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panPrincipalLayout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addGap(275, 275, 275)
+                                .addComponent(lblTitulo))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE))
+                    .addGroup(panPrincipalLayout.createSequentialGroup()
+                        .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnActualizarIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnAgregarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRestarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)))
+                .addComponent(scrollMenuLateral, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         panPrincipalLayout.setVerticalGroup(
             panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -380,22 +407,25 @@ public class FrmIngredientes extends javax.swing.JFrame {
                             .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnRestarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnActualizarIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnAgregarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPrincipalLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(scrollMenuLateral, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(panPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -405,6 +435,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "No disponible aún...");
@@ -498,6 +529,68 @@ public class FrmIngredientes extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRestarStockActionPerformed
 
+    private void btnActualizarIngredienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarIngredienteMouseClicked
+        int fila = tblIngredientes.getSelectedRow();
+        
+        if(fila == -1){
+            JOptionPane.showMessageDialog(this, "Seleccione un registro de la tabla", "Ingrediente no seleccionado", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        DefaultTableModel modelo = (DefaultTableModel) tblIngredientes.getModel();
+
+        IngredienteDTO ingrediente = (IngredienteDTO) modelo.getValueAt(fila, 0);
+        
+        String nombre = modelo.getValueAt(fila, 1).toString();
+        int stockActual = Integer.parseInt(modelo.getValueAt(fila, 3).toString());
+        
+        coordinador.frmIngredientesAFrmActualizarIngrediente(ingrediente);
+        
+        /*
+        try{
+            if(cantidad != null){
+                coordinador.actualizarStock(ingrediente.getId(), cantidad, TipoMovimiento.ENTRADA);
+            }
+            cargarTabla();
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }  
+        */
+        JOptionPane.showMessageDialog(this, "Falta programar funcionalidad...");
+        this.dispose();
+    }//GEN-LAST:event_btnActualizarIngredienteMouseClicked
+
+    private void btnActualizarIngredienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarIngredienteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnActualizarIngredienteActionPerformed
+
+    private void btnClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClientesMouseClicked
+        interfaces.mostrarFormularioClientes();
+        this.dispose();
+    }//GEN-LAST:event_btnClientesMouseClicked
+
+    private void tblIngredientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblIngredientesMouseClicked
+        int fila = tblIngredientes.getSelectedRow();
+        if(fila == -1){
+            JOptionPane.showMessageDialog(this, "Seleccione un registro de la tabla", "Ingrediente no seleccionado", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        IngredienteDTO ing = (IngredienteDTO) tblIngredientes.getValueAt(fila, 0);
+        
+        if (evt.getClickCount() == 2 && !modoProducto) {
+            int opcion = JOptionPane.showConfirmDialog( this, "¿Deseas eliminar este ingrediente?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION );
+            
+            if (opcion == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this, "Falta programar funcionalidad...");
+            }
+            return;
+        }
+
+        if (modoProducto) {
+            agregarIngrediente(ing);
+        }
+    }//GEN-LAST:event_tblIngredientesMouseClicked
+
     private void btnAgregarStockMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarStockMouseClicked
         int fila = tblIngredientes.getSelectedRow();
         
@@ -524,28 +617,12 @@ public class FrmIngredientes extends javax.swing.JFrame {
             cargarTabla();
         } catch (NegocioException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }   
+        }
     }//GEN-LAST:event_btnAgregarStockMouseClicked
 
     private void btnAgregarStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarStockActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAgregarStockActionPerformed
-
-    private void btnClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClientesMouseClicked
-        interfaces.mostrarFormularioClientes();
-        this.dispose();
-    }//GEN-LAST:event_btnClientesMouseClicked
-
-    private void tblIngredientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblIngredientesMouseClicked
-        if (!modoProducto) return;
-
-        int fila = tblIngredientes.getSelectedRow();
-        if (fila == -1) return;
-
-        IngredienteDTO ing = (IngredienteDTO) tblIngredientes.getValueAt(fila, 0);
-
-        agregarIngrediente(ing);
-    }//GEN-LAST:event_tblIngredientesMouseClicked
     
     public void cargarTabla(){
         try{
@@ -571,47 +648,43 @@ public class FrmIngredientes extends javax.swing.JFrame {
     public void activarModoProducto(){
         modoProducto = true;
 
-        // 1. Regresar la tabla a su tamaño original para que quepa el panel
         jScrollPane1.setPreferredSize(new java.awt.Dimension(750, 427));
-        jScrollPane1.setSize(new java.awt.Dimension(750, 427));
 
-        // 2. Mostrar el panel de selección
-        jScrollPane2.setVisible(true);
+        scrollMenuLateral.setVisible(true);
         pnlSeleccion.setVisible(true);
 
+        btnActualizarIngrediente.setVisible(false);
         btnAgregarStock.setVisible(false);
         btnAnadirIngrediente.setVisible(false);
         btnRestarStock.setVisible(false);
 
         panPrincipal.revalidate();
         panPrincipal.repaint();
+
+        this.pack();
     }
     
     public void desactivarModoProducto() {
         modoProducto = false;
         pnlSeleccion.removeAll();
 
-        // 1. Ocultar el panel de la derecha
-        jScrollPane2.setVisible(false);
+        scrollMenuLateral.setVisible(false);
+        btnAtras.setVisible(false);
 
-        // 2. FORZAR a la tabla a expandirse
-        // Vamos a sumar el ancho de la tabla + el ancho que tenía el panel de selección
-        // (Ajusta el 750 y el 200 según tus medidas originales en NetBeans)
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(950, 427)); 
-        jScrollPane1.setSize(new java.awt.Dimension(950, 427));
-
-        // 3. Actualizar
+        panPrincipal.remove(scrollMenuLateral);
         panPrincipal.revalidate();
         panPrincipal.repaint();
+        
+        this.pack();
     }
     
     private void agregarIngrediente(IngredienteDTO ing) {
 
-        for (Component   c : pnlSeleccion.getComponents()) {
+        for (Component c : pnlSeleccion.getComponents()) {
             if (c instanceof panIngredientesProducto) {
                 panIngredientesProducto p = (panIngredientesProducto) c;
                 if (p.getNombre().equals(ing.getNombre())) {
-                    p.incrementarCantidad(); // en vez de duplicar
+                    p.incrementarCantidad();
                     return;
                 }
             }
@@ -619,7 +692,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
         
         panIngredientesProducto item = new panIngredientesProducto();
 
-        // aquí le pasas datos (IMPORTANTE)
         item.setNombre(ing.getNombre());
         item.setUnidad(ing.getUnidadMedida());
         item.setImagen(ing.getUrlImagen());
@@ -632,6 +704,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizarIngrediente;
     private javax.swing.JButton btnAgregarStock;
     private javax.swing.JButton btnAnadirIngrediente;
     private javax.swing.JButton btnAtras;
@@ -647,7 +720,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
@@ -656,6 +728,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JPanel panPrincipal;
     private javax.swing.JPanel pnlSeleccion;
+    private javax.swing.JScrollPane scrollMenuLateral;
     private javax.swing.JTable tblIngredientes;
     private javax.swing.JTextField txtBusqueda;
     // End of variables declaration//GEN-END:variables

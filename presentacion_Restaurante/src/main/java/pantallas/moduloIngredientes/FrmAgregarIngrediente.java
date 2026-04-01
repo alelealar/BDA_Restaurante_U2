@@ -6,6 +6,7 @@ package pantallas.moduloIngredientes;
 
 import controlador.CoordinadorInterfaces;
 import controlador.Coordinador_ModuloIngredientes;
+import dtos.IngredienteDTO;
 import dtos.IngredienteNuevoDTO;
 import enumerators.UnidadDTO;
 import excepciones.NegocioException;
@@ -27,6 +28,7 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     CoordinadorInterfaces coordinadorInterfaces = new CoordinadorInterfaces();
     private Coordinador_ModuloIngredientes coordinador;
     File archivoImagen;
+    private boolean modoActualizar = false;
 
     /**
      * Creates new form FrmIngredientes
@@ -64,7 +66,7 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         btnReportes = new javax.swing.JButton();
         btnReportesComandas = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        lblTitulo = new javax.swing.JLabel();
         txtNombre = new javax.swing.JTextField();
         lblNombre = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
@@ -226,8 +228,8 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel3.setFont(new java.awt.Font("Verdana", 1, 36)); // NOI18N
-        jLabel3.setText("Ingrediente");
+        lblTitulo.setFont(new java.awt.Font("Verdana", 1, 36)); // NOI18N
+        lblTitulo.setText("Ingrediente");
 
         txtNombre.setFont(new java.awt.Font("Trebuchet MS", 0, 15)); // NOI18N
         txtNombre.setBorder(null);
@@ -353,14 +355,14 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
                                 .addGap(90, 90, 90))))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3)
+                .addComponent(lblTitulo)
                 .addGap(222, 222, 222))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel3)
+                .addComponent(lblTitulo)
                 .addGap(39, 39, 39)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
@@ -470,11 +472,6 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         // TODO add your handling code here:
-        int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de regresar? Acabará con su acceso a las operaciones.", "Cerrar Operaciones", JOptionPane.YES_NO_OPTION);
-        if(opcion == JOptionPane.NO_OPTION){
-            return;
-        }
-        coordinadorInterfaces.regresarInicio();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
@@ -501,8 +498,8 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         try{
             coordinador.agregarIngrediente(dto);
             JOptionPane.showMessageDialog(this, "Ingrediente agregado correctamente.");
-            this.dispose();
             coordinador.abrirFrmIngredientes();
+            this.dispose();
         } catch (NegocioException ex){
             System.out.println("ERROR: "+ex.getMessage());
         }
@@ -521,9 +518,11 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
             if (opcion == JOptionPane.YES_OPTION) {
                 txtNombre.setText("");
                 txtStockInicial.setText("");
+                coordinador.abrirFrmIngredientes();
                 this.dispose();
             }
         } else {
+            coordinador.abrirFrmIngredientes();
             this.dispose();
         }
     }//GEN-LAST:event_btnCancelarMouseClicked
@@ -547,6 +546,24 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private void cargarCBXUnidad() {
         cbxMedida.setModel(new javax.swing.DefaultComboBoxModel<>(UnidadDTO.values()));
     }
+    
+    public void modoActualizar(IngredienteDTO ingrediente){
+        this.modoActualizar = true;
+        
+        lblTitulo.setText("Actualizar Ingrediente");
+        btnAgregar.setText("Actualizar");
+        
+        txtNombre.setText(ingrediente.getNombre());
+        txtStockInicial.setText(String.valueOf(ingrediente.getStock()));
+        cbxMedida.setSelectedItem(ingrediente.getUnidadMedida());
+        
+        if (ingrediente.getUrlImagen() != null) {
+            ImageIcon icono = new ImageIcon(ingrediente.getUrlImagen());
+            Image img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            btnSubirImagen.setIcon(new ImageIcon(img));
+        }
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
@@ -560,7 +577,6 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private javax.swing.JLabel btnSubirImagen;
     private javax.swing.JComboBox<UnidadDTO> cbxMedida;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -577,6 +593,7 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private javax.swing.JLabel lblMedida;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblStockInicial1;
+    private javax.swing.JLabel lblTitulo;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtStockInicial;
     // End of variables declaration//GEN-END:variables

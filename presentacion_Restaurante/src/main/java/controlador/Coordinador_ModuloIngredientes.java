@@ -32,13 +32,18 @@ public class Coordinador_ModuloIngredientes {
     private IngredienteBO bo = IngredienteBO.getInstance();
     
     public void abrirFrmAgregarIngrediente(){
+        if (frmIngredientes != null) {
+            frmIngredientes.desactivarModoProducto();
+            frmIngredientes.dispose();
+        }
+
         frmAgregarIngrediente = new FrmAgregarIngrediente(this);
-        frmIngredientes.desactivarModoProducto();
         frmAgregarIngrediente.setVisible(true);
     }
     
     public void abrirFrmIngredientes(){
         frmIngredientes = new FrmIngredientes();
+        frmIngredientes.desactivarModoProducto();
         frmIngredientes.setVisible(true);
     }
     
@@ -71,6 +76,12 @@ public class Coordinador_ModuloIngredientes {
         dlgStock.setNombreProducto(nombreIngrediente);
         
         dlgStock.setVisible(true);
+    }
+    
+    public void frmIngredientesAFrmActualizarIngrediente(IngredienteDTO ingrediente){
+        frmAgregarIngrediente = new FrmAgregarIngrediente(this);
+        frmAgregarIngrediente.modoActualizar(ingrediente);
+        frmAgregarIngrediente.setVisible(true);
     }
     
     public void abrirFrmIngredientesModoProducto() {
