@@ -29,7 +29,8 @@ import javax.persistence.UniqueConstraint;
 @Table(
     name = "ingredientes",
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"nombre", "unidadMedida"})
+        @UniqueConstraint(columnNames = {"nombre_Ingrediente", "unidad_medida"}),
+        @UniqueConstraint(columnNames = {"identificador"})
     }
 )
 public class Ingrediente implements Serializable {

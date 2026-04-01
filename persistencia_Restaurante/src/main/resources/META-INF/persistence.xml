@@ -6,6 +6,8 @@
     <class>entidades.ClienteFrecuente</class>
     <class>entidades.Empleado</class>
     <class>entidades.Mesero</class>
+    <class>entidades.Ingrediente</class>
+    <class>entidades.ProductoIngrediente</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/restaurante?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="Tapneat"/>
