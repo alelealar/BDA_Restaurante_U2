@@ -53,9 +53,15 @@ public class ProductoIngrediente implements Serializable{
     @JoinColumn(name = "id_ingrediente", nullable = false)
     private Ingrediente ingrediente;
     
-    //Ale: majojojo aqui le pones tu mapeo
-
-    //Ale: majojojo actualizas en constructor cuando le pongas tu mapeo
+    /**
+     * Relación muchos a uno con Producto.
+     * 
+     * Muchos registros de ProductoIngrediente pueden estar asociados al mismo producto.
+     * Cada registro representa los productos que utilzan cierto ingrediente. 
+     */
+    @ManyToOne
+    @JoinColumn(name = "id_producto", nullable=false)
+    private Producto producto;
     
     /**
      * Constructor de ProductoIngrediente.
@@ -64,11 +70,13 @@ public class ProductoIngrediente implements Serializable{
      * @param id
      * @param cantidad
      * @param ingrediente 
+     * @param producto
      */
-    public ProductoIngrediente(Long id, Integer cantidad, Ingrediente ingrediente) {
+    public ProductoIngrediente(Long id, Integer cantidad, Ingrediente ingrediente, Producto producto) {
         this.id = id;
         this.cantidad = cantidad;
         this.ingrediente = ingrediente;
+        this.producto = producto;
     }
 
     /**
@@ -124,5 +132,21 @@ public class ProductoIngrediente implements Serializable{
     public void setIngrediente(Ingrediente ingrediente) {
         this.ingrediente = ingrediente;
     } 
+    
+    /**
+     * Devuelve el producto asociado a esta relación.
+     * @return producto relacionado.
+     */
+    public Producto getProducto(){
+        return producto;
+    }
+    
+    /**
+     * Asigna el producto a la relación ProductoIngrediente
+     * @param producto producto que se relaciona con un ingrediente.
+     */
+    public void setProducto(Producto producto){
+        this.producto = producto;
+    }
     
 }
