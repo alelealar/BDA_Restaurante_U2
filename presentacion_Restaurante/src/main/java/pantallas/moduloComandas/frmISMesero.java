@@ -1,7 +1,10 @@
 package pantallas.moduloComandas;
 
 import controlador.CoordinadorModuloComandas;
+import excepciones.NegocioException;
 import java.awt.Color;
+import javax.swing.JOptionPane;
+import validaciones.ValidadorCampos;
 
 /**
  *
@@ -34,7 +37,6 @@ public class frmISMesero extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         panTextFields = new javax.swing.JPanel();
         txtMesero = new javax.swing.JTextField();
-        pswContrasenia = new javax.swing.JPasswordField();
         btnIngresar = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
 
@@ -73,23 +75,11 @@ public class frmISMesero extends javax.swing.JFrame {
             }
         });
 
-        pswContrasenia.setBackground(new java.awt.Color(219, 219, 219));
-        pswContrasenia.setForeground(new java.awt.Color(0, 0, 0));
-        pswContrasenia.setText("**********");
-        pswContrasenia.setPreferredSize(new java.awt.Dimension(64, 19));
-        pswContrasenia.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                pswContraseniaFocusGained(evt);
-            }
-        });
-        pswContrasenia.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                pswContraseniaMousePressed(evt);
-            }
-        });
-
         btnIngresar.setBackground(new java.awt.Color(234, 176, 87));
         btnIngresar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnIngresarMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btnIngresarMouseEntered(evt);
             }
@@ -128,22 +118,18 @@ public class frmISMesero extends javax.swing.JFrame {
                 .addContainerGap(72, Short.MAX_VALUE)
                 .addGroup(panTextFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panTextFieldsLayout.createSequentialGroup()
-                        .addGroup(panTextFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(pswContrasenia, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtMesero, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(67, 67, 67))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panTextFieldsLayout.createSequentialGroup()
                         .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(199, 199, 199))))
+                        .addGap(199, 199, 199))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panTextFieldsLayout.createSequentialGroup()
+                        .addComponent(txtMesero, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(67, 67, 67))))
         );
         panTextFieldsLayout.setVerticalGroup(
             panTextFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panTextFieldsLayout.createSequentialGroup()
-                .addContainerGap(43, Short.MAX_VALUE)
+                .addGap(77, 77, 77)
                 .addComponent(txtMesero, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44)
-                .addComponent(pswContrasenia, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
                 .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -195,29 +181,11 @@ public class frmISMesero extends javax.swing.JFrame {
 
     }//GEN-LAST:event_txtMeseroMousePressed
 
-    private void pswContraseniaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pswContraseniaMousePressed
-
-    }//GEN-LAST:event_pswContraseniaMousePressed
-
     private void txtMeseroFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtMeseroFocusGained
         if (txtMesero.getText().equals("Ingrese su usuario")) {
             txtMesero.setText("");
         }
-
-        if (String.valueOf(pswContrasenia.getPassword()).isEmpty()) {
-            pswContrasenia.setText("**********");
-        }
     }//GEN-LAST:event_txtMeseroFocusGained
-
-    private void pswContraseniaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pswContraseniaFocusGained
-        if (String.valueOf(pswContrasenia.getPassword()).equals("**********")) {
-            pswContrasenia.setText("");
-        }
-        if (txtMesero.getText().isEmpty()) {
-            txtMesero.setText("Ingrese su usuario");
-        }
-
-    }//GEN-LAST:event_pswContraseniaFocusGained
 
     private void btnIngresarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIngresarMouseEntered
         btnIngresar.setBackground(Color.decode("#FFC060"));
@@ -228,6 +196,27 @@ public class frmISMesero extends javax.swing.JFrame {
         btnIngresar.setBackground(Color.decode("#EAB057"));
     }//GEN-LAST:event_btnIngresarMouseExited
 
+    private void btnIngresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIngresarMouseClicked
+
+        String usuario = txtMesero.getText();
+        boolean validacionVacio = ValidadorCampos.usuarioVacio(usuario);
+        boolean usuarioValido = ValidadorCampos.usuarioValido(usuario);
+        if (!validacionVacio && !usuarioValido) {
+            JOptionPane.showMessageDialog(null, "Usuario " + usuario + " no valido", "Usuario no válido", JOptionPane.WARNING_MESSAGE);
+        }
+        try {
+            boolean respuesta = coordinador.validarMesero(usuario);
+            if (respuesta) {
+                JOptionPane.showMessageDialog(null, "Bienvenido " + usuario, "Bienvenido", JOptionPane.PLAIN_MESSAGE);
+                coordinador.mostrarPantallaMesas();
+            } else {
+                JOptionPane.showMessageDialog(null, "Usuario " + usuario + " no encontrado", "Usuario no encontrado", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnIngresarMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel btnIngresar;
@@ -237,7 +226,6 @@ public class frmISMesero extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JPanel panTextFields;
-    private javax.swing.JPasswordField pswContrasenia;
     private javax.swing.JTextField txtMesero;
     // End of variables declaration//GEN-END:variables
 }

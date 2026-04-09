@@ -2,11 +2,15 @@ package entidades;
 
 import enumerators.EstadoMesa;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -43,6 +47,9 @@ public class Mesa implements Serializable {
      */
     @Column(name = "estado_mesa")
     private EstadoMesa estado;
+
+    @OneToMany(mappedBy = "mesa")
+    private List<Comanda> comandas = new ArrayList<>();
 
     /**
      * Constructor vacío requerido por JPA.
@@ -124,6 +131,24 @@ public class Mesa implements Serializable {
      */
     public void setEstado(EstadoMesa estado) {
         this.estado = estado;
+    }
+
+    /**
+     * Recupera las comandas.
+     *
+     * @return lista de comandas
+     */
+    public List<Comanda> getComandas() {
+        return comandas;
+    }
+
+    /**
+     * Establece la lista de comandas.
+     *
+     * @param comandas comadnas a establecer.
+     */
+    public void setComandas(List<Comanda> comandas) {
+        this.comandas = comandas;
     }
 
 }

@@ -13,12 +13,16 @@ import javax.persistence.Transient;
 /**
  * Representa un detalle dentro de una comanda.
  *
- * Cada detalle corresponde a un producto solicitado, incluyendo la cantidad, el
- * precio unitario y un posible comentario con indicaciones específicas del
- * cliente.
+ * Cada detalle corresponde a un producto específico solicitado por el cliente,
+ * incluyendo la cantidad, el precio unitario aplicado al momento de la compra y
+ * un posible comentario con indicaciones especiales.
  *
- * Esta entidad se encuentra asociada a una comanda mediante una relación
- * ManyToOne.
+ * Esta entidad mantiene una relación ManyToOne con la entidad Comanda,
+ * indicando a qué comanda pertenece el detalle, y también con Producto,
+ * permitiendo identificar el producto vendido.
+ *
+ * El precio unitario se almacena de manera independiente del producto para
+ * conservar el valor histórico al momento de la venta.
  *
  * El atributo nombreCliente es temporal y no se persiste en la base de datos.
  *
@@ -42,6 +46,13 @@ public class DetalleComanda {
     @ManyToOne
     @JoinColumn(name = "id_comanda", nullable = false)
     private Comanda comanda;
+
+    /**
+     * Producto asociado al detalle de la comanda.
+     */
+    @ManyToOne
+    @JoinColumn(name = "id_producto", nullable = false)
+    private Producto producto;
 
     /**
      * Cantidad de productos solicitados.
@@ -84,10 +95,20 @@ public class DetalleComanda {
 
     /**
      * Constructor completo del detalle de comanda.
+     *
+     * @param id Identificador del detalle.
+     * @param comanda Comanda asociada.
+     * @param producto Producto asociado.
+     * @param cantidad Cantidad solicitada.
+     * @param precioUnitario Precio unitario aplicado.
+     * @param comentario Comentario adicional.
+     * @param nombreCliente Nombre del cliente (temporal).
      */
-    public DetalleComanda(Long id, Comanda comanda, int cantidad, double precioUnitario, String comentario, String nombreCliente) {
+    public DetalleComanda(Long id, Comanda comanda, Producto producto,
+            int cantidad, double precioUnitario, String comentario, String nombreCliente) {
         this.id = id;
         this.comanda = comanda;
+        this.producto = producto;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.comentario = comentario;
@@ -128,6 +149,24 @@ public class DetalleComanda {
      */
     public void setComanda(Comanda comanda) {
         this.comanda = comanda;
+    }
+
+    /**
+     * Obtiene el producto asociado.
+     *
+     * @return producto.
+     */
+    public Producto getProducto() {
+        return producto;
+    }
+
+    /**
+     * Establece el producto asociado.
+     *
+     * @param producto Producto.
+     */
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 
     /**
@@ -203,7 +242,7 @@ public class DetalleComanda {
     }
 
     /**
-     * Calcula el subtotal del detalle multiplicando cantidad por precio
+     * Calcula el subtotal del detalle multiplicando la cantidad por el precio
      * unitario.
      *
      * @return subtotal del detalle.
@@ -211,5 +250,4 @@ public class DetalleComanda {
     public double getSubtotal() {
         return cantidad * precioUnitario;
     }
-
 }

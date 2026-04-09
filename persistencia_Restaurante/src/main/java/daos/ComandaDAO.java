@@ -3,6 +3,7 @@ package daos;
 import conexion.ConexionBD;
 import entidades.Comanda;
 import entidades.DetalleComanda;
+import entidades.Mesa;
 import excepciones.PersistenciaException;
 import interfaces.IComandaDAO;
 import java.util.List;
@@ -172,6 +173,9 @@ public class ComandaDAO implements IComandaDAO {
         try {
             return em.find(Comanda.class, idComanda);
         } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw new PersistenciaException("No fue posible buscar la comanda con id " + idComanda, e);
         } finally {
             em.close();
@@ -195,7 +199,52 @@ public class ComandaDAO implements IComandaDAO {
             return query.getResultList();
 
         } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw new PersistenciaException("No fue posible consultar las comandas", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public Long obtenerComandasDia() throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+
+        try {
+            // FUNCTION('DATE', c.fechaHora) extrae la fecha ignorando la hora
+            // CURRENT_DATE es la constante de JPQL para el "hoy"
+            String JPQL = "SELECT COUNT(c) FROM Comanda c WHERE FUNCTION('DATE', c.fechaHora) = CURRENT_DATE";
+            TypedQuery<Long> query = em.createQuery(JPQL, Long.class);
+
+            return query.getSingleResult();
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException("No fue posible consultar las comandas del dia", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<Mesa> obtenerMesas() throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+
+        try {
+            String JPQL = "SELECT m FROM Mesa m";
+            TypedQuery<Mesa> query = em.createQuery(JPQL, Mesa.class);
+
+            return query.getResultList();
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException("No fue posible consultar las mesas", e);
         } finally {
             em.close();
         }

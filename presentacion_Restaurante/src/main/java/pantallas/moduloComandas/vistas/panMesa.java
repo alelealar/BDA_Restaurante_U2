@@ -1,6 +1,8 @@
 package pantallas.moduloComandas.vistas;
 
 import controlador.CoordinadorModuloComandas;
+import dtos.MesaDTO;
+import enumerators.EstadoMesaDTO;
 import java.awt.Color;
 
 /**
@@ -11,15 +13,25 @@ public class panMesa extends javax.swing.JPanel {
 
     private CoordinadorModuloComandas coordinador;
 
+    boolean disponible = true;
+
     /**
      * Creates new form panMesa
      *
      * @param coordinador
      */
-    public panMesa(CoordinadorModuloComandas coordinador, int contador) {
+    public panMesa(CoordinadorModuloComandas coordinador, MesaDTO mesa) {
         initComponents();
         this.coordinador = coordinador;
-        lblNombre.setText("Mesa "+String.valueOf(contador));
+        lblNombre.setText("Mesa " + mesa.getNumero());
+        if (mesa.getEstado().equals(EstadoMesaDTO.DISPONIBLE)) {
+            this.setBackground(Color.decode("#FFF1C1"));
+            this.disponible = true;
+        } else if (mesa.getEstado().equals(EstadoMesaDTO.OCUPADA)) {
+            this.setBackground(Color.decode("#D4D4D4"));
+            this.disponible = false;
+        }
+
     }
 
     /**
@@ -73,11 +85,21 @@ public class panMesa extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseEntered
-        this.setBackground(Color.decode("#FFE281"));
+        if (disponible) {
+            this.setBackground(Color.decode("#FFE281"));
+        } else {
+            this.setBackground(Color.decode("#626262"));
+        }
+
     }//GEN-LAST:event_formMouseEntered
 
     private void formMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseExited
-        this.setBackground(Color.decode("#FFF1C1"));
+        if (disponible) {
+            this.setBackground(Color.decode("#FFF1C1"));
+        } else {
+            this.setBackground(Color.decode("#D4D4D4"));
+        }
+
     }//GEN-LAST:event_formMouseExited
 
 

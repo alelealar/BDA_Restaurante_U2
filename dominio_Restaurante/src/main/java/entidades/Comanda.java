@@ -2,28 +2,27 @@ package entidades;
 
 import enumerators.EstadoComanda;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Representa una comanda dentro del sistema del restaurante.
  *
  * Una comanda agrupa los productos solicitados por los clientes en una mesa,
- * incluyendo información como estado, folio, fecha de creación, total y
- * detalles.
+ * incluyendo información como estado, folio, fecha y hora de creación, total,
+ * mesa asociada y detalles de los productos.
  *
- * También puede estar asociada a un cliente frecuente registrado en el sistema.
+ * El folio de la comanda se genera automáticamente con el formato:
+ * OB-YYYYMMDD-XXX, donde: - YYYYMMDD corresponde a la fecha de creación. - XXX
+ * es un número consecutivo único por día.
+ *
+ * También puede estar asociada a un cliente frecuente.
+ *
+ * Incluye lógica para gestionar detalles y calcular el total acumulado.
+ *
+ * Esta entidad es persistida mediante JPA.
  *
  * @author Brian Kaleb Sandoval Rodríguez - 00000262741
  */
@@ -48,7 +47,7 @@ public class Comanda implements Serializable {
     /**
      * Folio único de la comanda.
      */
-    @Column(name = "folio", nullable = false, length = 100)
+    @Column(name = "folio", nullable = false, unique = true, length = 20)
     private String folio;
 
     /**
@@ -58,16 +57,23 @@ public class Comanda implements Serializable {
     private Double total;
 
     /**
-     * Fecha y hora de creación de la comanda.
+     * Fecha y hora exacta de creación de la comanda.
      */
     @Column(name = "fecha_hora", nullable = false)
-    private LocalDate fechaHora;
+    private LocalDateTime fechaHora;
+
+    /**
+     * Mesa asociada a la comanda.
+     */
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_mesa", nullable = false)
+    private Mesa mesa;
 
     /**
      * Lista de detalles asociados a la comanda.
      */
-    @OneToMany(mappedBy = "comanda", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
-    private List<DetalleComanda> detalles;
+    @OneToMany(mappedBy = "comanda", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<DetalleComanda> detalles = new ArrayList<>();
 
     /**
      * Cliente frecuente asociado a la comanda (opcional).
@@ -77,14 +83,15 @@ public class Comanda implements Serializable {
     private Cliente cliente;
 
     /**
-     * Método que se ejecuta automáticamente antes de persistir la entidad.
-     * Asigna la fecha actual si no ha sido definida. Establece el total en 0 si
-     * no se ingresó ninguno.
+     * Método que se ejecuta antes de persistir la entidad.
+     *
+     * - Asigna la fecha y hora actual si no ha sido definida. - Inicializa el
+     * total en 0 si es null.
      */
     @PrePersist
     public void prePersist() {
         if (this.fechaHora == null) {
-            this.fechaHora = LocalDate.now();
+            this.fechaHora = LocalDateTime.now();
         }
 
         if (this.total == null) {
@@ -99,7 +106,7 @@ public class Comanda implements Serializable {
     }
 
     /**
-     * Constructor que inicializa la comanda con un identificador.
+     * Constructor con identificador.
      *
      * @param id Identificador de la comanda.
      */
@@ -109,45 +116,64 @@ public class Comanda implements Serializable {
 
     /**
      * Constructor completo de la comanda.
+     *
+     * @param id Identificador.
+     * @param estadoComanda Estado actual.
+     * @param folio Folio único.
+     * @param total Total acumulado.
+     * @param fechaHora Fecha y hora de creación.
+     * @param mesa Mesa asociada.
+     * @param detalles Lista de detalles.
+     * @param cliente Cliente asociado.
      */
-    public Comanda(Long id, EstadoComanda estadoComanda, String folio, Double total, LocalDate fechaHora, List<DetalleComanda> detalles, Cliente cliente) {
+    public Comanda(Long id, EstadoComanda estadoComanda, String folio,
+            Double total, LocalDateTime fechaHora,
+            Mesa mesa, List<DetalleComanda> detalles, Cliente cliente) {
+
         this.id = id;
         this.estadoComanda = estadoComanda;
         this.folio = folio;
         this.total = total;
         this.fechaHora = fechaHora;
-        this.detalles = detalles;
+        this.mesa = mesa;
+        this.detalles = detalles != null ? detalles : new ArrayList<>();
         this.cliente = cliente;
     }
 
     /**
-     * Agrega un detalle a la comanda y establece la relación bidireccional.
+     * Agrega un detalle a la comanda.
      *
-     * @param d Detalle de comanda a agregar.
+     * @param d Detalle a agregar.
      */
     public void agregarDetalle(DetalleComanda d) {
-        detalles.add(d);
-        d.setComanda(this);
+        if (d != null) {
+            detalles.add(d);
+            d.setComanda(this);
+        }
     }
 
     /**
-     * Elimina un detalle de la comanda y rompe la relación.
+     * Elimina un detalle de la comanda.
      *
-     * @param d Detalle de comanda a eliminar.
+     * @param d Detalle a eliminar.
      */
     public void removerDetalle(DetalleComanda d) {
-        detalles.remove(d);
-        d.setComanda(null);
+        if (d != null && detalles.contains(d)) {
+            detalles.remove(d);
+            d.setComanda(null);
+        }
     }
 
     /**
-     * Calcula el total de la comanda sumando los subtotales de cada detalle.
+     * Calcula el total de la comanda sumando los subtotales.
      */
     public void calcularTotal() {
         double suma = 0;
 
         for (DetalleComanda d : detalles) {
-            suma += d.getSubtotal();
+            if (d != null) {
+                suma += d.getSubtotal();
+            }
         }
 
         this.total = suma;
@@ -230,21 +256,39 @@ public class Comanda implements Serializable {
      *
      * @return fecha y hora.
      */
-    public LocalDate getFechaHora() {
+    public LocalDateTime getFechaHora() {
         return fechaHora;
     }
 
     /**
      * Establece la fecha y hora de la comanda.
      *
-     * @param fechaHora Nueva fecha.
+     * @param fechaHora Nueva fecha y hora.
      */
-    public void setFechaHora(LocalDate fechaHora) {
+    public void setFechaHora(LocalDateTime fechaHora) {
         this.fechaHora = fechaHora;
     }
 
     /**
-     * Obtiene la lista de detalles de la comanda.
+     * Obtiene la mesa asociada.
+     *
+     * @return mesa.
+     */
+    public Mesa getMesa() {
+        return mesa;
+    }
+
+    /**
+     * Establece la mesa de la comanda.
+     *
+     * @param mesa Nueva mesa.
+     */
+    public void setMesa(Mesa mesa) {
+        this.mesa = mesa;
+    }
+
+    /**
+     * Obtiene la lista de detalles.
      *
      * @return lista de detalles.
      */
@@ -253,7 +297,7 @@ public class Comanda implements Serializable {
     }
 
     /**
-     * Establece la lista de detalles de la comanda.
+     * Establece la lista de detalles.
      *
      * @param detalles Nueva lista de detalles.
      */
@@ -262,7 +306,7 @@ public class Comanda implements Serializable {
     }
 
     /**
-     * Obtiene el cliente asociado a la comanda.
+     * Obtiene el cliente asociado.
      *
      * @return cliente.
      */
@@ -273,10 +317,9 @@ public class Comanda implements Serializable {
     /**
      * Establece el cliente de la comanda.
      *
-     * @param cliente Cliente a asociar.
+     * @param cliente Nuevo cliente.
      */
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
-
 }

@@ -6,6 +6,6 @@ package enumerators;
  */
 public enum EstadoComanda {
     ABIERTA,
-    CERRADA,
+    ENTREGADA,
     CANCELADA
 }

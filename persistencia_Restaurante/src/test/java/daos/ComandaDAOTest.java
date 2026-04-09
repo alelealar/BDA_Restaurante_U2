@@ -1,49 +1,82 @@
 package daos;
 
+import conexion.ConexionBD;
 import entidades.Comanda;
 import entidades.DetalleComanda;
+import entidades.Mesa;
+import entidades.Producto;
 import enumerators.EstadoComanda;
 import excepciones.PersistenciaException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Clase de pruebas unitarias para ComandaDAO.
  *
- * Se validan las operaciones CRUD principales sobre la entidad Comanda,
- * verificando el correcto funcionamiento de persistencia, actualización,
- * eliminación y consultas.
+ * Se validan las operaciones CRUD sobre la entidad Comanda.
  *
- * @author Brian Kaleb Sandoval Rodríguez - 00000262741
+ * Antes de cada prueba se crean datos base necesarios: - 10 mesas persistidas
+ * en la base de datos. - Se asume que existen productos con ID válidos en la
+ * BD.
+ *
+ * Esto evita errores de persistencia por relaciones ManyToOne.
+ *
+ * @author Brian Kaleb Sandoval Rodríguez
  */
 public class ComandaDAOTest {
 
-    private ComandaDAO comandaDAO;
+    private static ComandaDAO comandaDAO;
+    private static List<Mesa> mesas;
 
-    @BeforeEach
-    public void setUp() {
+    /**
+     * Inicializa el DAO y crea 10 mesas en la base de datos antes de cada
+     * prueba.
+     */
+    @BeforeAll
+    public static void initAll() {
         comandaDAO = ComandaDAO.getInstance();
+        mesas = new ArrayList<>();
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            em.getTransaction().begin();
+            // Solo se ejecuta UNA VEZ al iniciar la clase
+            for (int i = 1; i <= 10; i++) {
+                Mesa mesa = new Mesa();
+                mesa.setNumero(i);
+                em.persist(mesa);
+                mesas.add(mesa);
+            }
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
 
     /**
-     * Prueba que verifica que una comanda se guarda correctamente en la base de
-     * datos.
-     *
-     * Se crea una comanda con un detalle y se valida que: - No sea null al
-     * guardarse. - Se le haya asignado un ID.
+     * Prueba que verifica que una comanda se guarda correctamente.
      */
     @Test
     public void testGuardarComanda() throws PersistenciaException {
         Comanda comanda = new Comanda();
         comanda.setEstadoComanda(EstadoComanda.ABIERTA);
         comanda.setFolio("TEST-001");
+        comanda.setMesa(mesas.get(0));
 
         DetalleComanda detalle = new DetalleComanda();
         detalle.setCantidad(2);
         detalle.setPrecioUnitario(50);
+
+        Producto producto = new Producto();
+        producto.setId(1L);
+        detalle.setProducto(producto);
+
+        detalle.setComanda(comanda);
 
         List<DetalleComanda> detalles = new ArrayList<>();
         detalles.add(detalle);
@@ -58,16 +91,14 @@ public class ComandaDAOTest {
     }
 
     /**
-     * Prueba que valida la búsqueda de una comanda por su ID.
-     *
-     * Primero se guarda una comanda y posteriormente se busca, verificando que:
-     * - La comanda encontrada no sea null. - El ID coincida con el guardado.
+     * Prueba que valida la búsqueda de una comanda por ID.
      */
     @Test
     public void testBuscarComandaPorId() throws PersistenciaException {
         Comanda comanda = new Comanda();
         comanda.setEstadoComanda(EstadoComanda.ABIERTA);
         comanda.setFolio("TEST-002");
+        comanda.setMesa(mesas.get(1));
         comanda.setDetalles(new ArrayList<>());
 
         Comanda guardada = comandaDAO.guardarComanda(comanda);
@@ -80,37 +111,33 @@ public class ComandaDAOTest {
 
     /**
      * Prueba que verifica la actualización de una comanda.
-     *
-     * Se guarda una comanda y posteriormente se modifica su estado, validando
-     * que: - El cambio se refleje correctamente en la base de datos.
      */
     @Test
     public void testActualizarComanda() throws PersistenciaException {
         Comanda comanda = new Comanda();
         comanda.setEstadoComanda(EstadoComanda.ABIERTA);
         comanda.setFolio("TEST-003");
+        comanda.setMesa(mesas.get(2));
         comanda.setDetalles(new ArrayList<>());
 
         Comanda guardada = comandaDAO.guardarComanda(comanda);
 
-        guardada.setEstadoComanda(EstadoComanda.CERRADA);
+        guardada.setEstadoComanda(EstadoComanda.ENTREGADA);
 
         Comanda actualizada = comandaDAO.actualizarComanda(guardada);
 
-        assertEquals(EstadoComanda.CERRADA, actualizada.getEstadoComanda());
+        assertEquals(EstadoComanda.ENTREGADA, actualizada.getEstadoComanda());
     }
 
     /**
      * Prueba que valida la eliminación de una comanda.
-     *
-     * Se guarda una comanda y posteriormente se elimina, verificando que: - El
-     * método retorne true. - La comanda ya no exista en la base de datos.
      */
     @Test
     public void testEliminarComanda() throws PersistenciaException {
         Comanda comanda = new Comanda();
         comanda.setEstadoComanda(EstadoComanda.ABIERTA);
         comanda.setFolio("TEST-004");
+        comanda.setMesa(mesas.get(3));
         comanda.setDetalles(new ArrayList<>());
 
         Comanda guardada = comandaDAO.guardarComanda(comanda);
@@ -125,45 +152,34 @@ public class ComandaDAOTest {
 
     /**
      * Prueba que valida la obtención de todas las comandas.
-     *
-     * Se guardan varias comandas y se verifica que: - La lista obtenida no sea
-     * null. - Contenga al menos un elemento.
      */
     @Test
     public void testObtenerComandas() throws PersistenciaException {
-        Comanda comanda1 = new Comanda();
-        comanda1.setEstadoComanda(EstadoComanda.ABIERTA);
-        comanda1.setFolio("TEST-005");
-        comanda1.setDetalles(new ArrayList<>());
+        Comanda comanda = new Comanda();
+        comanda.setEstadoComanda(EstadoComanda.ABIERTA);
+        comanda.setFolio("TEST-005");
+        comanda.setMesa(mesas.get(4));
+        comanda.setDetalles(new ArrayList<>());
 
-        comandaDAO.guardarComanda(comanda1);
+        comandaDAO.guardarComanda(comanda);
 
         List<Comanda> lista = comandaDAO.obtenerComandas();
 
         assertNotNull(lista);
-        assertTrue(lista.size() > 0);
+        assertTrue(!lista.isEmpty());
     }
 
     /**
-     * Prueba que valida el comportamiento cuando se intenta eliminar una
-     * comanda inexistente.
-     *
-     * Se intenta eliminar un ID que no existe y se verifica que: - El método
-     * retorne false.
+     * Prueba que valida eliminar una comanda inexistente.
      */
     @Test
     public void testEliminarComandaInexistente() throws PersistenciaException {
         boolean resultado = comandaDAO.eliminarComanda(999999L);
-
         assertFalse(resultado);
     }
 
     /**
-     * Prueba que valida el manejo de error al actualizar una comanda
-     * inexistente.
-     *
-     * Se intenta actualizar una comanda con un ID que no existe, esperando que
-     * se lance una excepción.
+     * Prueba que valida error al actualizar una comanda inexistente.
      */
     @Test
     public void testActualizarComandaInexistente() {

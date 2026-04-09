@@ -2,9 +2,6 @@ package pantallas.moduloComandas;
 
 import pantallas.moduloComandas.vistas.panMesa;
 import controlador.CoordinadorModuloComandas;
-import dtos.ClienteDTO;
-import dtos.ComandaDTO;
-import excepciones.NegocioException;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -19,40 +16,23 @@ import javax.swing.SwingConstants;
  *
  * @author Kaleb
  */
-public class frmComandas extends javax.swing.JFrame {
+public class frmPedidos extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmComandas.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmPedidos.class.getName());
 
-    private boolean creada = false;
-
-    private CoordinadorModuloComandas coordinador;
-
-    private ClienteDTO cliente;
+    CoordinadorModuloComandas coordinador;
 
     /**
      * Creates new form frmMesas
-     *
-     * @param coordinador
      */
-    public frmComandas(CoordinadorModuloComandas coordinador) {
+    public frmPedidos(CoordinadorModuloComandas coordinador) {
         initComponents();
+        jScrollPane1.getViewport().setLayout(new java.awt.BorderLayout());
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            jPanel1.requestFocusInWindow();
+        });
+        panContenedorMesas.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
         this.coordinador = coordinador;
-        cargarEstado();
-
-    }
-
-    public void cargarEstado() {
-        if (creada) {
-            btnCrear.setText("+Crear Pedido");
-            jblAviso.setVisible(false);
-        } else {
-            btnCrear.setText("+Crear Comanda");
-            jblAviso.setVisible(true);
-        }
-    }
-
-    public void agregarPedidos() {
-
     }
 
     @SuppressWarnings("unchecked")
@@ -69,9 +49,15 @@ public class frmComandas extends javax.swing.JFrame {
         btnMesas = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        panContenedorPedidos = new javax.swing.JPanel();
-        jblAviso = new javax.swing.JLabel();
-        btnCrear = new javax.swing.JButton();
+        panContenedorMesas = new javax.swing.JPanel();
+        panBuscador = new javax.swing.JPanel();
+        txtBuscador = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        panProductos = new javax.swing.JPanel();
+        btnOrdenar = new javax.swing.JButton();
+        btnAtras = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -94,7 +80,7 @@ public class frmComandas extends javax.swing.JFrame {
             .addGroup(panEncabezadoLayout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         panEncabezadoLayout.setVerticalGroup(
@@ -178,24 +164,98 @@ public class frmComandas extends javax.swing.JFrame {
         jScrollPane1.setBorder(null);
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        panContenedorPedidos.setBackground(new java.awt.Color(255, 255, 255));
+        panContenedorMesas.setBackground(new java.awt.Color(255, 255, 255));
+        jScrollPane1.setViewportView(panContenedorMesas);
 
-        jblAviso.setFont(new java.awt.Font("Verdana", 1, 36)); // NOI18N
-        jblAviso.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jblAviso.setText("Sin comanda registrada");
-        panContenedorPedidos.add(jblAviso);
+        panBuscador.setBackground(new java.awt.Color(255, 255, 255));
 
-        jScrollPane1.setViewportView(panContenedorPedidos);
-
-        btnCrear.setBackground(new java.awt.Color(181, 245, 255));
-        btnCrear.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        btnCrear.setForeground(new java.awt.Color(74, 68, 89));
-        btnCrear.setText("+Crear Comanda");
-        btnCrear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCrearActionPerformed(evt);
+        txtBuscador.setBackground(new java.awt.Color(230, 230, 230));
+        txtBuscador.setForeground(new java.awt.Color(73, 69, 79));
+        txtBuscador.setText("Buscar Producto");
+        txtBuscador.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtBuscadorFocusGained(evt);
             }
         });
+        txtBuscador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBuscadorActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panBuscadorLayout = new javax.swing.GroupLayout(panBuscador);
+        panBuscador.setLayout(panBuscadorLayout);
+        panBuscadorLayout.setHorizontalGroup(
+            panBuscadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panBuscadorLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(425, Short.MAX_VALUE))
+        );
+        panBuscadorLayout.setVerticalGroup(
+            panBuscadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panBuscadorLayout.createSequentialGroup()
+                .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 6, Short.MAX_VALUE))
+        );
+
+        jScrollPane2.setBorder(null);
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        panProductos.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout panProductosLayout = new javax.swing.GroupLayout(panProductos);
+        panProductos.setLayout(panProductosLayout);
+        panProductosLayout.setHorizontalGroup(
+            panProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 223, Short.MAX_VALUE)
+        );
+        panProductosLayout.setVerticalGroup(
+            panProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 557, Short.MAX_VALUE)
+        );
+
+        jScrollPane2.setViewportView(panProductos);
+
+        btnOrdenar.setBackground(new java.awt.Color(44, 44, 44));
+        btnOrdenar.setForeground(new java.awt.Color(255, 255, 255));
+        btnOrdenar.setText("Ordenar");
+        btnOrdenar.setBorderPainted(false);
+        btnOrdenar.setOpaque(true);
+        btnOrdenar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOrdenarActionPerformed(evt);
+            }
+        });
+
+        btnAtras.setBackground(new java.awt.Color(44, 44, 44));
+        btnAtras.setForeground(new java.awt.Color(255, 255, 255));
+        btnAtras.setText("Atras");
+        btnAtras.setBorderPainted(false);
+        btnAtras.setOpaque(true);
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel5.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(141, 134, 134));
+        jLabel5.setText("Total:");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addContainerGap(13, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -207,10 +267,20 @@ public class frmComandas extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnCrear))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE))
-                .addContainerGap())
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane1)
+                            .addComponent(panBuscador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, 0)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(0, 0, 0))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnOrdenar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -218,11 +288,22 @@ public class frmComandas extends javax.swing.JFrame {
                 .addComponent(panEncabezado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCrear)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 9, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(panBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 499, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnOrdenar)
+                            .addComponent(btnAtras))
+                        .addContainerGap())))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -240,101 +321,40 @@ public class frmComandas extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
+    private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscadorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBuscadorActionPerformed
 
-        if (!creada) {
-            int seleccion = JOptionPane.showConfirmDialog(null, "¿Desea abrir la comanda?", "Confirmar", JOptionPane.OK_CANCEL_OPTION);
-
-            if (seleccion == JOptionPane.OK_OPTION) {
-                ComandaDTO comanda = new ComandaDTO();
-                comanda.setCliente(cliente);
-                try {
-                    coordinador.registrarComanda(comanda);
-                } catch (NegocioException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-                cargarEstado();
-            }
-        } else {
-            final int[] eleccion = {-1};
-
-            JButton boton1 = new JButton("Registrado");
-            boton1.setBackground(Color.decode("#FFAE0B"));
-            boton1.setForeground(Color.decode("#2C2C2C"));
-            boton1.setOpaque(true);
-            boton1.setContentAreaFilled(true);
-            boton1.setBorderPainted(false);
-
-            JButton boton2 = new JButton("Sin Registro");
-            boton2.setBackground(Color.decode("#2C2C2C"));
-            boton2.setForeground(Color.decode("#F5F5F5"));
-            boton2.setOpaque(true);
-            boton2.setContentAreaFilled(true);
-            boton2.setBorderPainted(false);
-
-            Object[] opciones = {boton1, boton2};
-            JLabel mensajeCentrado = new JLabel("Seleccionar cliente", SwingConstants.CENTER);
-            mensajeCentrado.setFont(new Font("Arial", Font.PLAIN, 14));
-
-            JOptionPane pane = new JOptionPane(
-                    mensajeCentrado,
-                    JOptionPane.PLAIN_MESSAGE,
-                    JOptionPane.DEFAULT_OPTION,
-                    null,
-                    opciones,
-                    opciones[0]
-            );
-
-            JDialog dialog = pane.createDialog("Tipo de Cliente");
-
-            BufferedImage imagenVacia = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-            dialog.setIconImage(imagenVacia);
-
-            boton1.addActionListener(e -> {
-                eleccion[0] = 0;
-                dialog.dispose();
-            });
-
-            boton2.addActionListener(e -> {
-                eleccion[0] = 1;
-                dialog.dispose();
-            });
-
-            dialog.setSize(350, 150);
-
-            dialog.setLocationRelativeTo(null);
-
-            dialog.setVisible(true);
-
-            switch (eleccion[0]) {
-                case 0:
-
-                    break;
-                case 1:
-                    coordinador.mostrarPantallaCrearPedido();
-                    break;
-                default:
-                    break;
-            }
+    private void txtBuscadorFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtBuscadorFocusGained
+        if (txtBuscador.getText().equals("Buscar Producto")) {
+            txtBuscador.setText("");
         }
+    }//GEN-LAST:event_txtBuscadorFocusGained
 
-
-    }//GEN-LAST:event_btnCrearActionPerformed
+    private void btnOrdenarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrdenarActionPerformed
+       
+    }//GEN-LAST:event_btnOrdenarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAtras;
     private javax.swing.JPanel btnComandas;
-    private javax.swing.JButton btnCrear;
     private javax.swing.JPanel btnMesas;
+    private javax.swing.JButton btnOrdenar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel jblAviso;
-    private javax.swing.JPanel panContenedorPedidos;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPanel panBuscador;
+    private javax.swing.JPanel panContenedorMesas;
     private javax.swing.JPanel panEncabezado;
     private javax.swing.JPanel panMenu;
+    private javax.swing.JPanel panProductos;
+    private javax.swing.JTextField txtBuscador;
     // End of variables declaration//GEN-END:variables
 }

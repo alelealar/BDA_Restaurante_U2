@@ -2,7 +2,13 @@ package pantallas.moduloComandas;
 
 import pantallas.moduloComandas.vistas.panMesa;
 import controlador.CoordinadorModuloComandas;
+import dtos.MesaDTO;
+import excepciones.NegocioException;
 import java.awt.FlowLayout;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -12,23 +18,40 @@ public class frmMesas extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmMesas.class.getName());
 
+    private final CoordinadorModuloComandas coordinador;
+
     /**
      * Creates new form frmMesas
      */
-    public frmMesas() {
+    public frmMesas(CoordinadorModuloComandas coordinador) {
         initComponents();
         jScrollPane1.getViewport().setLayout(new java.awt.BorderLayout());
 
         panContenedorMesas.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
 
+        this.coordinador = coordinador;
+
         agregarMesas();
     }
 
     public void agregarMesas() {
-        for (int i = 1; i <= 15; i++) {
-            panMesa mesa = new panMesa(new CoordinadorModuloComandas(), i);
 
-            panContenedorMesas.add(mesa);
+        try {
+            List<MesaDTO> mesas = coordinador.obtenerMesas();
+            if (mesas != null) {
+
+                List<MesaDTO> mesasOrdenadas = mesas.stream()
+                        .sorted(Comparator.comparingInt(MesaDTO::getNumero))
+                        .collect(Collectors.toList());
+
+                for (MesaDTO mesa : mesasOrdenadas) {
+                    panMesa mesaPanel = new panMesa(coordinador, mesa);
+                    panContenedorMesas.add(mesaPanel);
+                }
+
+            }
+        } catch (NegocioException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
 
         panContenedorMesas.revalidate();

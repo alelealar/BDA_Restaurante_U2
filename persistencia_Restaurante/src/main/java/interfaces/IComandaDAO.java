@@ -1,6 +1,7 @@
 package interfaces;
 
 import entidades.Comanda;
+import entidades.Mesa;
 import excepciones.PersistenciaException;
 import java.util.List;
 
@@ -57,4 +58,20 @@ public interface IComandaDAO {
      * @throws PersistenciaException Si ocurre un error.
      */
     public List<Comanda> obtenerComandas() throws PersistenciaException;
+
+    /**
+     * Obtiene todas las comandas registradas en el dia actual.
+     *
+     * @return Cantidad de comandas registradas en el dia.
+     * @throws PersistenciaException Si ocurre un error.
+     */
+    public Long obtenerComandasDia() throws PersistenciaException;
+
+    /**
+     * Obtiene todas las mesas registradas.
+     *
+     * @return Cantidad de mesas registradas.
+     * @throws PersistenciaException Si ocurre un error.
+     */
+    public List<Mesa> obtenerMesas() throws PersistenciaException;
 }

@@ -2,16 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package validaciones;
-
 
 /**
  *
  * @author Alejandra Leal Armenta, 262719
  */
-
 public class ValidadorCampos {
+
     // Nombres
     public static boolean nombreVacio(String nombre) {
         return nombre == null || nombre.isBlank();
@@ -32,7 +30,9 @@ public class ValidadorCampos {
 
     // Apellido materno (opcional)
     public static boolean apellidoMValido(String apellido) {
-        if (apellido == null || apellido.isBlank()) return true;
+        if (apellido == null || apellido.isBlank()) {
+            return true;
+        }
         return apellido.matches("^[\\p{L} \\.]+$");
     }
 
@@ -47,7 +47,25 @@ public class ValidadorCampos {
 
     // Correo (opcional)
     public static boolean correoValido(String correo) {
-        if (correo == null || correo.isBlank()) return true;
+        if (correo == null || correo.isBlank()) {
+            return true;
+        }
         return correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    }
+
+    // Usuario 
+    public static boolean usuarioVacio(String usuario) {
+        return usuario == null || usuario.trim().isEmpty();
+    }
+
+    public static boolean usuarioValido(String usuario) {
+        if (usuario == null) {
+            return false;
+        }
+        // ^[\\p{L}0-9]+$ significa:
+        // \\p{L} -> Cualquier letra (incluye acentos y ñ)
+        // 0-9    -> Permite números
+        // +      -> Al menos un carácter
+        return usuario.matches("^[\\p{L}0-9]+$");
     }
 }

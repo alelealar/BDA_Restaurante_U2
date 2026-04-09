@@ -11,6 +11,7 @@
     <class>entidades.Comanda</class>
     <class>entidades.DetalleComanda</class>
     <class>entidades.Mesa</class>
+    <class>entidades.Producto</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/restaurante?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="Tapneat"/>
