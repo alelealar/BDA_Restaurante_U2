@@ -6,6 +6,8 @@ package dtos;
 
 import enumerators.EstadoProductoDTO;
 import enumerators.TipoProductoDTO;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -25,10 +27,9 @@ public class ProductoNuevoDTO {
     
     private String urlImagen;
     
-    //private List<ProductoIngredienteDTO> ingredientes;
+    private List<ProductoIngredienteDTO> ingredientes;
 
-    public ProductoNuevoDTO() {
-    }
+    public ProductoNuevoDTO() {}
 
     public ProductoNuevoDTO(String nombre, TipoProductoDTO tipo, String descripcion, Double precio, EstadoProductoDTO estado, String urlImagen) {
         this.nombre = nombre;
@@ -36,6 +37,7 @@ public class ProductoNuevoDTO {
         this.descripcion = descripcion;
         this.precio = precio;
         this.estado = estado;
+        this.ingredientes = new ArrayList<>();
         this.urlImagen = urlImagen;
     }
 
@@ -85,6 +87,14 @@ public class ProductoNuevoDTO {
 
     public void setUrlImagen(String urlImagen) {
         this.urlImagen = urlImagen;
+    }
+    
+    public List<ProductoIngredienteDTO> getIngredientes(){
+        return ingredientes;
+    }
+    
+    public void setIngredientes(List<ProductoIngredienteDTO> ingredientes){
+        this.ingredientes = ingredientes;
     }
     
 }

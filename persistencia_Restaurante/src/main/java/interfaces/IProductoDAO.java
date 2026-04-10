@@ -5,6 +5,7 @@
 package interfaces;
 
 import entidades.Producto;
+import enumerators.TipoProducto;
 import excepciones.PersistenciaException;
 import java.util.List;
 
@@ -27,5 +28,7 @@ public interface IProductoDAO {
     boolean desactivarProducto(Long idProducto) throws PersistenciaException;
     
     Producto consultarProductoPorID(Long idProducto) throws PersistenciaException;
+    
+    public String obtenerUltimoIdentificador(TipoProducto tipo) throws PersistenciaException;
     
 }

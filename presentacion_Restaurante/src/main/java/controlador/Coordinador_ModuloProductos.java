@@ -4,10 +4,14 @@
  */
 package controlador;
 
+import dtos.IngredienteDTO;
 import dtos.ProductoDTO;
+import dtos.ProductoIngredienteDTO;
 import dtos.ProductoNuevoDTO;
 import excepciones.NegocioException;
 import interfaces.IProductoBO;
+import java.util.ArrayList;
+import java.util.List;
 import notificaciones.TipoNotificacion;
 import notificaciones.dlgNotificacion;
 import objetosNegocio.ProductoBO;
@@ -22,8 +26,18 @@ public class Coordinador_ModuloProductos {
     
     private frmProductos frmProductos;
     private frmAgregarProducto frmAgregarProducto;
-    
+    /**
+     * El coordinador ingredientes es el que ayuda a que podamos entrar a la 
+     * ventana de ingredientes para escoger los detallesProducto.
+     */
+    private Coordinador_ModuloIngredientes coordinadorIngredientes;
     private IProductoBO productoBO = ProductoBO.getInstance();
+    /**
+     * Aquí se crea esta lista, para que a lo largo de los coordinadores y los
+     * frames involucrados, solo se campartan la lista y no creen otras, para no
+     * perder la referencia ni los registros guardados.
+     */
+    private List<ProductoIngredienteDTO> listaIngredientes = new ArrayList<>();
     
     public void abrirFrmProductos(){
         if (frmProductos == null) {
@@ -41,59 +55,112 @@ public class Coordinador_ModuloProductos {
             frmAgregarProducto = new frmAgregarProducto(this);
         }
         frmProductos.setVisible(false);
-        frmProductos.setVisible(true);
+        frmAgregarProducto.setVisible(true);
     }
     
-    public void agregarProducto(ProductoNuevoDTO producto) {
+    public void abrirFrmModificarProducto(ProductoDTO producto){
+        if (this.frmAgregarProducto == null) {
+            this.frmAgregarProducto = new frmAgregarProducto(this);
+        }
+        frmAgregarProducto.setProductoParaModificar(producto);
+        frmAgregarProducto.setVisible(true);
+        frmProductos.dispose();
+    }
+    
+    public void refrescarTablaProductos(){
+        frmProductos.cargarTabla();
+    }
+    
+    /**
+     * Cada que un producto ya fue modificado/agregado, se limpia la lista para 
+     * tenerla nueva para el siguiente registro.
+     */
+    public void limpiarListaIngredientes(){
+        listaIngredientes.clear();
+    }
+    
+    /**
+     * Esto es para pasarle la lista desde ingredientes hasta el frmAgregarProducto.
+     * @param ingredientes La lista con los ProductoIngredienteDTO.
+     */
+    public void setDetallesProducto(List<ProductoIngredienteDTO> ingredientes){
+        frmAgregarProducto.setDetallesProducto(ingredientes);
+        frmAgregarProducto.setVisible(true);
+    }
+    
+    /**
+     * Por medio del coordinadorIngredientes aquí se abre la pantalla del módulo
+     * Ingredientes.
+     * 
+     * Crea el coordinador, le pasa la referencia a la lista compartida al frm
+     * Ingredientes y abre la pantalla.
+     */
+    public void abrirMenuIngredientes(){
+        if(coordinadorIngredientes == null){
+            coordinadorIngredientes = new Coordinador_ModuloIngredientes();
+            coordinadorIngredientes.setCoordinadorProductos(this);
+        }
+        coordinadorIngredientes.setListaIngredientes(listaIngredientes);
+        coordinadorIngredientes.abrirFrmIngredientesModoProducto();
+        frmAgregarProducto.setVisible(false);
+    }
+    
+    public boolean agregarProducto(ProductoNuevoDTO producto) {
         try{
             productoBO.agregarProducto(producto);
+            return true;
         } catch(NegocioException ne){
-            dlgNotificacion alerta = new dlgNotificacion(frmAgregarProducto, "Ocurrió un error al agregar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
-            alerta.setVisible(true);
+            dlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al agregar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
+            return false;
         }
     }
     
-    public void actualizarProducto(ProductoDTO producto){
+    public boolean actualizarProducto(ProductoDTO producto){
         try{
             productoBO.actualizarProducto(producto);
+            return true;
         } catch(NegocioException ne){
-            dlgNotificacion alerta = new dlgNotificacion(frmAgregarProducto, "Ocurrió un error al actualizar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
-            alerta.setVisible(true);
+            dlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al actualizar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
+            return false;
         }
     }
     
-    public void activarProducto(Long idProducto){
+    public boolean activarProducto(Long idProducto){
         try{
             productoBO.activarProducto(idProducto);
+            return true;
         } catch(NegocioException ne){
-            dlgNotificacion alerta = new dlgNotificacion(frmAgregarProducto, "Ocurrió un error al activar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
-            alerta.setVisible(true);
+            dlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al activar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
+            return false;
         }
     }
     
-    public void desactivarProducto(Long idProducto){
+    public boolean desactivarProducto(Long idProducto){
         try{
             productoBO.desactivarProducto(idProducto);
+            return true;
         } catch(NegocioException ne){
-            dlgNotificacion alerta = new dlgNotificacion(frmAgregarProducto, "Ocurrió un error al desactivar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
-            alerta.setVisible(true);
+            dlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al desactivar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
+            return false;
         }
     }
     
-    public void consultarTodosLosProductos(){
+    public List<ProductoDTO> consultarTodosLosProductos(){
         try{
-            productoBO.consultarTodosProductos();
+            return productoBO.consultarTodosProductos();
         } catch(NegocioException ne){
-            dlgNotificacion alerta = new dlgNotificacion(frmAgregarProducto, "Ocurrió un error al consultar todos los productos: " + ne.getMessage(), TipoNotificacion.ERROR);
-            alerta.setVisible(true);
+            dlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al consultar todos los productos: " + ne.getMessage(), TipoNotificacion.ERROR);
+            return null;
         }
     }
     
-    public void consultarProductoPorID(Long idProducto){
+    public ProductoDTO consultarProductoPorID(Long idProducto){
         try{
-            productoBO.consultarProductoPorID(idProducto);
+            return productoBO.consultarProductoPorID(idProducto);
         } catch(NegocioException ne){
             System.out.println("Error al buscar un producto con el id=" + idProducto + ", CAUSA=" + ne.getMessage());
+            return null;
         }
     }
+    
 }

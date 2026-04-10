@@ -7,19 +7,25 @@ package pantallas.moduloIngredientes;
 import controlador.CoordinadorInterfaces;
 import controlador.Coordinador_ModuloIngredientes;
 import dtos.IngredienteDTO;
+import dtos.ProductoIngredienteDTO;
 import enumerators.TipoMovimiento;
 import excepciones.NegocioException;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import notificaciones.TipoNotificacion;
+import notificaciones.dlgNotificacion;
 
 /**
  *
@@ -27,9 +33,19 @@ import javax.swing.table.TableRowSorter;
  */
 public class FrmIngredientes extends javax.swing.JFrame {
     
-    Coordinador_ModuloIngredientes coordinador = new Coordinador_ModuloIngredientes();
+    /**
+     * majojo:
+     * Quite el que se creara aquí mismo el coordinador por lo mismo que 
+     * comentaba en setCoordinadorIngredientes
+     */
+    Coordinador_ModuloIngredientes coordinador;
     CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
-    
+    /**
+     * majojo:
+     * Es la lista que se van pasando entre coordinadores y frms, para que
+     * manejen la misma referencia y no se pierda.
+     */
+    private List<ProductoIngredienteDTO> listaIngredientes;
     private List<IngredienteDTO> seleccionados = new ArrayList<>();
     private boolean modoProducto = false;
 
@@ -39,8 +55,21 @@ public class FrmIngredientes extends javax.swing.JFrame {
     public FrmIngredientes() {
         initComponents();
         this.setLocationRelativeTo(null);
-        cargarTabla();
-        
+        //cargarTabla();
+    }
+    
+    /**
+     * majojo:
+     * Hice este método porqué si no manejaban coordinadores diferentes y pues
+     * perdia comunicación ya que andaba en otro rollo el frm, y fue aquí donde
+     * puse el cargar tabla que había en el constructor.
+     * @param coordinador 
+     */
+    public void setCoordinadorIngredientes(Coordinador_ModuloIngredientes coordinador){
+        this.coordinador = coordinador;
+        if(coordinador != null){
+            cargarTabla();
+        }
     }
 
     /**
@@ -79,6 +108,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         scrollMenuLateral = new javax.swing.JScrollPane();
         pnlSeleccion = new javax.swing.JPanel();
         btnAgregarStock = new javax.swing.JButton();
+        lblResumen = new javax.swing.JLabel();
+        lblIngredientes = new javax.swing.JLabel();
+        btnAgregarIngredientes = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -338,7 +370,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
 
         scrollMenuLateral.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        pnlSeleccion.setBackground(new java.awt.Color(204, 204, 204));
+        pnlSeleccion.setBackground(new java.awt.Color(255, 255, 255));
         pnlSeleccion.setLayout(new javax.swing.BoxLayout(pnlSeleccion, javax.swing.BoxLayout.Y_AXIS));
         scrollMenuLateral.setViewportView(pnlSeleccion);
 
@@ -358,6 +390,23 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         });
 
+        lblResumen.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblResumen.setText("Resumen");
+
+        lblIngredientes.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblIngredientes.setText("Ingredientes");
+
+        btnAgregarIngredientes.setBackground(new java.awt.Color(0, 153, 102));
+        btnAgregarIngredientes.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        btnAgregarIngredientes.setForeground(new java.awt.Color(255, 255, 255));
+        btnAgregarIngredientes.setText("Agregar Ingredientes");
+        btnAgregarIngredientes.setBorder(null);
+        btnAgregarIngredientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarIngredientesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panPrincipalLayout = new javax.swing.GroupLayout(panPrincipal);
         panPrincipal.setLayout(panPrincipalLayout);
         panPrincipalLayout.setHorizontalGroup(
@@ -368,18 +417,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
                 .addGap(48, 48, 48)
                 .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panPrincipalLayout.createSequentialGroup()
-                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panPrincipalLayout.createSequentialGroup()
-                                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(306, 306, 306)
-                                .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panPrincipalLayout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(275, 275, 275)
-                                .addComponent(lblTitulo))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE))
-                    .addGroup(panPrincipalLayout.createSequentialGroup()
                         .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnActualizarIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -387,8 +424,30 @@ public class FrmIngredientes extends javax.swing.JFrame {
                         .addComponent(btnAgregarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnRestarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)))
-                .addComponent(scrollMenuLateral, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31))
+                    .addGroup(panPrincipalLayout.createSequentialGroup()
+                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panPrincipalLayout.createSequentialGroup()
+                                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(306, 306, 306)
+                                .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panPrincipalLayout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addGap(275, 275, 275)
+                                .addComponent(lblTitulo)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrollMenuLateral, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPrincipalLayout.createSequentialGroup()
+                        .addComponent(lblResumen)
+                        .addGap(74, 74, 74))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPrincipalLayout.createSequentialGroup()
+                        .addComponent(lblIngredientes)
+                        .addGap(52, 52, 52))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPrincipalLayout.createSequentialGroup()
+                        .addComponent(btnAgregarIngredientes, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(23, 23, 23))))
         );
         panPrincipalLayout.setVerticalGroup(
             panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -397,26 +456,34 @@ public class FrmIngredientes extends javax.swing.JFrame {
                 .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panPrincipalLayout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(lblTitulo))
-                        .addGap(10, 10, 10)
-                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(panPrincipalLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblResumen)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblIngredientes)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(scrollMenuLateral, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panPrincipalLayout.createSequentialGroup()
+                                .addGap(11, 11, 11)
+                                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(lblTitulo))
+                                .addGap(10, 10, 10)
+                                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnRestarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnActualizarIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnAgregarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPrincipalLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(scrollMenuLateral, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnRestarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnActualizarIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnAgregarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnAgregarIngredientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(34, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -435,6 +502,15 @@ public class FrmIngredientes extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * majojo:
+     * Es para que se pasen la misma referencia a la lista que se creó desde
+     * el coordinador de productos.
+     * @param lista 
+     */
+    public void setListaIngredientes(List<ProductoIngredienteDTO> lista){
+        this.listaIngredientes = lista;
+    }
     
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
@@ -623,6 +699,60 @@ public class FrmIngredientes extends javax.swing.JFrame {
     private void btnAgregarStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarStockActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAgregarStockActionPerformed
+
+    /**
+     * majojo:
+     * Agregué un botón para que puedan agregar los ingredientes al producto que 
+     * estén modificando/agregando. 
+     * @param evt 
+     */
+    private void btnAgregarIngredientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarIngredientesActionPerformed
+        // TODO add your handling code here:
+        // si es diferente de null la limpia para que no se quede con registros anteriores.
+        if(listaIngredientes != null){
+            listaIngredientes.clear();
+            /*
+            si de casualidad no existe la lista, la crea.
+            */
+        } else {
+            listaIngredientes = new ArrayList<>();
+        }
+        /**
+         * De los paneles que agregó, recupera los datos para crear el objeto
+         * ProductoIngredienteDTO y guardarlo en la lista.
+         */
+        for(Component c : pnlSeleccion.getComponents()){
+            if(c instanceof panIngredientesProducto p){
+                listaIngredientes.add(new ProductoIngredienteDTO(p.getIngrediente(), p.getCantidad()));
+            }
+        }
+        /**
+         * Valida que si hayan agregado ingredientes y no quieran mandarlos vacíos.
+         */
+        if(listaIngredientes.isEmpty()){
+            dlgNotificacion.mostrarNotificacion(this, "Por favor de seleccionar ingredientes para agregar al producto.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        
+        /**
+         * Pide confirmación.
+         */
+        int opcion = dlgNotificacion.mostrarNotificacion(this, "¿Seguro de agregar dichos ingredientes al producto?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == dlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        
+        /**
+         * Le pasa la lista al coordinador para que la pase al otro coordinador
+         * y este se la pueda pasar al frmAgregarProducto.
+         */
+        coordinador.setListaIngredientes(this.listaIngredientes);
+        /*
+        Se regresa al frm de agregar prooducto.
+        */
+        coordinador.abrirFrmAgregarProducto();
+        
+    }//GEN-LAST:event_btnAgregarIngredientesActionPerformed
     
     public void cargarTabla(){
         try{
@@ -647,12 +777,24 @@ public class FrmIngredientes extends javax.swing.JFrame {
     
     public void activarModoProducto(){
         modoProducto = true;
-
         jScrollPane1.setPreferredSize(new java.awt.Dimension(750, 427));
 
         scrollMenuLateral.setVisible(true);
+        /**
+         * majojo:
+         * Le cambie el layout para que se viera kawaii porque si no se movía todo
+         * bien raro.
+         */
+        pnlSeleccion.setLayout(new BoxLayout(pnlSeleccion, BoxLayout.Y_AXIS));
         pnlSeleccion.setVisible(true);
 
+        /**
+         * majojo:
+         * Simplemente que se active el botón que agregué abajo de pnlSelección.
+         */
+        btnAgregarIngredientes.setVisible(true);
+        lblResumen.setVisible(true);
+        lblIngredientes.setVisible(true);
         btnActualizarIngrediente.setVisible(false);
         btnAgregarStock.setVisible(false);
         btnAnadirIngrediente.setVisible(false);
@@ -670,12 +812,31 @@ public class FrmIngredientes extends javax.swing.JFrame {
 
         scrollMenuLateral.setVisible(false);
         btnAtras.setVisible(false);
+        /*
+        majojo:
+        Misma, que se desactive el botón que agregué.
+        */
+        btnAgregarIngredientes.setVisible(false);
+        lblResumen.setVisible(false);
+        lblIngredientes.setVisible(false);
 
         panPrincipal.remove(scrollMenuLateral);
         panPrincipal.revalidate();
         panPrincipal.repaint();
         
         this.pack();
+    }
+    
+    /**
+     * majojo:
+     * Por si en el panIngredienresProducto le dan click al botón de eliminar, 
+     * usa este método para eliminar el panel de esta pantalla.
+     * @param panel El panel que se quiere eliminar.
+     */
+    public void eliminarIngrediente(panIngredientesProducto panel){
+        pnlSeleccion.remove(panel);
+        pnlSeleccion.revalidate();
+        pnlSeleccion.validate();
     }
     
     private void agregarIngrediente(IngredienteDTO ing) {
@@ -691,20 +852,53 @@ public class FrmIngredientes extends javax.swing.JFrame {
         }
         
         panIngredientesProducto item = new panIngredientesProducto();
-
+        item.setFrmPadre(this);
+        item.setIngrediente(ing);
         item.setNombre(ing.getNombre());
         item.setUnidad(ing.getUnidadMedida());
         item.setImagen(ing.getUrlImagen());
         item.setCantidad(1);
+        /**
+         * majojo:
+         * Igual, para que se vean kawaii.
+         */
+        item.setMaximumSize(new Dimension(Integer.MAX_VALUE, item.getPreferredSize().height));  
+        item.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        /**
+         * majojo:
+         * Como quedaba un espacio sin rellenar, este lo rellena.
+         */
+        for (Component c : pnlSeleccion.getComponents()) {
+            if (c instanceof Box.Filler) {
+                pnlSeleccion.remove(c);
+            }
+        }
         pnlSeleccion.add(item);
+        /*
+        majojo:
+        Es para que no se amontonen los componentes, a lo que estuve leyendo.
+        */
+        pnlSeleccion.add(Box.createVerticalGlue());
         pnlSeleccion.revalidate();
         pnlSeleccion.repaint();
+        
+        /**
+         * majojo:
+         * Según yo esto es para que vayan apilandose de forma ascendente (o sea
+         * el último agregado va hacía abajo), aunq no me creas tanto porque esto
+         * sí se lo pregunté al geminicio.
+         */
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            javax.swing.JScrollBar vertical = scrollMenuLateral.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
+        });
     }
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizarIngrediente;
+    private javax.swing.JButton btnAgregarIngredientes;
     private javax.swing.JButton btnAgregarStock;
     private javax.swing.JButton btnAnadirIngrediente;
     private javax.swing.JButton btnAtras;
@@ -725,6 +919,8 @@ public class FrmIngredientes extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JLabel lblClientes;
+    private javax.swing.JLabel lblIngredientes;
+    private javax.swing.JLabel lblResumen;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JPanel panPrincipal;
     private javax.swing.JPanel pnlSeleccion;

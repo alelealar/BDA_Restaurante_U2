@@ -20,9 +20,11 @@ public class CoordinadorInterfaces {
     private frmClientes formClientes;
     private frmAgregarCliente formAgregarClientes;
     private Coordinador coordinadorNegocio;
+    private Coordinador_ModuloProductos coordinadorProducto;
     
     public CoordinadorInterfaces() {
         this.coordinadorNegocio = new Coordinador();
+        this.coordinadorProducto = new Coordinador_ModuloProductos();
     }
 
     public void iniciarSistema() {
@@ -117,4 +119,8 @@ public class CoordinadorInterfaces {
         coordinadorNegocio.eliminarCliente(cliente);
     }
 
+    public void abrirProductos(){
+        formClientes.dispose();
+        coordinadorProducto.abrirFrmProductos();
+    }
 }

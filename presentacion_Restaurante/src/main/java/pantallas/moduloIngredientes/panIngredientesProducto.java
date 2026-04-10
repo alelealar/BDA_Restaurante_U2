@@ -4,9 +4,12 @@
  */
 package pantallas.moduloIngredientes;
 
+import dtos.IngredienteDTO;
 import enumerators.UnidadDTO;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import notificaciones.TipoNotificacion;
+import notificaciones.dlgNotificacion;
 
 /**
  *
@@ -15,10 +18,48 @@ import javax.swing.JOptionPane;
 public class panIngredientesProducto extends javax.swing.JPanel {
     private int cantidad;
     /**
+     * majojo:
+     * Que guarde el ingredienteDTO para que sea más fácil recuperarlo.
+     */
+    private IngredienteDTO ingrediente;
+    /**
+     * majojo:
+     * El frm en el cual se encuentra, para saber de donde se debe eliminar.
+     */
+    private FrmIngredientes parent;
+    /**
      * Creates new form panIngredientesProducto
      */
     public panIngredientesProducto() {
         initComponents();
+    }
+    
+    /**
+     * majojo:
+     * Que establezca el frmPadre (frmIngredientes) al cual pertenece y del cual
+     * se debe eliminar en caso de requerirse.
+     * @param parent Frame en el que se encuentra.
+     */
+    public void setFrmPadre(FrmIngredientes parent){
+        this.parent = parent;
+    }
+    
+    /**
+     * majojo:
+     * Que guarde el atributo del ingrediente que muestra.
+     * @param ingrediente IngredienteDTO.
+     */
+    public void setIngrediente(IngredienteDTO ingrediente){
+        this.ingrediente = ingrediente;
+    }
+    
+    /**
+     * majojo:
+     * Que regrese su ingrediente para más comodidad.
+     * @return Su atributo.
+     */
+    public IngredienteDTO getIngrediente(){
+        return ingrediente;
     }
 
     /**
@@ -154,8 +195,28 @@ public class panIngredientesProducto extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * majojo:
+     * Le agregué la funcionalidad al botón de eliminar.
+     * @param evt 
+     */
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
+        /*
+        majojo:
+        Pide confirmación para eliminar.
+        */
+        int opcion = dlgNotificacion.mostrarNotificacion(parent, "¿Seguro de eliminar el ingrediente " + lblNombre.getText() + "?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == dlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        /*
+        majojo:
+        Le avisa el a su papá que elimine el panel.
+        */
+        if(parent != null){
+            parent.eliminarIngrediente(this);
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void txtCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadActionPerformed

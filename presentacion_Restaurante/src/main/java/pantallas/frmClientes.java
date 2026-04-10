@@ -399,7 +399,7 @@ public class frmClientes extends javax.swing.JFrame {
 
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
+        coordinador.abrirProductos();
     }//GEN-LAST:event_btnProductosActionPerformed
 
     private void btnReportesClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesClientesActionPerformed
@@ -455,7 +455,6 @@ public class frmClientes extends javax.swing.JFrame {
         } else {
             /* 
             el (?i) es para que busque sin importar mayúsculas y minúsculas.
-            falta q busque sin importar acentos.
             */
             ordenador.setRowFilter(RowFilter.regexFilter("(?i)" + busqueda));
         }

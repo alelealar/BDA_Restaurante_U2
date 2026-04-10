@@ -5,8 +5,10 @@
 package adaptadores;
 
 import dtos.ProductoDTO;
+import dtos.ProductoIngredienteDTO;
 import dtos.ProductoNuevoDTO;
 import entidades.Producto;
+import entidades.ProductoIngrediente;
 import enumerators.DisponibilidadProducto;
 import enumerators.EstadoProducto;
 import enumerators.EstadoProductoDTO;
@@ -33,7 +35,7 @@ public class ProductoAdapter {
         if(producto == null){
             return null;
         }
-        
+      
         return new ProductoDTO(
                 producto.getId(),
                 producto.getIdentificador(),
@@ -43,6 +45,7 @@ public class ProductoAdapter {
                 producto.getPrecio(),
                 EstadoProductoDTO.valueOf(producto.getEstado().name()),
                 producto.getDisponibilidad().toString(),
+                ProductoIngredienteAdapter.listaEntidadADTO(producto.getDetallesIngredientes()),
                 producto.getUrlImagen()
         );
     }
@@ -61,7 +64,7 @@ public class ProductoAdapter {
         }
         
         if (dto instanceof ProductoNuevoDTO p) {
-            return new Producto(
+            Producto pNuevo = new Producto(
                     null,
                     null,
                     p.getNombre(),
@@ -72,10 +75,19 @@ public class ProductoAdapter {
                     DisponibilidadProducto.DISPONIBLE,
                     p.getUrlImagen()
             );
+            
+            if(p.getIngredientes() != null){
+                for(ProductoIngredienteDTO detalle : p.getIngredientes()){
+                    ProductoIngrediente detalleEntidad = ProductoIngredienteAdapter.dtoAEntidad(detalle, null);
+                    pNuevo.agregarProductoIngrediente(detalleEntidad);
+                }
+            }
+            
+            return pNuevo;
         }
         
         if (dto instanceof ProductoDTO p) {
-            return new Producto(
+            Producto pRegistrado = new Producto(
                     p.getId(),
                     p.getIdentificador(),
                     p.getNombre(),
@@ -86,6 +98,15 @@ public class ProductoAdapter {
                     DisponibilidadProducto.valueOf(p.getDisponibilidad()),
                     p.getUrlImagen()
             );
+            
+            if(p.getIngredientes() != null){
+                for(ProductoIngredienteDTO detalle : p.getIngredientes()){
+                    ProductoIngrediente detalleEntidad = ProductoIngredienteAdapter.dtoAEntidad(detalle, pRegistrado);
+                    pRegistrado.agregarProductoIngrediente(detalleEntidad);
+                }
+            }
+            
+            return pRegistrado;
         }
         
         throw new NegocioException("DTO inválido: " + dto.getClass());

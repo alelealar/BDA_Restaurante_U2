@@ -8,10 +8,13 @@ import enumerators.DisponibilidadProducto;
 import enumerators.EstadoProducto;
 import enumerators.TipoProducto;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -57,6 +60,7 @@ public class Producto implements Serializable {
     /**
      * Tipo del producto (postre, bebida, platillo)
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_producto", nullable=false)
     private TipoProducto tipo;
     
@@ -79,7 +83,8 @@ public class Producto implements Serializable {
      * 
      * Solo tiene dos estados: activo o inactivo.
      */
-    @Column(name="estado", nullable=false)
+    @Enumerated(EnumType.STRING)
+    @Column(name="estado_producto", nullable=false)
     private EstadoProducto estado;
     
     /**
@@ -88,7 +93,8 @@ public class Producto implements Serializable {
      * 
      * Solo tiene dos tipos de disponibildad: disponible y no-disponible.
      */
-    @Column(name="disponibilidad", nullable=false)
+    @Enumerated(EnumType.STRING)
+    @Column(name="disponibilidad_producto", nullable=false)
     private DisponibilidadProducto disponibilidad;
     
     /**
@@ -109,12 +115,34 @@ public class Producto implements Serializable {
      * 
      * Cascade PERSIST y MERGE permite que al guardar o actualizar un producto,
      * también se guarden o actualicen automáticamente sus relaciones con ingredientes.
+     * orphanRemoval permite que cuando se eliminé un ingrediente en un 
+     * producto, dicha relación en la tabla productoIngrediente sea eliminada.
      */
     @OneToMany (
             mappedBy = "producto",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true
     )
-    private List<ProductoIngrediente> productos;
+    private List<ProductoIngrediente> detallesIngredientes;
+    
+    /**
+     * Relación con las comandas que se relacionan a este producto.
+     * 
+     * Es una representación de la lista de comandas donde es vendido el 
+     * producto.
+     * 
+     * "mappedBy = producto" indica que la relación se maneja desde DetalleComanda.
+     * 
+     * Cascade PERSIST y MERGE permite que al guardar o actualizar un producto, 
+     * también se guarden o actualicen automáticamente sus relaciones con comandas.
+     * 
+     * No se usa orphanRemoval para que el día de mañana aquellos productos que 
+     * se eliminen, no se pierda su información en comandas donde el producto
+     * todavía existía.
+     */
+    @OneToMany(mappedBy = "producto", 
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<DetalleComanda> detalles = new ArrayList<>();
     
     /**
      * Constructor vacío por default, requerido por JPA.
@@ -122,7 +150,7 @@ public class Producto implements Serializable {
     public Producto(){}
 
     /**
-     * Constructor con los atributos de la entidad excepto la lista de ingredientes.
+     * Constructor con los atributos de la entidad excepto la lista de detallesIngredientes.
      */
     public Producto(Long id, String identificador, String nombre, TipoProducto tipo, String descripcion, Double precio, EstadoProducto estado, DisponibilidadProducto disponibilidad, String urlImagen) {
         this.id = id;
@@ -139,7 +167,7 @@ public class Producto implements Serializable {
     /**
      * Constructor con todos los atributos de la entidad.
      */
-    public Producto(Long id, String identificador, String nombre, TipoProducto tipo, String descripcion, Double precio, EstadoProducto estado, DisponibilidadProducto disponibilidad, String urlImagen, List<ProductoIngrediente> productos) {
+    public Producto(Long id, String identificador, String nombre, TipoProducto tipo, String descripcion, Double precio, EstadoProducto estado, DisponibilidadProducto disponibilidad, String urlImagen, List<ProductoIngrediente> ingredientes) {
         this.id = id;
         this.identificador = identificador;
         this.nombre = nombre;
@@ -149,7 +177,7 @@ public class Producto implements Serializable {
         this.estado = estado;
         this.disponibilidad = disponibilidad;
         this.urlImagen = urlImagen;
-        this.productos = productos;
+        this.detallesIngredientes = ingredientes;
     }
 
     /**
@@ -300,16 +328,45 @@ public class Producto implements Serializable {
      * Regresa la lista con los ingredientes relacionados al producto.
      * @return lista con los ingredientes que están relacionados al producto.
      */
-    public List<ProductoIngrediente> getProductos() {
-        return productos;
+    public List<ProductoIngrediente> getDetallesIngredientes() {
+        return detallesIngredientes;
     }
 
     /**
      * Establece la lista de ingredientes relacionados al producto.
-     * @param productos lista de ingredientes a establecer al producto.
+     * @param ingredientes lista de ingredientes a establecer al producto.
      */
-    public void setProductos(List<ProductoIngrediente> productos) {
-        this.productos = productos;
+    public void setDetallesIngredientes(List<ProductoIngrediente> ingredientes) {
+        this.detallesIngredientes = ingredientes;
     }
    
+    /**
+     * Método para establecer el atributo producto en el productoIngrediente que
+     * se agrega.
+     * @param detalle ProductoIngrediente que se quiere relacionar.
+     */
+    public void agregarProductoIngrediente(ProductoIngrediente detalle) {
+        if (this.detallesIngredientes == null) {
+            this.detallesIngredientes = new ArrayList<>();
+        }
+        this.detallesIngredientes.add(detalle);
+        detalle.setProducto(this);
+    }
+
+    /**
+     * Regresa la lista con los detalles relacionados al producto.
+     * @return lista con los detalles que están relacionados al producto.
+     */
+    public List<DetalleComanda> getDetalles() {
+        return detalles;
+    }
+
+    /**
+     * Establece la lista de detalles relacionados al producto.
+     * @param ingredientes lista de detalles a establecer al producto.
+     */
+    public void setDetalles(List<DetalleComanda> detalles) {
+        this.detalles = detalles;
+    }
+    
 }

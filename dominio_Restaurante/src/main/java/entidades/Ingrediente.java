@@ -99,7 +99,7 @@ public class Ingrediente implements Serializable {
             mappedBy = "ingrediente",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE}
     )
-    private List<ProductoIngrediente> ingredientes = new ArrayList<>();
+    private List<ProductoIngrediente> productosAsociados = new ArrayList<>();
 
     public Ingrediente(Long id, String identificador, String nombre, Unidad unidadMedida, Integer stock, String urlImagen) {
         this.id = id;
@@ -216,16 +216,16 @@ public class Ingrediente implements Serializable {
      * Devuelve la lista de productos donde se usa este ingrediente.
      * @return relaciones producto-ingrediente
      */
-    public List<ProductoIngrediente> getIngredientes() {
-        return ingredientes;
+    public List<ProductoIngrediente> getProductoAsociados() {
+        return productosAsociados;
     }
 
     /**
      * Asigna las relaciones con productos.
      * @param ingredientes lista de relaciones producto-ingrediente
      */
-    public void setIngredientes(List<ProductoIngrediente> ingredientes) {
-        this.ingredientes = ingredientes;
+    public void setProductosAsociados(List<ProductoIngrediente> productosAsociados) {
+        this.productosAsociados = productosAsociados;
     }
     
     

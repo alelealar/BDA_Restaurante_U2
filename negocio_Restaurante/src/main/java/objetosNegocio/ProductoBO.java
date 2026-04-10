@@ -9,6 +9,7 @@ import daos.ProductoDAO;
 import dtos.ProductoDTO;
 import dtos.ProductoNuevoDTO;
 import enumerators.TipoProductoDTO;
+import enumerators.TipoProducto;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import entidades.Producto;
@@ -25,9 +26,6 @@ public class ProductoBO implements IProductoBO {
 
     private static ProductoBO instance;
     private static final Logger LOG = Logger.getLogger(ProductoBO.class.getName());
-    private static int identificadorBebida = 1;
-    private static int identificadorPlatillo = 1;
-    private static int identificadorPostre = 1;
     private final IProductoDAO productoDAO = ProductoDAO.getInstance();
     
     private ProductoBO(){}
@@ -221,27 +219,34 @@ public class ProductoBO implements IProductoBO {
      * tipo de producto.
      */
     private String generarIdentificador(TipoProductoDTO tipo) throws NegocioException {
-        String identificador = "";
         if(tipo == null){
             throw new NegocioException("El producto debe contar con un tipo para generar su identificador.");
         }
-        switch(tipo){
-            case TipoProductoDTO.BEBIDA:
-                identificador = String.format("BE-%03d", identificadorBebida);
-                identificadorBebida++;
-                break;
-            case TipoProductoDTO.PLATILLO:
-                identificador = String.format("PL-%03d", identificadorPlatillo);
-                identificadorPlatillo++;
-                break;
-            case TipoProductoDTO.POSTRE:
-                identificador = String.format("PO-%03d", identificadorPostre);
-                identificadorPostre++;
-                break;
-            default:
-                throw new NegocioException("Tipo de producto no válido.");
+        
+        try {
+            TipoProducto tipoEntidad = TipoProducto.valueOf(tipo.name());
+            int numero = 1;
+            
+            String ultimo = productoDAO.obtenerUltimoIdentificador(tipoEntidad);    
+            
+            if (ultimo != null && ultimo.contains("-")) {
+                numero = Integer.parseInt(ultimo.trim().substring(3));
+                numero++;
+            }
+            
+            switch(tipo){
+                case BEBIDA:
+                    return String.format("BE-%03d", numero);
+                case PLATILLO:
+                    return String.format("PL-%03d", numero);
+                case POSTRE:
+                    return String.format("PO-%03d", numero);
+                default:
+                    throw new NegocioException("Tipo de producto no válido.");
+            }
+        } catch (PersistenciaException ex) {
+            throw new NegocioException("Error al generar el identificador único.", ex);
         }
-        return identificador;
     }
 
     /**

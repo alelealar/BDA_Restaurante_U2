@@ -5,6 +5,16 @@
 package pantallasProducto;
 
 import controlador.Coordinador_ModuloProductos;
+import dtos.ProductoDTO;
+import enumerators.EstadoProductoDTO;
+import excepciones.NegocioException;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import notificaciones.TipoNotificacion;
+import notificaciones.dlgNotificacion;
 
 /**
  *
@@ -13,6 +23,7 @@ import controlador.Coordinador_ModuloProductos;
 public class frmProductos extends javax.swing.JFrame {
     
     private Coordinador_ModuloProductos coordinador;
+    private boolean resultado = false;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmProductos.class.getName());
 
     /**
@@ -21,6 +32,9 @@ public class frmProductos extends javax.swing.JFrame {
     public frmProductos(Coordinador_ModuloProductos coordinador) {
         this.coordinador = coordinador;
         initComponents();
+        tblProductos.setFillsViewportHeight(true);
+        this.setLocationRelativeTo(null);
+        cargarTabla();
     }
 
     /**
@@ -44,10 +58,10 @@ public class frmProductos extends javax.swing.JFrame {
         btnRepCli = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator4 = new javax.swing.JSeparator();
-        jPanel3 = new javax.swing.JPanel();
+        lblBuscarpOR = new javax.swing.JPanel();
         lblProReg = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaProductos = new javax.swing.JTable();
+        tblProductos = new javax.swing.JTable();
         txtBusqueda = new javax.swing.JTextField();
         iconBusqueda = new javax.swing.JLabel();
         btnAtras = new javax.swing.JButton();
@@ -55,9 +69,10 @@ public class frmProductos extends javax.swing.JFrame {
         btnModificar = new javax.swing.JButton();
         btnDesactivar = new javax.swing.JButton();
         btnAgregar = new javax.swing.JButton();
+        opcionBusqueda = new javax.swing.JComboBox<>();
+        lblBuscarPor = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(1029, 627));
         setMinimumSize(new java.awt.Dimension(1029, 627));
 
         jPanel1.setBackground(new java.awt.Color(255, 191, 71));
@@ -99,6 +114,8 @@ public class frmProductos extends javax.swing.JFrame {
         btnClientes.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnClientes.setText("Clientes");
         btnClientes.setBorder(null);
+        btnClientes.setBorderPainted(false);
+        btnClientes.setFocusPainted(false);
         btnClientes.setPreferredSize(new java.awt.Dimension(78, 27));
         btnClientes.addActionListener(this::btnClientesActionPerformed);
 
@@ -106,29 +123,34 @@ public class frmProductos extends javax.swing.JFrame {
         btnProductos.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnProductos.setText("Productos");
         btnProductos.setBorder(null);
+        btnProductos.setFocusPainted(false);
         btnProductos.addActionListener(this::btnProductosActionPerformed);
 
         btnInventario.setBackground(new java.awt.Color(255, 246, 222));
         btnInventario.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnInventario.setText("Inventario");
         btnInventario.setBorder(null);
+        btnInventario.setFocusPainted(false);
         btnInventario.addActionListener(this::btnInventarioActionPerformed);
 
         btnReportes.setBackground(new java.awt.Color(255, 246, 222));
         btnReportes.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnReportes.setText("Reportes");
         btnReportes.setBorder(null);
+        btnReportes.setFocusPainted(false);
         btnReportes.addActionListener(this::btnReportesActionPerformed);
 
         btnRepCom.setBackground(new java.awt.Color(255, 246, 222));
         btnRepCom.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnRepCom.setText("• Comandas");
         btnRepCom.setBorder(null);
+        btnRepCom.setFocusPainted(false);
 
         btnRepCli.setBackground(new java.awt.Color(255, 246, 222));
         btnRepCli.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnRepCli.setText("• Clientes");
         btnRepCli.setBorder(null);
+        btnRepCli.setFocusPainted(false);
         btnRepCli.addActionListener(this::btnRepCliActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -173,28 +195,25 @@ public class frmProductos extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setPreferredSize(new java.awt.Dimension(827, 541));
+        lblBuscarpOR.setBackground(new java.awt.Color(255, 255, 255));
+        lblBuscarpOR.setPreferredSize(new java.awt.Dimension(827, 541));
 
         lblProReg.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         lblProReg.setText("Productos Registrados");
 
-        tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
+        tblProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "Código", "Nombre", "Tipo", "Descripción", "Precio"
+                "Código", "Nombre", "Tipo", "Descripción", "Precio", "Estado"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -205,15 +224,20 @@ public class frmProductos extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(tablaProductos);
-        if (tablaProductos.getColumnModel().getColumnCount() > 0) {
-            tablaProductos.getColumnModel().getColumn(0).setResizable(false);
-            tablaProductos.getColumnModel().getColumn(1).setResizable(false);
-            tablaProductos.getColumnModel().getColumn(2).setResizable(false);
-            tablaProductos.getColumnModel().getColumn(4).setResizable(false);
+        jScrollPane1.setViewportView(tblProductos);
+        if (tblProductos.getColumnModel().getColumnCount() > 0) {
+            tblProductos.getColumnModel().getColumn(0).setResizable(false);
+            tblProductos.getColumnModel().getColumn(1).setResizable(false);
+            tblProductos.getColumnModel().getColumn(2).setResizable(false);
+            tblProductos.getColumnModel().getColumn(4).setResizable(false);
         }
 
         txtBusqueda.addActionListener(this::txtBusquedaActionPerformed);
+        txtBusqueda.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBusquedaKeyReleased(evt);
+            }
+        });
 
         iconBusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/icon buscar 32 kawaii.png"))); // NOI18N
         iconBusqueda.setText("jLabel4");
@@ -222,77 +246,110 @@ public class frmProductos extends javax.swing.JFrame {
         btnAtras.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         btnAtras.setForeground(new java.awt.Color(255, 255, 255));
         btnAtras.setText("Atrás");
+        btnAtras.setBorderPainted(false);
+        btnAtras.setFocusPainted(false);
+        btnAtras.setOpaque(true);
         btnAtras.addActionListener(this::btnAtrasActionPerformed);
 
         btnActivar.setBackground(new java.awt.Color(0, 153, 102));
         btnActivar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         btnActivar.setForeground(new java.awt.Color(255, 255, 255));
         btnActivar.setText("Activar");
+        btnActivar.setBorderPainted(false);
+        btnActivar.setFocusPainted(false);
+        btnActivar.setOpaque(true);
         btnActivar.addActionListener(this::btnActivarActionPerformed);
 
         btnModificar.setBackground(new java.awt.Color(9, 94, 178));
         btnModificar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         btnModificar.setForeground(new java.awt.Color(255, 255, 255));
         btnModificar.setText("Modificar");
+        btnModificar.setBorderPainted(false);
+        btnModificar.setFocusPainted(false);
+        btnModificar.setOpaque(true);
+        btnModificar.addActionListener(this::btnModificarActionPerformed);
 
         btnDesactivar.setBackground(new java.awt.Color(163, 0, 0));
         btnDesactivar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         btnDesactivar.setForeground(new java.awt.Color(255, 255, 255));
         btnDesactivar.setText("Desactivar");
+        btnDesactivar.setBorderPainted(false);
+        btnDesactivar.setFocusPainted(false);
+        btnDesactivar.setOpaque(true);
+        btnDesactivar.addActionListener(this::btnDesactivarActionPerformed);
 
         btnAgregar.setBackground(new java.awt.Color(181, 245, 255));
         btnAgregar.setFont(new java.awt.Font("Trebuchet MS", 0, 24)); // NOI18N
         btnAgregar.setText("+ Añadir Producto");
+        btnAgregar.setBorderPainted(false);
+        btnAgregar.setFocusPainted(false);
+        btnAgregar.setOpaque(true);
         btnAgregar.addActionListener(this::btnAgregarActionPerformed);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(iconBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(308, 308, 308)
-                .addComponent(btnAgregar)
-                .addGap(33, 33, 33))
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        opcionBusqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nombre", "Tipo" }));
+
+        lblBuscarPor.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblBuscarPor.setText("Buscar Por:");
+
+        javax.swing.GroupLayout lblBuscarpORLayout = new javax.swing.GroupLayout(lblBuscarpOR);
+        lblBuscarpOR.setLayout(lblBuscarpORLayout);
+        lblBuscarpORLayout.setHorizontalGroup(
+            lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(lblBuscarpORLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 823, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(lblBuscarpORLayout.createSequentialGroup()
+                        .addGap(301, 301, 301)
+                        .addComponent(lblProReg)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(lblBuscarpORLayout.createSequentialGroup()
+                        .addGroup(lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(opcionBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblBuscarPor))
+                        .addGap(18, 18, 18)
+                        .addComponent(iconBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnAgregar)
+                        .addGap(33, 33, 33))
+                    .addGroup(lblBuscarpORLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 823, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(lblBuscarpORLayout.createSequentialGroup()
+                        .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 421, Short.MAX_VALUE)
                         .addComponent(btnActivar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDesactivar)
-                        .addGap(30, 30, 30))))
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(314, 314, 314)
-                .addComponent(lblProReg)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(36, 36, 36))))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
-                .addComponent(lblProReg)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        lblBuscarpORLayout.setVerticalGroup(
+            lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(lblBuscarpORLayout.createSequentialGroup()
+                .addContainerGap(9, Short.MAX_VALUE)
+                .addGroup(lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(lblBuscarpORLayout.createSequentialGroup()
+                        .addComponent(lblProReg)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(iconBusqueda)
-                            .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(lblBuscarpORLayout.createSequentialGroup()
+                        .addComponent(lblBuscarPor)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(opcionBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(lblBuscarpORLayout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 338, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(440, 440, 440)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGap(0, 114, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lblBuscarpORLayout.createSequentialGroup()
+                        .addGap(401, 401, 401)
+                        .addGroup(lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnActivar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -308,15 +365,15 @@ public class frmProductos extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 880, Short.MAX_VALUE))
+                .addComponent(lblBuscarpOR, javax.swing.GroupLayout.DEFAULT_SIZE, 880, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+                    .addComponent(lblBuscarpOR, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)))
         );
 
         pack();
@@ -324,22 +381,27 @@ public class frmProductos extends javax.swing.JFrame {
 
     private void btnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientesActionPerformed
         // TODO add your handling code here:
+         JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
     }//GEN-LAST:event_btnClientesActionPerformed
 
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
+         JOptionPane.showMessageDialog(this, "Ya está en la opción de Productos.");
     }//GEN-LAST:event_btnProductosActionPerformed
 
     private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
         // TODO add your handling code here:
+         JOptionPane.showMessageDialog(this, "Aún no está disponible");
     }//GEN-LAST:event_btnReportesActionPerformed
 
     private void btnRepCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepCliActionPerformed
         // TODO add your handling code here:
+         JOptionPane.showMessageDialog(this, "Aún no está disponible.");
     }//GEN-LAST:event_btnRepCliActionPerformed
 
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
+         JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
     }//GEN-LAST:event_btnInventarioActionPerformed
 
     private void txtBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBusquedaActionPerformed
@@ -348,16 +410,127 @@ public class frmProductos extends javax.swing.JFrame {
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
         // TODO add your handling code here:
+         JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
     }//GEN-LAST:event_btnAtrasActionPerformed
 
     private void btnActivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActivarActionPerformed
         // TODO add your handling code here:
+        int fila = tblProductos.getSelectedRow();
+        
+        if(fila == -1){
+            dlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para activar.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        
+        ProductoDTO producto = (ProductoDTO) tblProductos.getValueAt(fila, 0);
+        if(producto == null){
+            dlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        if(producto.getEstado() == EstadoProductoDTO.ACTIVO){
+            dlgNotificacion.mostrarNotificacion(this, "Este producto ya se encuentra activo.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        resultado = coordinador.activarProducto(producto.getId());
+        if(resultado){
+            dlgNotificacion.mostrarNotificacion(this, "Producto activado correctamente.", TipoNotificacion.ÉXITO);
+            cargarTabla();
+            return;
+        }
     }//GEN-LAST:event_btnActivarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
+        coordinador.abrirFrmAgregarProducto();
     }//GEN-LAST:event_btnAgregarActionPerformed
 
+    private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
+        // TODO add your handling code here:
+        String busqueda = txtBusqueda.getText().trim();
+        
+        TableRowSorter<DefaultTableModel> ordenador = new TableRowSorter(tblProductos.getModel());
+        tblProductos.setRowSorter(ordenador);
+        
+        if(busqueda.isBlank() || busqueda.isEmpty() || busqueda.length() == 0){
+            ordenador.setRowFilter(null);
+        } else {
+            /*
+                según la opción que hayan escogido en el combo box, en esa columna
+                se centra en buscar.
+             */
+            switch((String) opcionBusqueda.getSelectedItem()){
+                case "Tipo":
+                    ordenador.setRowFilter(RowFilter.regexFilter("(?i)" + busqueda, 2));
+                    break;
+                case "Nombre":
+                    ordenador.setRowFilter(RowFilter.regexFilter("(?i)" + busqueda, 1));
+                    break;
+                default:
+                    ordenador.setRowFilter(null);
+            }
+        }
+    }//GEN-LAST:event_txtBusquedaKeyReleased
+
+    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+        // TODO add your handling code here:
+        int fila = tblProductos.getSelectedRow();
+        
+        if(fila == -1){
+            dlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para modificar.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        ProductoDTO producto = (ProductoDTO) tblProductos.getValueAt(fila, 0);
+        if(producto == null){
+            dlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        coordinador.abrirFrmModificarProducto(producto);
+        this.dispose();
+    }//GEN-LAST:event_btnModificarActionPerformed
+
+    private void btnDesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesactivarActionPerformed
+        // TODO add your handling code here:
+        int fila = tblProductos.getSelectedRow();
+        
+        if(fila == -1){
+            dlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para desactivar.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        
+        ProductoDTO producto = (ProductoDTO) tblProductos.getValueAt(fila, 0);
+        if(producto == null){
+            dlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        if(producto.getEstado() == EstadoProductoDTO.INACTIVO){
+            dlgNotificacion.mostrarNotificacion(this, "Este producto ya se encuentra inactivo.", TipoNotificacion.MENSAJE);
+            return;
+        } 
+        resultado = coordinador.desactivarProducto(producto.getId());
+        if(resultado){
+            dlgNotificacion.mostrarNotificacion(this, "Producto desactivado correctamente.", TipoNotificacion.ÉXITO);
+            cargarTabla();
+            return;
+        }
+    }//GEN-LAST:event_btnDesactivarActionPerformed
+
+    public void cargarTabla() {
+        List<ProductoDTO> lista = coordinador.consultarTodosLosProductos();
+
+        DefaultTableModel model = (DefaultTableModel) tblProductos.getModel();
+        model.setRowCount(0);
+
+        for (ProductoDTO p : lista) {
+            model.addRow(new Object[]{
+                p,
+                p.getNombre(),
+                p.getTipo(),
+                p.getDescripcion(),
+                p.getPrecio(),
+                p.getEstado()
+            });
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActivar;
@@ -375,13 +548,15 @@ public class frmProductos extends javax.swing.JFrame {
     private javax.swing.JLabel iconSistema;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JLabel lblBuscarPor;
+    private javax.swing.JPanel lblBuscarpOR;
     private javax.swing.JLabel lblProReg;
     private javax.swing.JLabel lblProductos;
-    private javax.swing.JTable tablaProductos;
+    private javax.swing.JComboBox<String> opcionBusqueda;
+    private javax.swing.JTable tblProductos;
     private javax.swing.JTextField txtBusqueda;
     // End of variables declaration//GEN-END:variables
 }

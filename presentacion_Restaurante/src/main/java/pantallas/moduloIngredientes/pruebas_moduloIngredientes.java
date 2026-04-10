@@ -5,6 +5,8 @@
 
 package pantallas.moduloIngredientes;
 
+import controlador.Coordinador_ModuloIngredientes;
+
 /**
  *
  * @author Alejandra Leal Armenta, 262719
@@ -16,6 +18,10 @@ public class pruebas_moduloIngredientes {
      */
     public static void main(String[] args) {
         FrmIngredientes frm = new FrmIngredientes();
+        /*
+        majojo: nomás le puse un coordinador.
+        */
+        frm.setCoordinadorIngredientes(new Coordinador_ModuloIngredientes());
         frm.desactivarModoProducto();
         frm.setVisible(true);
     }

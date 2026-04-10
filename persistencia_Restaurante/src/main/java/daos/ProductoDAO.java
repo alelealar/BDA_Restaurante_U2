@@ -6,7 +6,9 @@ package daos;
 
 import conexion.ConexionBD;
 import entidades.Producto;
+import entidades.ProductoIngrediente;
 import enumerators.EstadoProducto;
+import enumerators.TipoProducto;
 import excepciones.PersistenciaException;
 import interfaces.IProductoDAO;
 import java.util.List;
@@ -61,7 +63,19 @@ public class ProductoDAO implements IProductoDAO {
             productoBD.setDescripcion(producto.getDescripcion());
             productoBD.setPrecio(producto.getPrecio());
             productoBD.setUrlImagen(producto.getUrlImagen());
-            productoBD.setProductos(producto.getProductos());
+
+            /*
+            para que no se altere a la hora de modificar la lista de ingredientes.
+            mejor la limpiamos y agregamos uno por uno.
+            */
+            if (productoBD.getDetallesIngredientes() != null) {
+                productoBD.getDetallesIngredientes().clear();
+            }
+            if (producto.getDetallesIngredientes() != null) {
+                for (ProductoIngrediente nuevoDetalle : producto.getDetallesIngredientes()) {
+                    productoBD.agregarProductoIngrediente(nuevoDetalle); 
+                }
+            }
             
             em.getTransaction().commit();
             return producto;
@@ -162,6 +176,26 @@ public class ProductoDAO implements IProductoDAO {
             return em.find(Producto.class, idProducto);
         } catch (Exception e) {
             throw new PersistenciaException("No fue posible buscar al producto con id: " + idProducto, e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public String obtenerUltimoIdentificador(TipoProducto tipo) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            String jpql = "select p.identificador from Producto p where p.tipo = :tipo order by p.identificador desc";
+            TypedQuery<String> query = em.createQuery(jpql, String.class);
+            query.setParameter("tipo", tipo);
+            query.setMaxResults(1);
+            List<String> resultados = query.getResultList();          
+            if (resultados.isEmpty()) {
+                return null;
+            }
+            return resultados.get(0);
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al consultar el último identificador.", e);
         } finally {
             em.close();
         }

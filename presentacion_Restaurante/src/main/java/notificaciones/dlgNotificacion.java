@@ -5,15 +5,8 @@
 package notificaciones;
 
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.util.logging.Logger;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.KeyStroke;
 
 /**
  *
@@ -28,18 +21,19 @@ public class dlgNotificacion extends JDialog {
     /**
      * A return status code - returned if Cancel button has been pressed
      */
-    public static final int RET_CANCEL = 0;
+    public static final int RET_CANCELAR = 0;
     /**
      * A return status code - returned if OK button has been pressed
      */
-    public static final int RET_OK = 1;
+    public static final int RET_ACEPTAR = 1;
 
     /**
      * Creates new form dlgNotificacion
      */
-    public dlgNotificacion(Frame parent, String mensaje, TipoNotificacion tipo) {
+    private dlgNotificacion(Frame parent, String mensaje, TipoNotificacion tipo) {
         super(parent, true);
-        this.mensaje.setText(mensaje);
+        initComponents();
+        this.mensaje.setText("<html><div style='width: 250px; text-align: center;'>" + mensaje + "</div></html>");
         this.tipoNotificacion.setText(tipo.toString());
         switch(tipo){
             case TipoNotificacion.CONFIRMACIÓN:
@@ -51,11 +45,19 @@ public class dlgNotificacion extends JDialog {
                 btnCancelar.setVisible(false);
         }
         this.setLocationRelativeTo(parent);
-        initComponents();
     }
-
-    public int getOpcion() {
-        return opcion;
+    
+    /**
+     * Método para que sea más fácil generar notificaciones sin necesidad de 
+     * construir objetos de la clase cómo tal.
+     * @param parent Frame donde se ha de mostrar.
+     * @param mensaje Mensaje de la notificación.
+     * @param tipo Ya sea un mensaje, un error o una confirmación de usuario.
+     */
+    public static int mostrarNotificacion(Frame parent, String mensaje, TipoNotificacion tipo){
+        dlgNotificacion noti = new dlgNotificacion(parent, mensaje, tipo);
+        noti.setVisible(true);
+        return noti.opcion;
     }
 
     /**
@@ -88,17 +90,22 @@ public class dlgNotificacion extends JDialog {
         btnCancelar.setBackground(new java.awt.Color(163, 0, 0));
         btnCancelar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnCancelar.setText("Cancelar");
+        btnCancelar.setBorderPainted(false);
+        btnCancelar.setFocusPainted(false);
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
 
         btnAceptar.setBackground(new java.awt.Color(0, 153, 102));
         btnAceptar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnAceptar.setText("Aceptar");
+        btnAceptar.setBorderPainted(false);
+        btnAceptar.setFocusPainted(false);
         btnAceptar.addActionListener(this::btnAceptarActionPerformed);
 
         tipoNotificacion.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         tipoNotificacion.setText("Tipo de Notificación");
 
         mensaje.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        mensaje.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         mensaje.setText("Mensaje");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -116,9 +123,9 @@ public class dlgNotificacion extends JDialog {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(tipoNotificacion))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addComponent(mensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(mensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -126,9 +133,9 @@ public class dlgNotificacion extends JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(tipoNotificacion)
-                .addGap(56, 56, 56)
+                .addGap(34, 34, 34)
                 .addComponent(mensaje)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancelar)
                     .addComponent(btnAceptar))
@@ -175,16 +182,16 @@ public class dlgNotificacion extends JDialog {
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         // TODO add your handling code here:
-        opcion = RET_CANCEL;
+        opcion = RET_CANCELAR;
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
         // TODO add your handling code here:
-        opcion = RET_OK;
+        opcion = RET_ACEPTAR;
         this.dispose();
     }//GEN-LAST:event_btnAceptarActionPerformed
-    
+   
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
