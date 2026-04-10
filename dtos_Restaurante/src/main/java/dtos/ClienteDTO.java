@@ -2,11 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package dtos;
 
 import java.time.LocalDate;
-
 
 /**
  * Clase DTO (Data Transfer Object) que representa la información de un cliente.
@@ -22,8 +20,8 @@ import java.time.LocalDate;
  * @author Alejandra Leal Armenta - 00000262719
  * @author Maria Jose Valdez Iglesias - 00000262775
  */
-
 public class ClienteDTO {
+
     private Long id;
     private String nombres;
     private String apellidoPaterno;
@@ -41,8 +39,6 @@ public class ClienteDTO {
         this.correo = correo;
         this.fechaRegistro = fechaRegistro;
     }
-
-    
 
     public ClienteDTO() {
     }
@@ -107,6 +103,5 @@ public class ClienteDTO {
     public String toString() {
         return nombres + " " + apellidoPaterno + " " + apellidoMaterno;
     }
-    
-    
+
 }

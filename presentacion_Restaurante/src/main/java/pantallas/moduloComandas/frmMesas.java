@@ -2,7 +2,9 @@ package pantallas.moduloComandas;
 
 import pantallas.moduloComandas.vistas.panMesa;
 import controlador.CoordinadorModuloComandas;
+import dtos.ComandaDTO;
 import dtos.MesaDTO;
+import enumerators.EstadoComandaDTO;
 import excepciones.NegocioException;
 import java.awt.FlowLayout;
 import java.util.Comparator;
@@ -22,6 +24,7 @@ public class frmMesas extends javax.swing.JFrame {
 
     /**
      * Creates new form frmMesas
+     * @param coordinador
      */
     public frmMesas(CoordinadorModuloComandas coordinador) {
         initComponents();
@@ -45,6 +48,7 @@ public class frmMesas extends javax.swing.JFrame {
                         .collect(Collectors.toList());
 
                 for (MesaDTO mesa : mesasOrdenadas) {
+
                     panMesa mesaPanel = new panMesa(coordinador, mesa);
                     panContenedorMesas.add(mesaPanel);
                 }
@@ -67,8 +71,6 @@ public class frmMesas extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         panMenu = new javax.swing.JPanel();
-        btnComandas = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
         btnMesas = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -77,6 +79,7 @@ public class frmMesas extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(1029, 656));
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -110,31 +113,6 @@ public class frmMesas extends javax.swing.JFrame {
 
         panMenu.setBackground(new java.awt.Color(255, 246, 222));
 
-        btnComandas.setBackground(new java.awt.Color(255, 246, 222));
-
-        jLabel3.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel3.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(74, 68, 89));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Comandas");
-
-        javax.swing.GroupLayout btnComandasLayout = new javax.swing.GroupLayout(btnComandas);
-        btnComandas.setLayout(btnComandasLayout);
-        btnComandasLayout.setHorizontalGroup(
-            btnComandasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(btnComandasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        btnComandasLayout.setVerticalGroup(
-            btnComandasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(btnComandasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         btnMesas.setBackground(new java.awt.Color(255, 228, 132));
 
         jLabel4.setBackground(new java.awt.Color(74, 68, 89));
@@ -149,14 +127,14 @@ public class frmMesas extends javax.swing.JFrame {
             btnMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnMesasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                 .addContainerGap())
         );
         btnMesasLayout.setVerticalGroup(
             btnMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnMesasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -164,16 +142,14 @@ public class frmMesas extends javax.swing.JFrame {
         panMenu.setLayout(panMenuLayout);
         panMenuLayout.setHorizontalGroup(
             panMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btnComandas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnMesas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panMenuLayout.setVerticalGroup(
             panMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panMenuLayout.createSequentialGroup()
-                .addComponent(btnComandas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(btnMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jScrollPane1.setBorder(null);
@@ -221,11 +197,9 @@ public class frmMesas extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel btnComandas;
     private javax.swing.JPanel btnMesas;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;

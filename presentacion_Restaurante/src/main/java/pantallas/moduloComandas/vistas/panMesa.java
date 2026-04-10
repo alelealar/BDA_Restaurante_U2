@@ -11,27 +11,31 @@ import java.awt.Color;
  */
 public class panMesa extends javax.swing.JPanel {
 
-    private CoordinadorModuloComandas coordinador;
+    private final CoordinadorModuloComandas coordinador;
 
-    boolean disponible = true;
+    boolean comandaActiva = false;
+
+    private MesaDTO mesa;
 
     /**
      * Creates new form panMesa
      *
      * @param coordinador
+     * @param mesa
      */
     public panMesa(CoordinadorModuloComandas coordinador, MesaDTO mesa) {
         initComponents();
         this.coordinador = coordinador;
+        this.mesa = mesa;
         lblNombre.setText("Mesa " + mesa.getNumero());
-        if (mesa.getEstado().equals(EstadoMesaDTO.DISPONIBLE)) {
-            this.setBackground(Color.decode("#FFF1C1"));
-            this.disponible = true;
-        } else if (mesa.getEstado().equals(EstadoMesaDTO.OCUPADA)) {
-            this.setBackground(Color.decode("#D4D4D4"));
-            this.disponible = false;
-        }
 
+        if (mesa.getEstado() == EstadoMesaDTO.DISPONIBLE) {
+            this.comandaActiva = false;
+            this.setBackground(Color.decode("#FFF1C1"));
+        } else {
+            this.comandaActiva = true;
+            this.setBackground(Color.decode("#D4D4D4"));
+        }
     }
 
     /**
@@ -48,6 +52,9 @@ public class panMesa extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(255, 241, 193));
         addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 formMouseEntered(evt);
             }
@@ -85,7 +92,7 @@ public class panMesa extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseEntered
-        if (disponible) {
+        if (!comandaActiva) {
             this.setBackground(Color.decode("#FFE281"));
         } else {
             this.setBackground(Color.decode("#626262"));
@@ -94,13 +101,17 @@ public class panMesa extends javax.swing.JPanel {
     }//GEN-LAST:event_formMouseEntered
 
     private void formMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseExited
-        if (disponible) {
+        if (!comandaActiva) {
             this.setBackground(Color.decode("#FFF1C1"));
         } else {
             this.setBackground(Color.decode("#D4D4D4"));
         }
 
     }//GEN-LAST:event_formMouseExited
+
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        coordinador.mostrarPantallaComandas(mesa);
+    }//GEN-LAST:event_formMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

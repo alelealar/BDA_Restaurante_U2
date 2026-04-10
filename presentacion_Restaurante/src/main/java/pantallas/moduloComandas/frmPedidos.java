@@ -1,16 +1,17 @@
 package pantallas.moduloComandas;
 
-import pantallas.moduloComandas.vistas.panMesa;
 import controlador.CoordinadorModuloComandas;
-import java.awt.Color;
+import dtos.MesaDTO;
+import dtos.ProductoDTO;
+import excepciones.NegocioException;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
+import java.util.List;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
+import pantallas.moduloComandas.vistas.panProducto;
+import pantallas.moduloComandas.vistas.panProductoMenu;
 
 /**
  *
@@ -20,19 +21,61 @@ public class frmPedidos extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmPedidos.class.getName());
 
-    CoordinadorModuloComandas coordinador;
+    private CoordinadorModuloComandas coordinador;
+
+    private MesaDTO mesa;
+
+    private Double total = 0.0;
 
     /**
      * Creates new form frmMesas
      */
-    public frmPedidos(CoordinadorModuloComandas coordinador) {
+    public frmPedidos(CoordinadorModuloComandas coordinador, MesaDTO mesa) {
         initComponents();
         jScrollPane1.getViewport().setLayout(new java.awt.BorderLayout());
         javax.swing.SwingUtilities.invokeLater(() -> {
             jPanel1.requestFocusInWindow();
         });
-        panContenedorMesas.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        panContenedorProductos.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        panProductosPedidos.setLayout(new BoxLayout(panProductosPedidos, BoxLayout.Y_AXIS));
+
+        this.mesa = mesa;
         this.coordinador = coordinador;
+        agregarProductos();
+    }
+
+    public void agregarProductos() {
+        try {
+            List<ProductoDTO> productos = coordinador.consultarProductos();
+            for (ProductoDTO producto : productos) {
+                panProductoMenu panelProducto = new panProductoMenu(producto, coordinador);
+                panContenedorProductos.add(panelProducto);
+            }
+
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+        panContenedorProductos.revalidate();
+        panContenedorProductos.repaint();
+    }
+
+    public void agregarProductosComanda(ProductoDTO producto) {
+        panProducto panelProductoComanda = new panProducto(producto, coordinador);
+
+        panelProductoComanda.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+
+        panProductosPedidos.add(panelProductoComanda);
+        panProductosPedidos.add(Box.createVerticalStrut(10));
+
+        panProductosPedidos.revalidate();
+        panProductosPedidos.repaint();
+    }
+
+    public void actualizarTotal(Double monto) {
+        total += monto;
+
+        // Formateamos a 2 decimales para que se vea como dinero (ej. Total: $125.50)
+        lblTotal.setText(String.format("Total: $%.2f", total));
     }
 
     @SuppressWarnings("unchecked")
@@ -49,19 +92,22 @@ public class frmPedidos extends javax.swing.JFrame {
         btnMesas = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        panContenedorMesas = new javax.swing.JPanel();
+        panContenedorProductos = new javax.swing.JPanel();
         panBuscador = new javax.swing.JPanel();
         txtBuscador = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        panProductos = new javax.swing.JPanel();
+        panProductosPedidos = new javax.swing.JPanel();
         btnOrdenar = new javax.swing.JButton();
         btnAtras = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
-        setMinimumSize(new java.awt.Dimension(1029, 656));
+        setMaximumSize(new java.awt.Dimension(1212, 677));
+        setMinimumSize(new java.awt.Dimension(1212, 677));
+        setResizable(false);
+        setSize(new java.awt.Dimension(1212, 677));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -164,8 +210,8 @@ public class frmPedidos extends javax.swing.JFrame {
         jScrollPane1.setBorder(null);
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        panContenedorMesas.setBackground(new java.awt.Color(255, 255, 255));
-        jScrollPane1.setViewportView(panContenedorMesas);
+        panContenedorProductos.setBackground(new java.awt.Color(255, 255, 255));
+        jScrollPane1.setViewportView(panContenedorProductos);
 
         panBuscador.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -202,20 +248,20 @@ public class frmPedidos extends javax.swing.JFrame {
         jScrollPane2.setBorder(null);
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        panProductos.setBackground(new java.awt.Color(255, 255, 255));
+        panProductosPedidos.setBackground(new java.awt.Color(234, 234, 234));
 
-        javax.swing.GroupLayout panProductosLayout = new javax.swing.GroupLayout(panProductos);
-        panProductos.setLayout(panProductosLayout);
-        panProductosLayout.setHorizontalGroup(
-            panProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 223, Short.MAX_VALUE)
+        javax.swing.GroupLayout panProductosPedidosLayout = new javax.swing.GroupLayout(panProductosPedidos);
+        panProductosPedidos.setLayout(panProductosPedidosLayout);
+        panProductosPedidosLayout.setHorizontalGroup(
+            panProductosPedidosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 358, Short.MAX_VALUE)
         );
-        panProductosLayout.setVerticalGroup(
-            panProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        panProductosPedidosLayout.setVerticalGroup(
+            panProductosPedidosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 557, Short.MAX_VALUE)
         );
 
-        jScrollPane2.setViewportView(panProductos);
+        jScrollPane2.setViewportView(panProductosPedidos);
 
         btnOrdenar.setBackground(new java.awt.Color(44, 44, 44));
         btnOrdenar.setForeground(new java.awt.Color(255, 255, 255));
@@ -233,12 +279,17 @@ public class frmPedidos extends javax.swing.JFrame {
         btnAtras.setText("Atras");
         btnAtras.setBorderPainted(false);
         btnAtras.setOpaque(true);
+        btnAtras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAtrasActionPerformed(evt);
+            }
+        });
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel5.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(141, 134, 134));
-        jLabel5.setText("Total:");
+        lblTotal.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        lblTotal.setForeground(new java.awt.Color(141, 134, 134));
+        lblTotal.setText("Total:");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -246,14 +297,14 @@ public class frmPedidos extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(lblTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel5)
+                .addComponent(lblTotal)
                 .addContainerGap(13, Short.MAX_VALUE))
         );
 
@@ -267,15 +318,14 @@ public class frmPedidos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1)
-                            .addComponent(panBuscador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2)
+                            .addComponent(panBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 594, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, 0)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(0, 0, 0))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -332,8 +382,20 @@ public class frmPedidos extends javax.swing.JFrame {
     }//GEN-LAST:event_txtBuscadorFocusGained
 
     private void btnOrdenarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrdenarActionPerformed
-       
+
     }//GEN-LAST:event_btnOrdenarActionPerformed
+
+    private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
+        int respuesta = JOptionPane.showConfirmDialog(
+                null,
+                "¿Desea continuar, se borraran los productos ingresados?",
+                "Advertencia",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+        if (respuesta == JOptionPane.OK_OPTION) {
+            coordinador.mostrarPantallaComandas(mesa);
+        }
+    }//GEN-LAST:event_btnAtrasActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -345,16 +407,16 @@ public class frmPedidos extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblTotal;
     private javax.swing.JPanel panBuscador;
-    private javax.swing.JPanel panContenedorMesas;
+    private javax.swing.JPanel panContenedorProductos;
     private javax.swing.JPanel panEncabezado;
     private javax.swing.JPanel panMenu;
-    private javax.swing.JPanel panProductos;
+    private javax.swing.JPanel panProductosPedidos;
     private javax.swing.JTextField txtBuscador;
     // End of variables declaration//GEN-END:variables
 }

@@ -22,7 +22,7 @@ public class CoordinadorInterfaces {
     private Coordinador coordinadorNegocio;
     private Coordinador_ModuloProductos coordinadorProducto;
     private CoordinadorModuloComandas coordinadorComandas;
-    
+
     public CoordinadorInterfaces() {
         this.coordinadorNegocio = new Coordinador();
         this.coordinadorProducto = new Coordinador_ModuloProductos();
@@ -49,7 +49,7 @@ public class CoordinadorInterfaces {
         formClientes.setVisible(true);
         formInicio.dispose();
         formAgregarClientes.dispose();
-        
+
     }
 
     /**
@@ -62,72 +62,75 @@ public class CoordinadorInterfaces {
         formClientes.setVisible(false);
         formAgregarClientes.setVisible(true);
     }
-    
-    public void regresarInicio(){
-        if(formInicio == null){
+
+    public void regresarInicio() {
+        if (formInicio == null) {
             formInicio = new frmInicio(this);
         }
         formClientes.setVisible(false);
         formInicio.setVisible(true);
     }
-    
-    public void mostrarISMeseros(){
+
+    public void mostrarISMeseros() {
+        if (formInicio != null) {
+            formInicio.dispose();
+        }
         coordinadorComandas.mostrarPantallaISMesero();
     }
-    
+
     /**
      * Metodo que llama al BO (capa de negocio) para agregar un cliente.
-     * 
+     *
      * Este metodo llama al coordinador de negocio
+     *
      * @param cliente DTO con la información del cliente a registrar
- *   * @throws NegocioException si ocurre un error en la capa de negocio
+     *   * @throws NegocioException si ocurre un error en la capa de negocio
      */
-    public void agregarCliente(ClienteNuevoDTO cliente) throws NegocioException{
+    public void agregarCliente(ClienteNuevoDTO cliente) throws NegocioException {
         coordinadorNegocio.agregarCliente(cliente);
     }
-    
+
     /**
-     * Metodo que llama al BO (capa de negocio) para pedirle los datos de negocio y mostrarlos
-     * en la tabla.
-     * 
+     * Metodo que llama al BO (capa de negocio) para pedirle los datos de
+     * negocio y mostrarlos en la tabla.
+     *
      * Este metodo llama al coordinador de negocio
-     * @return 
-     * @throws NegocioException 
+     *
+     * @return
+     * @throws NegocioException
      */
     public List<ClienteDTO> obtenerClientes() throws NegocioException {
         return coordinadorNegocio.obtenerClientes();
     }
-    
+
     /**
-     * Hace que la tabla se puedo actualizar en el momento en el que
-     * se agrega un cliente desde el frmAgregarCliente
+     * Hace que la tabla se puedo actualizar en el momento en el que se agrega
+     * un cliente desde el frmAgregarCliente
      */
-    public void refrescarTableFormClientes(){
+    public void refrescarTableFormClientes() {
         formClientes.cargarTable();
     }
-    
-    public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException{
+
+    public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException {
         coordinadorNegocio.actualizarCliente(clienteDTO);
     }
-    
+
     public void mostrarFormularioEditarCliente(ClienteDTO cliente) {
         frmAgregarCliente frm = new frmAgregarCliente(this);
         frm.setClienteParaEditar(cliente);
         frm.setVisible(true);
         formClientes.dispose();
     }
-    
-    public ClienteDTO buscarClientePorId(Long id) throws NegocioException{
+
+    public ClienteDTO buscarClientePorId(Long id) throws NegocioException {
         return coordinadorNegocio.buscarClientePorId(id);
     }
-    
-    
-    
-    public void eliminarCliente(ClienteDTO cliente) throws NegocioException{
+
+    public void eliminarCliente(ClienteDTO cliente) throws NegocioException {
         coordinadorNegocio.eliminarCliente(cliente);
     }
 
-    public void abrirProductos(){
+    public void abrirProductos() {
         formClientes.dispose();
         coordinadorProducto.abrirFrmProductos();
     }

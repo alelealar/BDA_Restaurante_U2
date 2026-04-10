@@ -2,6 +2,7 @@ package daos;
 
 import conexion.ConexionBD;
 import entidades.Cliente;
+import entidades.ClienteGeneral;
 import excepciones.PersistenciaException;
 import interfaces.IClienteDAO;
 import java.util.List;
@@ -22,21 +23,20 @@ import javax.persistence.TypedQuery;
  * @author Maria Jose Valdez Iglesias - 00000262775
  */
 public class ClienteDAO implements IClienteDAO {
-    
+
     private static ClienteDAO instancia;
-    
-    public ClienteDAO(){
-        
+
+    public ClienteDAO() {
+
     }
-    
-    public static ClienteDAO getInstance(){
-        if(instancia == null){
+
+    public static ClienteDAO getInstance() {
+        if (instancia == null) {
             instancia = new ClienteDAO();
         }
         return instancia;
     }
-    
-    
+
     /**
      * Guarda un nuevo cliente en la base de datos.
      *
@@ -61,7 +61,7 @@ public class ClienteDAO implements IClienteDAO {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("No fue posible guardar al cliente " + cliente.getNombres(), e);             
+            throw new PersistenciaException("No fue posible guardar al cliente " + cliente.getNombres(), e);
         } finally {
             em.close();
         }
@@ -167,6 +167,56 @@ public class ClienteDAO implements IClienteDAO {
     }
 
     /**
+     * Obtiene el cliente general existente o lo crea si no existe.
+     *
+     * Garantiza que siempre haya un cliente general disponible para asociar
+     * comandas sin cliente registrado.
+     *
+     * @return ClienteGeneral existente o recién creado.
+     * @throws PersistenciaException Si ocurre un error en la operación.
+     */
+    @Override
+    public ClienteGeneral obtenerOcrearClienteGeneral() throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        ClienteGeneral cliente = null;
+
+        try {
+            // Buscamos si ya existe
+            String jpql = "SELECT c FROM ClienteGeneral c";
+            TypedQuery<ClienteGeneral> query = em.createQuery(jpql, ClienteGeneral.class);
+
+            cliente = query.setMaxResults(1).getResultStream().findFirst().orElse(null);
+
+            if (cliente == null) {
+                // Si no existe, creamos uno nuevo.
+                em.getTransaction().begin();
+
+                cliente = new ClienteGeneral(
+                        "Cliente",
+                        "General",
+                        "N/A",
+                        "0000000000",
+                        null
+                );
+
+                em.persist(cliente);
+                em.getTransaction().commit();
+            }
+
+            return cliente;
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            throw new PersistenciaException("Error al obtener/crear cliente general", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
      * Obtiene la lista completa de clientes registrados en la base de datos.
      *
      * Este método permite recuperar todos los clientes almacenados en el
@@ -191,27 +241,28 @@ public class ClienteDAO implements IClienteDAO {
             em.close();
         }
     }
-    @Override
-    public boolean existeTelefono(String telefono, Long ID) throws PersistenciaException{
-        EntityManager em = ConexionBD.crearConexion();
-        try{
-           //validar telefono existente
-           String JPQL;
-           TypedQuery<Long> query;
 
-           if(ID == null){
-               JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :tel";
-               query = em.createQuery(JPQL, Long.class);
-               query.setParameter("tel", telefono);
-           } else {
-               JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :tel AND c.id != :id";
-               query = em.createQuery(JPQL, Long.class);
-               query.setParameter("tel", telefono);
-               query.setParameter("id", ID);
-           }
-           
-           Long conteo = query.getSingleResult();
-           return conteo > 0;
+    @Override
+    public boolean existeTelefono(String telefono, Long ID) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            //validar telefono existente
+            String JPQL;
+            TypedQuery<Long> query;
+
+            if (ID == null) {
+                JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :tel";
+                query = em.createQuery(JPQL, Long.class);
+                query.setParameter("tel", telefono);
+            } else {
+                JPQL = "SELECT COUNT(c) FROM Cliente c WHERE c.telefono = :tel AND c.id != :id";
+                query = em.createQuery(JPQL, Long.class);
+                query.setParameter("tel", telefono);
+                query.setParameter("id", ID);
+            }
+
+            Long conteo = query.getSingleResult();
+            return conteo > 0;
 
         } catch (Exception e) {
             throw new PersistenciaException("Error al verificar el telefono", e);
@@ -220,9 +271,9 @@ public class ClienteDAO implements IClienteDAO {
             em.close();
         }
     }
-    
+
     @Override
-    public boolean existeCorreo(String correo, Long ID) throws PersistenciaException{
+    public boolean existeCorreo(String correo, Long ID) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
         try {
             String JPQL;

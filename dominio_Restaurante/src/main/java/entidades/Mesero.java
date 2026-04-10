@@ -15,9 +15,10 @@ import javax.persistence.Table;
 /**
  * Subclase de Empleado.
  * 
- * Contiene solo los atirbutos que puede tener un empleado que
- * es mesero.
  * 
+ * Contiene solo los atirbutos que
+ *  puede tener un empleado que
+ * es mesero.
  * @author Alejandra Leal Armenta, 262719
  */
 @Entity

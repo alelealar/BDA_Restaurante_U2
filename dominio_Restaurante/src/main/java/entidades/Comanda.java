@@ -41,6 +41,7 @@ public class Comanda implements Serializable {
     /**
      * Estado actual de la comanda (ABIERTA, ENTREGADA, CANCELADA).
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "estado_comanda", nullable = false)
     private EstadoComanda estadoComanda;
 

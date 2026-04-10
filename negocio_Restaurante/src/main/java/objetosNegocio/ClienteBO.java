@@ -5,6 +5,7 @@ import daos.ClienteDAO;
 import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
 import entidades.Cliente;
+import entidades.ClienteGeneral;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import interfaces.IClienteBO;
@@ -18,8 +19,8 @@ import java.util.logging.Logger;
  * para la gestión de clientes.
  *
  * Esta clase se encarga de validar los datos recibidos desde capas superiores,
- * convertir DTOs a entidades y delegar las operaciones a la capa de acceso
- * a datos (DAO).
+ * convertir DTOs a entidades y delegar las operaciones a la capa de acceso a
+ * datos (DAO).
  *
  * Además, maneja excepciones de negocio y registra eventos mediante Logger.
  *
@@ -28,13 +29,14 @@ import java.util.logging.Logger;
  * @author Maria Jose Valdez Iglesias - 00000262775
  */
 public class ClienteBO implements IClienteBO {
-    
+
     private static ClienteBO instancia;
-    
-    public ClienteBO(){
+
+    public ClienteBO() {
     }
-    public static ClienteBO getInstance(){
-        if(instancia == null){
+
+    public static ClienteBO getInstance() {
+        if (instancia == null) {
             instancia = new ClienteBO();
         }
         return instancia;
@@ -51,13 +53,15 @@ public class ClienteBO implements IClienteBO {
     private static final Logger LOG = Logger.getLogger(ClienteBO.class.getName());
 
     /**
-     * Registra un nuevo cliente en el sistema.Valida los datos del cliente, convierte el DTO a entidad y delega
-     * la operación al DAO.
+     * Registra un nuevo cliente en el sistema.Valida los datos del cliente,
+     * convierte el DTO a entidad y delega la operación al DAO.
      *
-     * Maneja errores de persistencia y los transforma en excepciones de negocio.
+     * Maneja errores de persistencia y los transforma en excepciones de
+     * negocio.
      *
      * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente
-     * @throws NegocioException si ocurre un error en la validación o persistencia
+     * @throws NegocioException si ocurre un error en la validación o
+     * persistencia
      */
     @Override
     public void registrarCliente(ClienteNuevoDTO clienteDTO) throws NegocioException {
@@ -93,13 +97,13 @@ public class ClienteBO implements IClienteBO {
      */
     @Override
     public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException {
-        try{
+        try {
             validarDatosDTO(clienteDTO);
-            
+
             if (clienteDTO.getCorreo() == null || clienteDTO.getCorreo().trim().isEmpty()) {
                 clienteDTO.setCorreo(null);
             }
-            
+
             Cliente clienteEntidad = ClienteAdapter.dtoAEntidad(clienteDTO);
             if (clienteDAO.existeCorreo(clienteEntidad.getCorreo(), clienteEntidad.getId())) {
                 throw new NegocioException("El correo ya está registrado");
@@ -109,12 +113,12 @@ public class ClienteBO implements IClienteBO {
                 throw new NegocioException("El teléfono ya está registrado");
             }
             clienteDAO.actualizarCliente(clienteEntidad);
-            
+
             LOG.info(() -> "El cliente fue actualizado correctamente: " + clienteDTO.toString());
-            
-        } catch(PersistenciaException ex){
+
+        } catch (PersistenciaException ex) {
             LOG.warning(() -> "No fue posible actualizar al cliente: " + clienteDTO.toString());
-            throw new NegocioException("ERROR: "+ex.getMessage());
+            throw new NegocioException("ERROR: " + ex.getMessage());
         }
     }
 
@@ -127,18 +131,18 @@ public class ClienteBO implements IClienteBO {
      */
     @Override
     public ClienteDTO buscarClientePorId(Long id) throws NegocioException {
-        try{
-            
+        try {
+
             Cliente cliente = clienteDAO.buscarClientePorId(id);
-            
-            if(cliente == null){
+
+            if (cliente == null) {
                 throw new NegocioException("El cliente con ID=" + id + " no fue encontrado en el sistema.");
             }
-            
+
             LOG.info(() -> "Cliente con ID=" + id + " encontrado.");
             return ClienteAdapter.entidadADTO(cliente);
-        
-        } catch(PersistenciaException ex){
+
+        } catch (PersistenciaException ex) {
             LOG.warning(() -> "No fue posible encontrar al cliente con ID: " + id);
             throw new NegocioException("No fue posible encontrar al cliente con ID: " + id, ex);
         }
@@ -152,49 +156,80 @@ public class ClienteBO implements IClienteBO {
      */
     @Override
     public void eliminarCliente(Long id) throws NegocioException {
-        try{
+        try {
             boolean eliminado = clienteDAO.eliminarCliente(id);
-            
-            if(!eliminado){
+
+            if (!eliminado) {
                 throw new NegocioException("El cliente que quiere eliminar ya no se encuentra en el sistema.");
             }
-            
+
             LOG.info(() -> "El cliente con ID=" + id + " fue eliminado correctamente.");
-            
-        } catch(PersistenciaException ex){
+
+        } catch (PersistenciaException ex) {
             LOG.warning(() -> "No se pudo eliminar al cliente con ID: " + id);
             throw new NegocioException("No se pudo eliminar al cliente con ID: " + id, ex);
         }
     }
-    
+
+    /**
+     * Obtiene el cliente general del sistema.
+     *
+     * Este cliente se utiliza cuando una comanda no está asociada a un cliente
+     * registrado.
+     *
+     * @return ClienteDTO correspondiente al cliente general
+     * @throws NegocioException si no existe o hay error
+     */
+    @Override
+    public ClienteDTO obtenerClienteGeneral() throws NegocioException {
+        try {
+            ClienteGeneral clienteGeneral = clienteDAO.obtenerOcrearClienteGeneral();
+
+            if (clienteGeneral == null) {
+                LOG.warning("No existe cliente general en la BD");
+                throw new NegocioException("No existe un cliente general configurado en el sistema");
+            }
+
+            LOG.info("Cliente general obtenido correctamente");
+
+            return ClienteAdapter.entidadADTO(clienteGeneral);
+
+        } catch (PersistenciaException ex) {
+            LOG.warning("Error al obtener cliente general");
+            throw new NegocioException("No fue posible obtener el cliente general", ex);
+        }
+    }
+
     /**
      * Obtiene a todos los clientes registrados en la BD
-     * 
+     *
      * @return lista con todos los clientes
-     * @throws NegocioException 
+     * @throws NegocioException
      */
     @Override
     public List<ClienteDTO> obtenerClientes() throws NegocioException {
-        try{
+        try {
             List<Cliente> clientes = clienteDAO.obtenerClientes();
-            
+
             LOG.info("Los clientes se obtuvieron correctamente");
-            
+
             return ClienteAdapter.listaEntidadADTO(clientes);
-            
-        } catch(PersistenciaException ex){
+
+        } catch (PersistenciaException ex) {
             LOG.warning("No se encontraron los clientes");
             throw new NegocioException("No fue posible obtener a los clientes", ex);
         }
     }
 
     /**
-     * Valida los datos del cliente antes de ser procesados.Verifica que los campos obligatorios no estén vacíos y que el
-     * correo tenga un formato válido.
+     * Valida los datos del cliente antes de ser procesados.Verifica que los
+     * campos obligatorios no estén vacíos y que el correo tenga un formato
+     * válido.
      *
      *
      * @param clienteDto objeto ClienteNuevoDTO a validar
-     * @throws NegocioException si algún dato no cumple con las reglas de negocio
+     * @throws NegocioException si algún dato no cumple con las reglas de
+     * negocio
      */
     private void validarDatosNuevoDTO(ClienteNuevoDTO clienteDto) throws NegocioException {
         if (clienteDto.getNombres() == null || clienteDto.getNombres().trim().isEmpty()) {
@@ -220,14 +255,16 @@ public class ClienteBO implements IClienteBO {
         }
 
     }
-    
+
     /**
-     * Valida los datos del cliente antes de ser procesados.Verifica que los campos obligatorios no estén vacíos y que el
-     * correo tenga un formato válido.
+     * Valida los datos del cliente antes de ser procesados.Verifica que los
+     * campos obligatorios no estén vacíos y que el correo tenga un formato
+     * válido.
      *
      *
      * @param clienteDto objeto ClienteNuevoDTO a validar
-     * @throws NegocioException si algún dato no cumple con las reglas de negocio
+     * @throws NegocioException si algún dato no cumple con las reglas de
+     * negocio
      */
     private void validarDatosDTO(ClienteDTO clienteDto) throws NegocioException {
         if (clienteDto.getNombres() == null || clienteDto.getNombres().trim().isEmpty()) {
@@ -250,8 +287,7 @@ public class ClienteBO implements IClienteBO {
             if (!clienteDto.getCorreo().trim().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                 throw new NegocioException("El formato del correo no es válido.");
             }
-        }    
+        }
     }
-    
-    
+
 }

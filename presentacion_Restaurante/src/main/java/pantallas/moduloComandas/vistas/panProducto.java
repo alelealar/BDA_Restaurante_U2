@@ -1,13 +1,59 @@
 package pantallas.moduloComandas.vistas;
 
+import controlador.Coordinador;
+import controlador.CoordinadorModuloComandas;
+import dtos.ProductoDTO;
+import java.awt.Image;
+import java.net.URL;
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author Brian Kaleb Sandoval Rodríguez - 00000262741
  */
 public class panProducto extends javax.swing.JPanel {
 
-    public panProducto() {
+    private ProductoDTO producto;
+
+    private CoordinadorModuloComandas coordinador;
+
+    public panProducto(ProductoDTO producto, CoordinadorModuloComandas coordinador) {
         initComponents();
+
+        this.producto = producto;
+        this.coordinador = coordinador;
+
+        this.setPreferredSize(new java.awt.Dimension(334, 163));
+        this.setMinimumSize(new java.awt.Dimension(334, 163));
+        this.setMaximumSize(new java.awt.Dimension(334, 163));
+
+        URL url = getClass().getResource(producto.getUrlImagen());
+
+        if (url != null) {
+            ImageIcon iconoOriginal = new ImageIcon(url);
+            Image imagenEscalada = iconoOriginal.getImage()
+                    .getScaledInstance(136, 120, Image.SCALE_SMOOTH);
+
+            lblImagen.setIcon(new ImageIcon(imagenEscalada));
+            lblImagen.setText("");
+        } else {
+            System.out.println("No se encontró la imagen: " + producto.getUrlImagen());
+        }
+        lblCantidad.setText("1");
+        lblNombre.setText(producto.getNombre());
+        lblTipo.setText(producto.getTipo().name());
+        lblPrecio.setText(String.valueOf(producto.getPrecio()));
+        if (Integer.parseInt(lblCantidad.getText()) == 1) {
+            btnDisminuir.setEnabled(false);
+            btnDisminuir.setOpaque(false);
+            btnDisminuir.setContentAreaFilled(false);
+            btnDisminuir.setBorderPainted(false);
+        } else {
+            btnDisminuir.setEnabled(true);
+            btnDisminuir.setOpaque(true);
+            btnDisminuir.setContentAreaFilled(true);
+            btnDisminuir.setBorderPainted(false);
+        }
     }
 
     /**
@@ -19,36 +65,53 @@ public class panProducto extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        lblImagen = new javax.swing.JLabel();
         lblNombre = new javax.swing.JLabel();
         lblTipo = new javax.swing.JLabel();
         lblPrecio = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnIncrementar = new javax.swing.JButton();
+        btnDisminuir = new javax.swing.JButton();
         lblCantidad = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel1.setText("jLabel1");
+        lblImagen.setText("jLabel1");
 
-        lblNombre.setForeground(new java.awt.Color(141, 134, 134));
+        lblNombre.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblNombre.setForeground(new java.awt.Color(0, 0, 0));
         lblNombre.setText("jLabel2");
 
-        lblTipo.setForeground(new java.awt.Color(141, 134, 134));
+        lblTipo.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblTipo.setForeground(new java.awt.Color(0, 0, 0));
         lblTipo.setText("jLabel2");
 
-        lblPrecio.setForeground(new java.awt.Color(141, 134, 134));
+        lblPrecio.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        lblPrecio.setForeground(new java.awt.Color(0, 0, 0));
         lblPrecio.setText("jLabel2");
 
         jButton1.setBackground(new java.awt.Color(255, 0, 0));
+        jButton1.setForeground(new java.awt.Color(0, 0, 0));
         jButton1.setText("Cancelar");
+        jButton1.setBorderPainted(false);
 
-        jButton2.setText("+");
+        btnIncrementar.setText("+");
+        btnIncrementar.setOpaque(true);
+        btnIncrementar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIncrementarActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("-");
+        btnDisminuir.setText("-");
+        btnDisminuir.setOpaque(true);
+        btnDisminuir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDisminuirActionPerformed(evt);
+            }
+        });
 
-        lblCantidad.setForeground(new java.awt.Color(141, 134, 134));
+        lblCantidad.setForeground(new java.awt.Color(0, 0, 0));
         lblCantidad.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblCantidad.setText("0");
 
@@ -58,56 +121,86 @@ public class panProducto extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(lblImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblNombre)
-                            .addComponent(lblTipo)
-                            .addComponent(lblPrecio))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3)
-                        .addGap(0, 0, 0)
-                        .addComponent(lblCantidad, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
-                        .addGap(0, 0, 0)
-                        .addComponent(jButton2)
-                        .addGap(16, 16, 16))))
+                    .addComponent(lblNombre)
+                    .addComponent(lblTipo)
+                    .addComponent(lblPrecio))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(119, 119, 119)
+                .addComponent(jButton1)
+                .addGap(28, 28, 28)
+                .addComponent(btnDisminuir)
+                .addGap(18, 18, 18)
+                .addComponent(lblCantidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(23, 23, 23)
+                .addComponent(btnIncrementar)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(34, 34, 34)
-                        .addComponent(lblNombre)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblTipo)
-                        .addGap(10, 10, 10)
-                        .addComponent(lblPrecio))
+                        .addGap(22, 22, 22)
+                        .addComponent(lblImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                        .addGap(14, 14, 14)
+                        .addComponent(lblNombre)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblTipo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblPrecio)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
+                    .addComponent(btnIncrementar)
+                    .addComponent(btnDisminuir)
                     .addComponent(lblCantidad))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnIncrementarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncrementarActionPerformed
+        int valorActual = Integer.parseInt(lblCantidad.getText());
+
+        valorActual++;
+        lblCantidad.setText(String.valueOf(valorActual));
+
+        coordinador.actualizarTotal(producto.getPrecio());
+
+        if (valorActual > 1) {
+            btnDisminuir.setEnabled(true);
+            btnDisminuir.setOpaque(true);
+            btnDisminuir.setContentAreaFilled(true);
+        }
+    }//GEN-LAST:event_btnIncrementarActionPerformed
+
+    private void btnDisminuirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisminuirActionPerformed
+        int valorActual = Integer.parseInt(lblCantidad.getText());
+
+        coordinador.actualizarTotal(-producto.getPrecio());
+
+        if (valorActual > 1) {
+            valorActual--;
+            lblCantidad.setText(String.valueOf(valorActual));
+        }
+        if (valorActual == 1) {
+            btnDisminuir.setEnabled(false);
+            btnDisminuir.setOpaque(false);
+            btnDisminuir.setContentAreaFilled(false);
+        }
+    }//GEN-LAST:event_btnDisminuirActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDisminuir;
+    private javax.swing.JButton btnIncrementar;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblCantidad;
+    private javax.swing.JLabel lblImagen;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblPrecio;
     private javax.swing.JLabel lblTipo;

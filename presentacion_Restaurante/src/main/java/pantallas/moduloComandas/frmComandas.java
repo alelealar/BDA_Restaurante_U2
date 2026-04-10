@@ -1,14 +1,15 @@
 package pantallas.moduloComandas;
 
-import pantallas.moduloComandas.vistas.panMesa;
 import controlador.CoordinadorModuloComandas;
 import dtos.ClienteDTO;
 import dtos.ComandaDTO;
+import dtos.MesaDTO;
+import enumerators.EstadoComandaDTO;
 import excepciones.NegocioException;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -29,19 +30,41 @@ public class frmComandas extends javax.swing.JFrame {
 
     private ClienteDTO cliente;
 
+    private ComandaDTO comanda;
+
+    private MesaDTO mesa;
+
     /**
      * Creates new form frmMesas
      *
      * @param coordinador
      */
-    public frmComandas(CoordinadorModuloComandas coordinador) {
+    public frmComandas(CoordinadorModuloComandas coordinador, MesaDTO mesa) {
         initComponents();
         this.coordinador = coordinador;
+        this.mesa = mesa;
         cargarEstado();
 
     }
 
     public void cargarEstado() {
+        try {
+            this.creada = false;
+            List<ComandaDTO> comandasRegistradas = coordinador.obtenerComandas();
+
+            for (ComandaDTO c : comandasRegistradas) {
+                if (c.getMesa() != null && c.getEstadoComanda() != null) {
+
+                    if (c.getMesa().getId().equals(mesa.getId()) && c.getEstadoComanda().equals(EstadoComandaDTO.ABIERTA)) {
+                        this.creada = true;
+                        this.comanda = c;
+                        break; // Detenemos la búsqueda porque ya la encontramos
+                    }
+                }
+            }
+        } catch (NegocioException ex) {
+            System.getLogger(frmComandas.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
         if (creada) {
             btnCrear.setText("+Crear Pedido");
             jblAviso.setVisible(false);
@@ -49,6 +72,11 @@ public class frmComandas extends javax.swing.JFrame {
             btnCrear.setText("+Crear Comanda");
             jblAviso.setVisible(true);
         }
+        cargarComanda();
+    }
+
+    public void cargarComanda() {
+
     }
 
     public void agregarPedidos() {
@@ -76,6 +104,7 @@ public class frmComandas extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(1029, 656));
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -135,6 +164,11 @@ public class frmComandas extends javax.swing.JFrame {
         );
 
         btnMesas.setBackground(new java.awt.Color(255, 246, 222));
+        btnMesas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnMesasMouseClicked(evt);
+            }
+        });
 
         jLabel4.setBackground(new java.awt.Color(74, 68, 89));
         jLabel4.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
@@ -247,12 +281,14 @@ public class frmComandas extends javax.swing.JFrame {
 
             if (seleccion == JOptionPane.OK_OPTION) {
                 ComandaDTO comanda = new ComandaDTO();
-                comanda.setCliente(cliente);
+                comanda.setMesa(mesa);
                 try {
                     coordinador.registrarComanda(comanda);
                 } catch (NegocioException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
                 }
+                this.comanda = comanda;
+                creada = true;
                 cargarEstado();
             }
         } else {
@@ -311,15 +347,21 @@ public class frmComandas extends javax.swing.JFrame {
 
                     break;
                 case 1:
-                    coordinador.mostrarPantallaCrearPedido();
+                    coordinador.mostrarPantallaCrearPedido(mesa);
+                    this.comanda.setCliente(cliente);
                     break;
                 default:
                     break;
             }
+            cargarEstado();
         }
 
 
     }//GEN-LAST:event_btnCrearActionPerformed
+
+    private void btnMesasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMesasMouseClicked
+        coordinador.mostrarPantallaMesas();
+    }//GEN-LAST:event_btnMesasMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

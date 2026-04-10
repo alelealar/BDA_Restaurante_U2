@@ -2,18 +2,22 @@ package objetosNegocio;
 
 import adaptadores.ComandaAdapter;
 import adaptadores.MesaAdapter;
+import daos.ClienteDAO;
 import daos.ComandaDAO;
 import dtos.ClienteDTO;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
 import dtos.MesaDTO;
+import entidades.Cliente;
 import entidades.Comanda;
 import entidades.Mesa;
 import enumerators.EstadoComandaDTO;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
+import interfaces.IClienteDAO;
 import interfaces.IComandaBO;
 import interfaces.IComandaDAO;
+import interfaces.IMesaBO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,6 +46,11 @@ public class ComandaBO implements IComandaBO {
      * DAO utilizado para operaciones de persistencia.
      */
     private final IComandaDAO comandaDAO = ComandaDAO.getInstance();
+
+    /**
+     * DAO utilizado para operaciones con clientes.
+     */
+    private final IClienteDAO clienteDAO = ClienteDAO.getInstance();
 
     /**
      * Logger para registrar eventos del sistema.
@@ -86,18 +95,26 @@ public class ComandaBO implements IComandaBO {
 
             Long consecutivo = comandaDAO.obtenerComandasDia() + 1;
             comandaDTO.setFolio(generarFolio(consecutivo));
+            Cliente clienteEntidad;
 
             if (comandaDTO.getCliente() == null) {
-                ClienteDTO cliente = new ClienteDTO();
-                cliente.setNombres("Cliente General");
-                comandaDTO.setCliente(cliente);
+                clienteEntidad = clienteDAO.obtenerOcrearClienteGeneral();
+            } else {
+                clienteEntidad = clienteDAO.buscarClientePorId(
+                        comandaDTO.getCliente().getId()
+                );
             }
 
             Comanda comanda = ComandaAdapter.dtoAEntidad(comandaDTO);
+
+            comanda.setCliente(clienteEntidad);
+
             Comanda registrada = comandaDAO.guardarComanda(comanda);
 
             if (registrada.getId() != null) {
                 LOG.info("Comanda registrada exitosamente.");
+                IMesaBO mesaBO = MesaBO.getInstance();
+                mesaBO.cambiarEstadoMesa(comandaDTO.getMesa().getId(), "OCUPADA");
             }
 
         } catch (PersistenciaException ex) {
@@ -119,6 +136,8 @@ public class ComandaBO implements IComandaBO {
                 throw new NegocioException("El id de la comanda no puede ser nulo.");
             }
 
+            ComandaDTO comanda = buscarComandaPorId(idComanda);
+
             boolean eliminada = comandaDAO.eliminarComanda(idComanda);
 
             if (!eliminada) {
@@ -126,6 +145,9 @@ public class ComandaBO implements IComandaBO {
             }
 
             LOG.info("Comanda eliminada correctamente.");
+
+            IMesaBO mesaBO = MesaBO.getInstance();
+            mesaBO.cambiarEstadoMesa(comanda.getMesa().getId(), "DISPONIBLE");
 
         } catch (PersistenciaException e) {
             LOG.warning(e.getMessage());
@@ -144,8 +166,9 @@ public class ComandaBO implements IComandaBO {
         try {
             validarActualizacion(comandaDTO);
 
-            if (comandaDTO.getEstadoComanda() != EstadoComandaDTO.ABIERTA) {
-                throw new NegocioException("No es posible modificar una comanda que no este abierta.");
+            ComandaDTO comandaGuardada = buscarComandaPorId(comandaDTO.getId());
+            if (comandaGuardada.getEstadoComanda() != EstadoComandaDTO.ABIERTA) {
+                throw new NegocioException("No es posible modificar una comanda que ya fue cerrada o pagada.");
             }
 
             Comanda comanda = ComandaAdapter.dtoAEntidad(comandaDTO);
@@ -153,6 +176,11 @@ public class ComandaBO implements IComandaBO {
 
             if (actualizada != null) {
                 LOG.info("Comanda actualizada correctamente.");
+
+                if (comandaDTO.getEstadoComanda() != EstadoComandaDTO.ABIERTA) {
+                    IMesaBO mesaBO = MesaBO.getInstance();
+                    mesaBO.cambiarEstadoMesa(comandaDTO.getMesa().getId(), "DISPONIBLE");
+                }
             }
 
         } catch (PersistenciaException e) {

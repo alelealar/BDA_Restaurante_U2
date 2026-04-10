@@ -143,8 +143,7 @@ public class frmInicio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSoyAdminActionPerformed
 
     private void btnSoyMeseroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSoyMeseroActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Se está cocinando aún...");
+        coordinador.mostrarISMeseros();
     }//GEN-LAST:event_btnSoyMeseroActionPerformed
 
 

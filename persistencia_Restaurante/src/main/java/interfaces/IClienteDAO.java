@@ -1,6 +1,7 @@
 package interfaces;
 
 import entidades.Cliente;
+import entidades.ClienteGeneral;
 import excepciones.PersistenciaException;
 import java.util.List;
 
@@ -68,35 +69,47 @@ public interface IClienteDAO {
      * @throws PersistenciaException si ocurre un error durante la búsqueda
      */
     public Cliente buscarClientePorId(Long id) throws PersistenciaException;
-    
-    
+
     /**
-    * Obtiene la lista completa de clientes registrados en la base de datos.
-    *
-    * Este método permite recuperar todos los clientes almacenados en el sistema,
-    * facilitando su visualización en interfaces como tablas o listados dentro
-    * de la aplicación.
-    *
-    * @return lista de clientes registrados
-    * @throws PersistenciaException si ocurre un error durante la consulta
-    */
+     * Obtiene el cliente general existente o lo crea si no existe.
+     *
+     * Garantiza que siempre haya un cliente general disponible para asociar
+     * comandas sin cliente registrado.
+     *
+     * @return ClienteGeneral existente o recién creado.
+     * @throws PersistenciaException Si ocurre un error en la operación.
+     */
+    public ClienteGeneral obtenerOcrearClienteGeneral() throws PersistenciaException;
+
+    /**
+     * Obtiene la lista completa de clientes registrados en la base de datos.
+     *
+     * Este método permite recuperar todos los clientes almacenados en el
+     * sistema, facilitando su visualización en interfaces como tablas o
+     * listados dentro de la aplicación.
+     *
+     * @return lista de clientes registrados
+     * @throws PersistenciaException si ocurre un error durante la consulta
+     */
     public List<Cliente> obtenerClientes() throws PersistenciaException;
-    
+
     /**
      * Valida que el telefono no exista en alguno de los regitros
+     *
      * @param telefono
      * @param ID
-     * @return 
-     * @throws PersistenciaException 
+     * @return
+     * @throws PersistenciaException
      */
     public boolean existeTelefono(String telefono, Long ID) throws PersistenciaException;
-    
+
     /**
      * Valida que el correo no exista en alguno de los regitros
+     *
      * @param correo
      * @param ID
-     * @return 
-     * @throws PersistenciaException 
+     * @return
+     * @throws PersistenciaException
      */
     public boolean existeCorreo(String correo, Long ID) throws PersistenciaException;
 }
