@@ -21,10 +21,12 @@ public class CoordinadorInterfaces {
     private frmAgregarCliente formAgregarClientes;
     private Coordinador coordinadorNegocio;
     private Coordinador_ModuloProductos coordinadorProducto;
+    private CoordinadorModuloComandas coordinadorComandas;
     
     public CoordinadorInterfaces() {
         this.coordinadorNegocio = new Coordinador();
         this.coordinadorProducto = new Coordinador_ModuloProductos();
+        this.coordinadorComandas = new CoordinadorModuloComandas();
     }
 
     public void iniciarSistema() {
@@ -67,6 +69,10 @@ public class CoordinadorInterfaces {
         }
         formClientes.setVisible(false);
         formInicio.setVisible(true);
+    }
+    
+    public void mostrarISMeseros(){
+        coordinadorComandas.mostrarPantallaISMesero();
     }
     
     /**
@@ -114,6 +120,8 @@ public class CoordinadorInterfaces {
     public ClienteDTO buscarClientePorId(Long id) throws NegocioException{
         return coordinadorNegocio.buscarClientePorId(id);
     }
+    
+    
     
     public void eliminarCliente(ClienteDTO cliente) throws NegocioException{
         coordinadorNegocio.eliminarCliente(cliente);
