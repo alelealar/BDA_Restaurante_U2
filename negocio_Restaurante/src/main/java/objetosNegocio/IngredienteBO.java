@@ -7,21 +7,31 @@ package objetosNegocio;
 
 import adaptadores.IngredienteAdapter;
 import daos.IngredienteDAO;
+import daos.ProductoIngredienteDAO;
 import dtos.IngredienteDTO;
 import dtos.IngredienteNuevoDTO;
 import dtos.IngredienteStockDTO;
 import entidades.Ingrediente;
 import enumerators.TipoMovimiento;
+import enumerators.Unidad;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import interfaces.IIngredienteBO;
 import interfaces.IIngredienteDAO;
+import interfaces.IProductoIngredienteDAO;
+import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 /**
- *
+ * Objeto de negocio encargado de la gestión de ingredientes.
+ * 
+ * Se encarga de aplicar las reglas de negocio, validar datos y
+ * coordinar las operaciones relacionadas con ingredientes antes
+ * de su persistencia.
+ * 
  * @author Alejandra Leal Armenta, 262719
  */
 
@@ -39,9 +49,14 @@ public class IngredienteBO implements IIngredienteBO{
     }
     
     private final IIngredienteDAO ingredienteDAO = IngredienteDAO.getInstance();
+    private final IProductoIngredienteDAO piDAO = ProductoIngredienteDAO.getInstance();
     
     private static final Logger LOG = Logger.getLogger(ClienteBO.class.getName());
-    
+    /**
+     * Agrega un nuevo ingrediente al sistema.Valida que la información sea correcta y que no exista previamente.
+     * @param ingredienteDTO
+     * @throws NegocioException 
+     */
     @Override
     public void agregarIngrediente(IngredienteNuevoDTO ingredienteDTO) throws NegocioException {
         try{
@@ -50,17 +65,23 @@ public class IngredienteBO implements IIngredienteBO{
             Ingrediente entidad = IngredienteAdapter.nuevoDTOAEntidad(ingredienteDTO);
             
             String identificador = generarIdentificador();
-            System.out.println("IDENTIFICADOR: "+identificador);
             entidad.setIdentificador(identificador);
-
+ 
             ingredienteDAO.agregarIngrediente(entidad);
         } catch (PersistenciaException ex) {
-            LOG.warning(() -> "No fue posible agregar el ingrediente: " + ingredienteDTO.toString());
-            throw new NegocioException("No fue posible agregar el ingrediente", ex);
+            //LOG.warning(() -> "No fue posible agregar el ingrediente: " + ingredienteDTO.toString());
+            throw new NegocioException(ex.getMessage(), ex);
         }
-        
     }
 
+    /**
+     * Modifica el stock de un ingrediente según el tipo de movimiento.
+     * Permite aumentar o disminuir la cantidad disponible, validando que la operación sea válida.
+     * @param idIngrediente
+     * @param cantidad
+     * @param tipo
+     * @throws NegocioException 
+     */
     @Override
     public void actualizarStock(Long idIngrediente, int cantidad, TipoMovimiento tipo) throws NegocioException {
         if (idIngrediente == null || idIngrediente <= 0) {
@@ -108,7 +129,84 @@ public class IngredienteBO implements IIngredienteBO{
             throw new NegocioException("No fue posible consultar los ingredientes", ex);
         }
     }
+    
+    /**
+     * Elimina un ingrediente del sistema.
+     * Verifica que no esté en uso antes de realizar la eliminación.
+     * @param ingrediente
+     * @throws NegocioException 
+     */
+    @Override
+    public void eliminarIngrediente(IngredienteDTO ingrediente) throws NegocioException{
+        validarDatosDTO(ingrediente);
+        
+        try {
+            Ingrediente entidad = ingredienteDAO.buscarPorId(ingrediente.getId());
 
+            if (entidad == null) {
+                throw new NegocioException("El ingrediente no existe");
+            }
+            
+            boolean enUso = piDAO.existeIngredienteEnRecetas(entidad.getId());
+            
+            if (enUso) {
+                throw new NegocioException("No se puede eliminar, el ingrediente está en uso en recetas");
+            }
+            
+            String urlImagen = entidad.getUrlImagen();
+                       
+            ingredienteDAO.eliminarIngrediente(entidad);
+            
+            if (urlImagen != null && !urlImagen.isEmpty()) {
+                File archivo = new File(urlImagen);
+                if(archivo.exists()){
+                    archivo.delete();
+                }
+            }
+            
+        } catch (PersistenciaException ex) {
+            LOG.warning(() -> "No fue posible eliminar el ingrediente: " + ingrediente.toString());
+            throw new NegocioException("No fue posible eliminar el ingrediente", ex);
+        }
+    }
+    
+    /**
+     * Actualiza la información de un ingrediente existente.
+     * Valida los datos y aplica los cambios correspondientes.
+     * @param ingrediente
+     * @throws NegocioException 
+     */
+    @Override
+    public void actualizarIngrediente(IngredienteDTO ingrediente) throws NegocioException{
+        validarDatosDTO(ingrediente);
+        
+        try {
+            Ingrediente entidad = ingredienteDAO.buscarPorId(ingrediente.getId());
+            
+            if (entidad == null) {
+                throw new NegocioException("El ingrediente no existe");
+            }
+            
+                  
+            entidad.setNombre(ingrediente.getNombre());
+            entidad.setUnidadMedida(Unidad.valueOf(ingrediente.getUnidadMedida().name()));
+            entidad.setStock(ingrediente.getStock());
+            entidad.setUrlImagen(ingrediente.getUrlImagen());
+            
+            ingredienteDAO.actualizarIngrediente(entidad);
+            
+        } catch (PersistenciaException ex) {
+            LOG.warning(() -> "No fue posible actualizar el ingrediente: " + ingrediente.toString());
+            throw new NegocioException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Obtiene la lista de ingredientes registrados en el sistema.
+     * Proporciona la información necesaria para su uso en la aplicación.
+     * @return
+     * @throws NegocioException 
+     */
     @Override
     public List<IngredienteDTO> obtenerIngredientes() throws NegocioException{
         try{           
@@ -121,6 +219,12 @@ public class IngredienteBO implements IIngredienteBO{
         }
     } 
     
+    /**
+     * Valida los datos de un ingrediente para actualización.
+     * Verifica campos obligatorios, valores válidos y normaliza datos como nombre e imagen.
+     * @param ingredienteDto
+     * @throws NegocioException 
+     */
     private void validarDatosDTO(IngredienteDTO ingredienteDto) throws NegocioException {
         
         if (ingredienteDto == null) {
@@ -161,6 +265,12 @@ public class IngredienteBO implements IIngredienteBO{
         }
     }
     
+    /**
+     * Valida los datos de un nuevo ingrediente.
+     * Verifica campos obligatorios, stock inicial válido y normaliza datos.
+     * @param ingredienteNuevoDto
+     * @throws NegocioException 
+     */
     private void validarDatosNuevoDTO(IngredienteNuevoDTO ingredienteNuevoDto) throws NegocioException{
         if (ingredienteNuevoDto == null) {
             throw new NegocioException("El ingrediente no puede ser nulo.");
@@ -200,6 +310,12 @@ public class IngredienteBO implements IIngredienteBO{
         }
     }
     
+    /**
+     * Valida los datos necesarios para modificar el stock de un ingrediente.
+     * Verifica cantidad y tipo de movimiento válidos.
+     * @param ingredienteStock
+     * @throws NegocioException 
+     */
     private void validarDatosStockDTO(IngredienteStockDTO ingredienteStock) throws NegocioException{
         if (ingredienteStock == null){
             throw new NegocioException("El ingrediente no puede ser nulo.");
@@ -218,6 +334,12 @@ public class IngredienteBO implements IIngredienteBO{
         }
     }
     
+    /**
+     * Genera un identificador único para un ingrediente.
+     * Se basa en el último identificador registrado para generar el siguiente consecutivo.
+     * @return Identificador generado.
+     * @throws NegocioException 
+     */
     private String generarIdentificador() throws NegocioException {
         try {
             String ultimo = ingredienteDAO.obtenerUltimoIdentificador();

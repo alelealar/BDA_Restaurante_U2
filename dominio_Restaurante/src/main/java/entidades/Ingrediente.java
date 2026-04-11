@@ -12,6 +12,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -66,6 +68,7 @@ public class Ingrediente implements Serializable {
      * La unicidad se define con el nombre, o sea, no se pueden repetir
      * ingredientes nombre-unidadMedida
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "unidad_medida", nullable = false)
     private Unidad unidadMedida;
     
@@ -103,6 +106,14 @@ public class Ingrediente implements Serializable {
 
     public Ingrediente(Long id, String identificador, String nombre, Unidad unidadMedida, Integer stock, String urlImagen) {
         this.id = id;
+        this.identificador = identificador;
+        this.nombre = nombre;
+        this.unidadMedida = unidadMedida;
+        this.stock = stock;
+        this.urlImagen = urlImagen;
+    }
+
+    public Ingrediente(String identificador, String nombre, Unidad unidadMedida, Integer stock, String urlImagen) {
         this.identificador = identificador;
         this.nombre = nombre;
         this.unidadMedida = unidadMedida;
@@ -222,7 +233,6 @@ public class Ingrediente implements Serializable {
 
     /**
      * Asigna las relaciones con productos.
-     * @param ingredientes lista de relaciones producto-ingrediente
      */
     public void setProductosAsociados(List<ProductoIngrediente> productosAsociados) {
         this.productosAsociados = productosAsociados;

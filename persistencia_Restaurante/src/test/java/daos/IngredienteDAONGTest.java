@@ -1,219 +1,224 @@
-///*
-// * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-// * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/EmptyTestNGTest.java to edit this template
-// */
-//package daos;
-//
-//import conexion.ConexionBD;
-//import entidades.Ingrediente;
-//import enumerators.Unidad;
-//import excepciones.PersistenciaException;
-//import java.util.List;
-//import javax.persistence.EntityManager;
-//import javax.persistence.Query;
-//import org.junit.jupiter.api.AfterEach;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import org.junit.jupiter.api.Test;
-//import static org.testng.Assert.*;
-//
-///**
-// *
-// * @author Home
-// */
-//public class IngredienteDAONGTest {
-//    IngredienteDAO dao = new IngredienteDAO();
-//    
-//    @AfterEach
-//    void limpiar() {
-//        EntityManager em = ConexionBD.crearConexion();
-//        em.getTransaction().begin();
-//
-//        Query q = em.createQuery("DELETE FROM Ingrediente i WHERE i.nombre LIKE 'Temp-%'");
-//        q.executeUpdate();
-//
-//        em.getTransaction().commit();
-//        em.close();
-//    }
-//    //passed
-//    @Test
-//    public void agregarIngrediente_guardarCorrectamente() throws PersistenciaException{
-//        EntityManager em = ConexionBD.crearConexion();
-//        try{
-//            em.getTransaction().begin();
-//
-//            Ingrediente ingrediente = new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null);
-//
-//            Ingrediente resultado = dao.agregarIngrediente(ingrediente);
-//            
-//            assertNotNull(resultado);
-//            assertNotNull(resultado.getId());
-//            assertEquals("Temp-1", resultado.getNombre());
-//
-//            em.getTransaction().rollback(); 
-//            
-//        } finally {
-//            em.close();
-//        }  
-//    }
-//    
-//    //passed
-//    @Test
-//    public void agregarIngrediente_duplicados() throws PersistenciaException{
-//        EntityManager em = ConexionBD.crearConexion();
-//        try{
-//            em.getTransaction().begin();
-//
-//            Ingrediente ingrediente = new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null);    
-//            Ingrediente ingrediente2 = new Ingrediente(null, "IN-001", "Temp-2", Unidad.PIEZA, 20, null);
-//
-//            Ingrediente resultado = dao.agregarIngrediente(ingrediente);
-//            
-//            assertThrows(PersistenciaException.class, () -> {
-//                dao.agregarIngrediente(ingrediente2);
-//            });
-//
-//            em.getTransaction().rollback(); 
-//            
-//        } finally {
-//            em.close();
-//        }  
-//    }
-//    
-//    @Test
-//    public void actualizarStock_correcto() throws PersistenciaException{
-//        EntityManager em = ConexionBD.crearConexion();
-//
-//        try {
-//            em.getTransaction().begin();
-//
-//            // Arrange
-//            Ingrediente ingrediente = new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null);
-//            dao.agregarIngrediente(ingrediente);
-//
-//            // Simular nuevo stock (como lo haría el BO)
-//            ingrediente.setStock(70);
-//
-//            // Act
-//            Ingrediente resultado = dao.actualizarStock(ingrediente);
-//
-//            // Assert
-//            assertEquals(70, resultado.getStock().intValue());
-//
-//            em.getTransaction().rollback();
-//
-//        } finally {
-//            em.close();
-//        }
-//    }
-//    
-//    @Test
-//    public void actualizarStock_IngredienteInexistente() throws PersistenciaException{
-//        EntityManager em = ConexionBD.crearConexion();
-//        try{
-//            em.getTransaction().begin();
-//
-//            Ingrediente ingrediente = new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 50, null);
-//            
-//            assertThrows(PersistenciaException.class, () -> {
-//                dao.actualizarStock(ingrediente);
-//            });
-//            
-//            em.getTransaction().rollback();
-//            
-//        } finally {
-//            em.close();
-//        }       
-//    }
-//    
-//    @Test
-//    public void buscarPorId_correcto() throws PersistenciaException{
-//        EntityManager em = ConexionBD.crearConexion();
-//        try{
-//            em.getTransaction().begin();
-//            
-//            Ingrediente ingrediente = new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null);
-//            dao.agregarIngrediente(ingrediente);
-//            
-//            Ingrediente buscado = dao.buscarPorId(ingrediente.getId());
-//            
-//            assertNotNull(buscado);
-//            assertEquals(ingrediente.getId(), buscado.getId());
-//            assertEquals(ingrediente.getNombre(), buscado.getNombre());         
-//            
-//            em.getTransaction().rollback(); 
-//            
-//        } finally {
-//            em.close();
-//        }       
-//    }
-//    
-//    @Test
-//    public void buscarPorId_noEncontrado() throws PersistenciaException{
-//        EntityManager em = ConexionBD.crearConexion();
-//        try{
-//            em.getTransaction().begin();
-//            
-//            Ingrediente ingrediente = new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null);
-//            
-//            
-//            assertThrows(PersistenciaException.class, () -> {
-//                dao.buscarPorId(ingrediente.getId());
-//            });
-//            
-//            
-//            em.getTransaction().rollback(); 
-//            
-//        } finally {
-//            em.close();
-//        }       
-//    }
-//    
-//    @Test
-//    public void obtenerIngredientes_correcto() throws PersistenciaException{
-//        EntityManager em = ConexionBD.crearConexion();
-//        try{
-//            em.getTransaction().begin();
-//            
-//            Ingrediente ingrediente = new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null);
-//            dao.agregarIngrediente(ingrediente);
-//            
-//            Ingrediente ingrediente2 = new Ingrediente(null, "IN-002", "Temp-2", Unidad.PIEZA, 1000, null);
-//            dao.agregarIngrediente(ingrediente2);
-//            
-//            Ingrediente ingrediente3 = new Ingrediente(null, "IN-003", "Temp-3", Unidad.PIEZA, 80, null);
-//            dao.agregarIngrediente(ingrediente3);
-//            
-//            List<Ingrediente> ingredientes = dao.obtenerIngredientes();
-//            
-//            assertNotNull(ingredientes);
-//            assertFalse(ingredientes.isEmpty());
-//            assertEquals(ingredientes.get(0).getId(), ingrediente.getId());
-//            assertEquals(ingredientes.get(1).getId(), ingrediente2.getId());
-//            assertNotEquals(ingredientes.get(1).getId(), ingrediente3.getId());
-//            assertEquals(ingredientes.get(2).getId(), ingrediente3.getId());
-//            
-//            em.getTransaction().rollback(); 
-//            
-//        } finally {
-//            em.close();
-//        }       
-//    }
-//    
-//    @Test
-//    public void obtenerIngredientes_NoHay() throws PersistenciaException{
-//        EntityManager em = ConexionBD.crearConexion();
-//        try{
-//            em.getTransaction().begin();
-//            List<Ingrediente> ingredientes = dao.obtenerIngredientes();
-//
-//            assertNotNull(ingredientes);
-//            assertTrue(ingredientes.isEmpty());
-//            
-//            em.getTransaction().rollback(); 
-//            
-//        } finally {
-//            em.close();
-//        }       
-//    }
-//    
-//}
+/*
+package daos;
+
+import conexion.ConexionBD;
+import entidades.Ingrediente;
+import enumerators.Unidad;
+import excepciones.PersistenciaException;
+import interfaces.IIngredienteDAO;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class IngredienteDAONGTest {
+
+    IIngredienteDAO dao = IngredienteDAO.getInstance();
+
+    @AfterEach
+    void limpiar() {
+        EntityManager em = ConexionBD.crearConexion();
+
+        try {
+            em.getTransaction().begin();
+
+            em.createQuery("DELETE FROM Ingrediente").executeUpdate();
+
+            em.getTransaction().commit();
+
+        } finally {
+            em.close();
+        }
+    }
+
+    @Test
+    public void agregarIngrediente_guardarCorrectamente() throws PersistenciaException {
+        Ingrediente ingrediente = new Ingrediente(
+                null,
+                "IN-001",
+                "Temp-1",
+                Unidad.PIEZA,
+                20,
+                null
+        );
+
+        Ingrediente resultado = dao.agregarIngrediente(ingrediente);
+
+        assertNotNull(resultado);
+        assertNotNull(resultado.getId());
+        assertEquals("Temp-1", resultado.getNombre());
+    }
+
+    @Test
+    public void agregarIngrediente_duplicados() throws PersistenciaException {
+
+        Ingrediente ingrediente = new Ingrediente( null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null );
+
+        Ingrediente ingrediente2 = new Ingrediente( null, "IN-001", "Temp-2", Unidad.PIEZA, 20, null );
+
+        dao.agregarIngrediente(ingrediente);
+
+        assertThrows(PersistenciaException.class, () -> {
+            dao.agregarIngrediente(ingrediente2);
+        });
+    }
+
+    @Test
+    public void actualizarStock_correcto() throws PersistenciaException {
+
+        Ingrediente ingrediente = new Ingrediente( null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null );
+
+        Ingrediente guardado = dao.agregarIngrediente(ingrediente);
+
+        guardado.setStock(70);
+
+        Ingrediente resultado = dao.actualizarStock(guardado);
+
+        assertEquals(70, resultado.getStock().intValue());
+    }
+
+    @Test
+    public void actualizarStock_IngredienteInexistente() {
+
+        Ingrediente ingrediente = new Ingrediente( null, "IN-999", "Temp-1", Unidad.PIEZA, 50, null );
+
+        assertThrows(PersistenciaException.class, () -> {
+            dao.actualizarStock(ingrediente);
+        });
+    }
+
+    @Test
+    public void buscarPorId_correcto() throws PersistenciaException {
+
+        Ingrediente ingrediente = new Ingrediente( null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null );
+
+        Ingrediente guardado = dao.agregarIngrediente(ingrediente);
+
+        Ingrediente buscado = dao.buscarPorId(guardado.getId());
+
+        assertNotNull(buscado);
+        assertEquals(guardado.getId(), buscado.getId());
+        assertEquals(guardado.getNombre(), buscado.getNombre());
+    }
+
+    @Test
+    public void buscarPorId_noEncontrado() {
+
+        assertThrows(PersistenciaException.class, () -> {
+            dao.buscarPorId(9999L);
+        });
+    }
+
+    @Test
+    public void obtenerIngredientes_correcto() throws PersistenciaException {
+
+        dao.agregarIngrediente(new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null));
+        dao.agregarIngrediente(new Ingrediente(null, "IN-002", "Temp-2", Unidad.PIEZA, 1000, null));
+        dao.agregarIngrediente(new Ingrediente(null, "IN-003", "Temp-3", Unidad.PIEZA, 80, null));
+
+        List<Ingrediente> ingredientes = dao.obtenerIngredientes();
+
+        assertNotNull(ingredientes);
+        assertFalse(ingredientes.isEmpty());
+        assertEquals(3, ingredientes.size());
+    }
+
+    @Test
+    public void obtenerIngredientes_NoHay() throws PersistenciaException {
+
+        List<Ingrediente> ingredientes = dao.obtenerIngredientes();
+
+        assertNotNull(ingredientes);
+        assertTrue(ingredientes.isEmpty());
+    }
+
+    @Test
+    public void obtenerUltimoIdentificador_NoHay() throws PersistenciaException {
+
+        String ultimoId = dao.obtenerUltimoIdentificador();
+
+        assertNull(ultimoId);
+    }
+
+    @Test
+    public void obtenerUltimoIdentificador_SiHay() throws PersistenciaException {
+
+        Ingrediente i1 = dao.agregarIngrediente( new Ingrediente(null, "IN-001", "Temp-1", Unidad.PIEZA, 20, null) );
+
+        Ingrediente i2 = dao.agregarIngrediente( new Ingrediente(null, "IN-002", "Temp-2", Unidad.PIEZA, 1000, null) );
+
+        Ingrediente i3 = dao.agregarIngrediente( new Ingrediente(null, "IN-003", "Temp-3", Unidad.PIEZA, 80, null) );
+
+        String ultimoId = dao.obtenerUltimoIdentificador();
+
+        assertNotNull(ultimoId);
+        assertEquals("IN-003", ultimoId);
+    }
+    
+    @Test
+    public void eliminarIngrediente_correcto() throws PersistenciaException {
+            
+        Ingrediente ing = new Ingrediente(null, "IN-001", "Temp-Elim", Unidad.PIEZA, 10, null);
+        dao.agregarIngrediente(ing);
+        
+        Ingrediente eliminado = dao.eliminarIngrediente(ing);
+
+        assertNotNull(eliminado);
+        assertEquals(ing.getId(), eliminado.getId());
+    }
+    
+    @Test
+    public void eliminarIngrediente_noExiste() {
+        assertThrows(PersistenciaException.class, () -> {
+            Ingrediente ing = new Ingrediente();
+            ing.setId(9999L);
+
+            dao.eliminarIngrediente(ing);
+        });
+    }
+    
+    @Test
+    public void actualizarIngrediente_correcto() throws PersistenciaException {
+        Ingrediente ing = new Ingrediente(null, "IN-001", "Temp-Act", Unidad.PIEZA, 10, null);
+        dao.agregarIngrediente(ing);
+
+        ing.setNombre("Temp-ActEditado");
+        ing.setStock(50);
+
+        Ingrediente actualizado = dao.actualizarIngrediente(ing);
+
+        assertEquals("Temp-ActEditado", actualizado.getNombre());
+        assertEquals(50, actualizado.getStock());
+    }
+    
+    @Test
+    public void actualizarIngrediente_noExiste() {
+        assertThrows(PersistenciaException.class, () -> {
+            Ingrediente ing = new Ingrediente();
+            ing.setId(9999L);
+
+            dao.actualizarIngrediente(ing);
+        });
+    }
+    
+    @Test
+    public void existeIngredienteDuplicado_siExiste() throws PersistenciaException {
+        Ingrediente ing = new Ingrediente(null, "IN-001", "Tomate", Unidad.PIEZA, 10, null);
+        dao.agregarIngrediente(ing);
+
+        boolean duplicado = dao.existeIngredienteDuplicado( null, "Tomate", Unidad.PIEZA);
+
+        assertTrue(duplicado);
+    }
+    
+    @Test
+    public void existeIngredienteDuplicado_noExiste() throws PersistenciaException {
+        boolean duplicado = dao.existeIngredienteDuplicado( null, "TomateX", Unidad.PIEZA );
+
+        assertFalse(duplicado);
+    }
+}
+*/

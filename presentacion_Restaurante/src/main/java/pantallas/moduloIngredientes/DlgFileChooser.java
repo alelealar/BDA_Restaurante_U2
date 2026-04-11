@@ -9,7 +9,10 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 /**
- *
+ * Panel con el componente FileChooser.
+ * 
+ * Permite visualizar los archivos que tienes en tu computador. Se usa para obtener
+ * las imagenes necesarias para los ingredientes.
  * @author Alejandra Leal Armenta, 262719
  */
     public class DlgFileChooser extends javax.swing.JDialog {

@@ -28,8 +28,12 @@ import notificaciones.TipoNotificacion;
 import notificaciones.dlgNotificacion;
 
 /**
- *
- * @author Home
+ * Pantalla donde se muestran los ingredientes.
+ * 
+ * Tiene dos vistas:
+ * Administracion de ingredientes: elimina, actualiza, agrega y muestra los ingredientes (ale)
+ * Añadir a productos: Agrega ingredientes a los productos (majojojo)
+ * @author Alejandra Leal Armenta, 262719
  */
 public class FrmIngredientes extends javax.swing.JFrame {
     
@@ -621,19 +625,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         int stockActual = Integer.parseInt(modelo.getValueAt(fila, 3).toString());
         
         coordinador.frmIngredientesAFrmActualizarIngrediente(ingrediente);
-        
-        /*
-        try{
-            if(cantidad != null){
-                coordinador.actualizarStock(ingrediente.getId(), cantidad, TipoMovimiento.ENTRADA);
-            }
-            cargarTabla();
-        } catch (NegocioException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }  
-        */
-        JOptionPane.showMessageDialog(this, "Falta programar funcionalidad...");
         this.dispose();
+        cargarTabla();
+        
     }//GEN-LAST:event_btnActualizarIngredienteMouseClicked
 
     private void btnActualizarIngredienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarIngredienteActionPerformed
@@ -652,15 +646,20 @@ public class FrmIngredientes extends javax.swing.JFrame {
             return;
         }
         IngredienteDTO ing = (IngredienteDTO) tblIngredientes.getValueAt(fila, 0);
-        
-        if (evt.getClickCount() == 2 && !modoProducto) {
-            int opcion = JOptionPane.showConfirmDialog( this, "¿Deseas eliminar este ingrediente?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION );
-            
-            if (opcion == JOptionPane.YES_OPTION) {
-                JOptionPane.showMessageDialog(this, "Falta programar funcionalidad...");
+        try{
+            if (evt.getClickCount() == 2 && !modoProducto) {
+                int opcion = JOptionPane.showConfirmDialog( this, "¿Deseas eliminar este ingrediente?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION );
+
+                if (opcion == JOptionPane.YES_OPTION) {
+                    coordinador.eliminarIngrediente(ing);
+                }
+                cargarTabla();
+                return;
             }
-            return;
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        
 
         if (modoProducto) {
             agregarIngrediente(ing);
@@ -700,12 +699,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAgregarStockActionPerformed
 
-    /**
-     * majojo:
-     * Agregué un botón para que puedan agregar los ingredientes al producto que 
-     * estén modificando/agregando. 
-     * @param evt 
-     */
     private void btnAgregarIngredientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarIngredientesActionPerformed
         // TODO add your handling code here:
         // si es diferente de null la limpia para que no se quede con registros anteriores.
@@ -754,6 +747,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnAgregarIngredientesActionPerformed
     
+    /**
+     * Actualiza la tabla donde se ven los ingredientes
+     */
     public void cargarTabla(){
         try{
             DefaultTableModel modelo = (DefaultTableModel) tblIngredientes.getModel();
@@ -774,7 +770,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         }
     }
     
-    
+    /**
+     * Activa la vista desde el flujo de los productos. Donde se agregan ingredientes a productops
+     */
     public void activarModoProducto(){
         modoProducto = true;
         jScrollPane1.setPreferredSize(new java.awt.Dimension(750, 427));
@@ -806,6 +804,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         this.pack();
     }
     
+    /**
+     * Muestra la vista desde el flujo de ingredientes. Donde se administran los ingredientes
+     */
     public void desactivarModoProducto() {
         modoProducto = false;
         pnlSeleccion.removeAll();
@@ -839,6 +840,11 @@ public class FrmIngredientes extends javax.swing.JFrame {
         pnlSeleccion.validate();
     }
     
+    /**
+     * Agrega los ingredientes mediante un formato para que al agregarlos al panel lateral
+     * se vean bonitos y tengan sus debidas funcionalidades para la vista de productos.
+     * @param ing 
+     */
     private void agregarIngrediente(IngredienteDTO ing) {
 
         for (Component c : pnlSeleccion.getComponents()) {

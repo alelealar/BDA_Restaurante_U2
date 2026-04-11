@@ -5,7 +5,7 @@
 package validaciones;
 
 /**
- *
+ * Validaciones de los componentes de la UI.
  * @author Alejandra Leal Armenta, 262719
  */
 public class ValidadorCampos {
@@ -67,5 +67,9 @@ public class ValidadorCampos {
         // 0-9    -> Permite números
         // +      -> Al menos un carácter
         return usuario.matches("^[\\p{L}0-9]+$");
+    }
+    
+    public static boolean soloNumeros(String numeros){
+        return numeros.matches("\\d+");
     }
 }

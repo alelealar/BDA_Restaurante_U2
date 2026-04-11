@@ -1,4 +1,4 @@
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
@@ -10,6 +10,7 @@ import dtos.IngredienteDTO;
 import dtos.IngredienteNuevoDTO;
 import enumerators.UnidadDTO;
 import excepciones.NegocioException;
+import excepciones.PersistenciaException;
 import java.awt.Image;
 import java.io.File;
 import javax.swing.DefaultComboBoxModel;
@@ -18,10 +19,16 @@ import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import validaciones.ValidadorCampos;
 
 /**
- *
- * @author Home
+ * Pantalla que permite agregar/actualizar los ingredientes previamente almacenados en la base de datos.
+ * 
+ * Tiene dos vistas:
+ * Agregar ingrediente
+ * Actualizar Ingrediente
+ * 
+ * @author Alejandra Leal Armenta, 262719
  */
 public class FrmAgregarIngrediente extends javax.swing.JFrame {
     
@@ -29,6 +36,8 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private Coordinador_ModuloIngredientes coordinador;
     File archivoImagen;
     private boolean modoActualizar = false;
+    private IngredienteDTO ingredienteOriginal;
+    
 
     /**
      * Creates new form FrmIngredientes
@@ -479,32 +488,80 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnAgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarMouseClicked
-        int confirmacion = JOptionPane.showConfirmDialog( this, "¿Estás seguro de que deseas agregar este ingrediente?", "Confirmar registro", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+        String nombre = txtNombre.getText();
+        String stock = txtStockInicial.getText();
         
-        if (confirmacion != JOptionPane.YES_OPTION) {
+        if(ValidadorCampos.nombreVacio(nombre)){
+            JOptionPane.showMessageDialog(this, "Nombre obligatorio");
             return;
         }
         
-        UnidadDTO unidad = (UnidadDTO) cbxMedida.getSelectedItem();
+        if (!ValidadorCampos.nombreValido(nombre)) {
+            JOptionPane.showMessageDialog(this, "El nombre solo debe contener letras");
+            return;
+        }
         
-        int stock = Integer.parseInt(txtStockInicial.getText());
-        String rutaImagen = null;
+        if(!ValidadorCampos.soloNumeros(stock)){
+            JOptionPane.showMessageDialog(this, "El stock solo puede contener numeros");
+            return;
+        }
+        
+        Integer stockInt = Integer.valueOf(stock);
+        
+        if(stockInt < 0){
+            JOptionPane.showMessageDialog(this, "El Stock debe ser positivo");
+            return;
+        }
+        
+        int confirmacion;
 
+        if (!modoActualizar) {
+            confirmacion = JOptionPane.showConfirmDialog( this, "¿Estás seguro de que deseas agregar este ingrediente?", "Confirmar registro", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+        } else {
+            confirmacion = JOptionPane.showConfirmDialog( this, "¿Estás seguro de que deseas actualizar este ingrediente?", "Confirmar registro", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
+        }
+
+        if (confirmacion != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        UnidadDTO unidad = (UnidadDTO) cbxMedida.getSelectedItem();
+
+        String rutaImagen = null;
         if (archivoImagen != null) {
             rutaImagen = archivoImagen.getAbsolutePath();
         }
-        
-        IngredienteNuevoDTO dto = new IngredienteNuevoDTO(txtNombre.getText(), unidad, stock, rutaImagen);
-        try{
-            coordinador.agregarIngrediente(dto);
-            JOptionPane.showMessageDialog(this, "Ingrediente agregado correctamente.");
-            coordinador.abrirFrmIngredientes();
-            this.dispose();
-        } catch (NegocioException ex){
-            System.out.println("ERROR: "+ex.getMessage());
+
+        try {
+
+            if (modoActualizar) {
+                ingredienteOriginal.setNombre(txtNombre.getText());
+                ingredienteOriginal.setStock(stockInt);
+                ingredienteOriginal.setUnidadMedida(unidad);
+
+                if (archivoImagen != null) {
+                    ingredienteOriginal.setUrlImagen(rutaImagen);
+                }
+                coordinador.actualizarIngrediente(ingredienteOriginal);
+                JOptionPane.showMessageDialog(this, "Ingrediente actualizado correctamente.");
+                coordinador.abrirFrmIngredientes();
+                this.dispose();
+
+            } else {
+                try{
+                    coordinador.agregarIngrediente( new IngredienteNuevoDTO(txtNombre.getText(), unidad, stockInt, rutaImagen) );
+                    JOptionPane.showMessageDialog(this, "Ingrediente agregado correctamente.");
+                    coordinador.abrirFrmIngredientes();
+                    this.dispose();
+                } catch (NegocioException ex) {
+                    JOptionPane.showMessageDialog(this, ex.getMessage());
+                }
+                
+            }
+
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
-        
-        
     }//GEN-LAST:event_btnAgregarMouseClicked
 
     private void btnSubirImagenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubirImagenMouseClicked
@@ -513,20 +570,22 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
 
     private void btnCancelarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarMouseClicked
         if(!txtNombre.getText().isEmpty() || !txtStockInicial.getText().isEmpty()){
-            int opcion = JOptionPane.showConfirmDialog(this, "Se perdera el dato escrito en el campo", "Confirmar", JOptionPane.YES_NO_OPTION);
-            
+            int opcion = JOptionPane.showConfirmDialog(this, "Se perderan los datos registrados", "Confirmar", JOptionPane.YES_NO_OPTION);
             if (opcion == JOptionPane.YES_OPTION) {
                 txtNombre.setText("");
                 txtStockInicial.setText("");
                 coordinador.abrirFrmIngredientes();
                 this.dispose();
             }
-        } else {
-            coordinador.abrirFrmIngredientes();
-            this.dispose();
         }
     }//GEN-LAST:event_btnCancelarMouseClicked
     
+    /**
+     * Agrega la imagen al campo de imagen del frame.
+     * 
+     * Muestra la imagen en el campo donde se agrega la imagen, la obtiene del fileChooser (panel)
+     * @param archivo 
+     */
     public void setImagenOpcional(File archivo){
         if (archivo == null) return;
         
@@ -543,20 +602,33 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         btnSubirImagen.setIcon(new ImageIcon(imagenEscalada));
     }
     
+    /**
+     * Carga el comboBox con las opciones del enumerator
+     */
     private void cargarCBXUnidad() {
         cbxMedida.setModel(new javax.swing.DefaultComboBoxModel<>(UnidadDTO.values()));
     }
     
+    /**
+     * Cambia la interfaz de la pantalla dependiendo de donde se esta llamando a la pantalla.
+     * 
+     * Esta pantalla tienes dos usos, el de ingredientes y el de productos. Esconde y/o muestra componentes dependiendo de
+     * donde venga el flujo. Desde la administracion de los ingredientres se agregan botones por ejmeplo, de añadir ingredientes,
+     * actualizar, eliminar, etc, mientras de desde los productos muestra un panel lateral para agregar ingredientes a productos.
+     * @param ingrediente 
+     */
     public void modoActualizar(IngredienteDTO ingrediente){
         this.modoActualizar = true;
-        
+
+        this.ingredienteOriginal = ingrediente;
+
         lblTitulo.setText("Actualizar Ingrediente");
         btnAgregar.setText("Actualizar");
-        
+
         txtNombre.setText(ingrediente.getNombre());
         txtStockInicial.setText(String.valueOf(ingrediente.getStock()));
         cbxMedida.setSelectedItem(ingrediente.getUnidadMedida());
-        
+
         if (ingrediente.getUrlImagen() != null) {
             ImageIcon icono = new ImageIcon(ingrediente.getUrlImagen());
             Image img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);

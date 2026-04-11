@@ -9,8 +9,12 @@ import dtos.IngredienteDTO;
 import dtos.IngredienteNuevoDTO;
 import dtos.ProductoIngredienteDTO;
 import enumerators.TipoMovimiento;
+import enumerators.Unidad;
 import excepciones.NegocioException;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import objetosNegocio.IngredienteBO;
 import pantallas.moduloIngredientes.DlgFileChooser;
@@ -20,7 +24,10 @@ import pantallas.moduloIngredientes.FrmIngredientes;
 
 
 /**
- *
+ * Coordinador/controlador de las interfaces del modulo Ingredientes.
+ * 
+ * Hace que las pantallas no se comuniquen entre si que las pantallas no tengan contacto directo
+ * con los Objetos de negocio
  * @author Alejandra Leal Armenta, 262719
  */
 
@@ -29,13 +36,8 @@ public class Coordinador_ModuloIngredientes {
     private FrmAgregarIngrediente frmAgregarIngrediente;
     private DlgFileChooser dlgFile;
     private DlgModificarStock dlgStock;
-    /**
-     * majojo:
-     * La lista compartida que se andan rolando entre frms/coordinadores.
-     */
     private List<ProductoIngredienteDTO> listaIngredientes;
     /**
-     * majojo:
      * El coordinador de productos para que se puedan regresar a la pantalla
      * agregarProducto.
      */
@@ -43,6 +45,9 @@ public class Coordinador_ModuloIngredientes {
     
     private IngredienteBO bo = IngredienteBO.getInstance();
     
+    /**
+     * abre la pantalla de agregar/actualizar ingrediente.
+     */
     public void abrirFrmAgregarIngrediente(){
         if (frmIngredientes != null) {
             frmIngredientes.desactivarModoProducto();
@@ -53,33 +58,51 @@ public class Coordinador_ModuloIngredientes {
         frmAgregarIngrediente.setVisible(true);
     }
     
+    /**
+     * abre la pantalla de los ingredientes.
+     */
     public void abrirFrmIngredientes(){
         frmIngredientes = new FrmIngredientes();
-        /*
-        majojo:
-        Nomás le agregué que recibiera el coordinador.
-        */
         frmIngredientes.setCoordinadorIngredientes(this);
         frmIngredientes.desactivarModoProducto();
         frmIngredientes.setVisible(true);
     }
     
+    /**
+     * Abre el panel file chooser, donde se buscan las imagenes de tu compu.
+     */
     public void fileChooser(){
         dlgFile = new DlgFileChooser(frmAgregarIngrediente, true, this);
         dlgFile.setVisible(true);      
     }
     
+    /**
+     * Manda la imagen del fileChooser a la pantalla de agregarIngrediente.
+     * @param archivo 
+     */
     public void archivoAFrmAgregarIngrediente(File archivo){
         if (frmAgregarIngrediente == null) {
             System.out.println("ERROR: formulario no inicializado");
             return;
+        }
+        
+        try{
+            File carpeta = new File("imagenes");
+            if (!carpeta.exists()) {
+                carpeta.mkdirs();
+            }
+            
+            File destino = new File(carpeta, archivo.getName());
+            
+            Files.copy(archivo.toPath(), destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         frmAgregarIngrediente.setImagenOpcional(archivo);
     }
     
     /**
-     * majojo:
      * Establece la lista compartida entre frames/coordinadores.
      * @param lista 
      */
@@ -88,7 +111,6 @@ public class Coordinador_ModuloIngredientes {
     }
     
     /**
-     * majojo:
      * Por medio del coordinador de productos abre el frmAgregarProducto ya que
      * terminó de seleccionar los productos.
      */
@@ -98,14 +120,29 @@ public class Coordinador_ModuloIngredientes {
         coordinadorProductos.abrirFrmAgregarProducto();
     }
     
+    /**
+     * Agrega el ingrediente dado por la UI.
+     * @param ingrediente
+     * @throws NegocioException 
+     */
     public void agregarIngrediente(IngredienteNuevoDTO ingrediente) throws NegocioException{
         bo.agregarIngrediente(ingrediente);
     }
     
+    /**
+     * Obtiene los ingredientes registrados en la BD.
+     * @return
+     * @throws NegocioException 
+     */
     public List<IngredienteDTO> obtenerIngredientes() throws NegocioException{
         return bo.obtenerIngredientes();
     }
     
+    /**
+    * Abre el diálogo para modificar el stock de un ingrediente.
+    * @param nombreIngrediente
+    * @param tipo 
+    */
     public void frmIngredientesADlgModificarStock(String nombreIngrediente, TipoMovimiento tipo){
         dlgStock = new DlgModificarStock(frmIngredientes, true, this);
         
@@ -115,6 +152,10 @@ public class Coordinador_ModuloIngredientes {
         dlgStock.setVisible(true);
     }
     
+    /**
+     * Abre el formulario en modo actualización con los datos del ingrediente.
+     * @param ingrediente 
+     */
     public void frmIngredientesAFrmActualizarIngrediente(IngredienteDTO ingrediente){
         frmAgregarIngrediente = new FrmAgregarIngrediente(this);
         frmAgregarIngrediente.modoActualizar(ingrediente);
@@ -122,7 +163,6 @@ public class Coordinador_ModuloIngredientes {
     }
     
     /**
-     * majojo:
      * Simplemente que le establezca el coordinador a usar y la referencia de 
      * la lista que creó el coordinador de productos.
      */
@@ -145,13 +185,42 @@ public class Coordinador_ModuloIngredientes {
         this.coordinadorProductos = coordinadorP;
     }
     
+    /**
+     * Obtiene la cantidad capturada en el diálogo de stock.
+     * @return 
+     */
     public Integer cantidadStock(){
         return dlgStock.getCantidad(); 
         
     }
     
+    /**
+     * Actualiza el stock de un ingrediente.
+     * @param idIngrediente
+     * @param cantidad
+     * @param tipo
+     * @throws NegocioException 
+     */
     public void actualizarStock(Long idIngrediente, int cantidad, TipoMovimiento tipo) throws NegocioException{
         bo.actualizarStock(idIngrediente, cantidad, tipo);
+    }
+    
+     /**
+     * Elimina un ingrediente ya resgistrado en la BD.
+     * @param ingrediente
+     * @throws NegocioException 
+     */
+    public void eliminarIngrediente(IngredienteDTO ingrediente) throws NegocioException{
+        bo.eliminarIngrediente(ingrediente);
+    }
+    
+    /**
+     * Actualiza un ingrediente ya registrado en la BD.
+     * @param ingrediente
+     * @throws NegocioException 
+     */
+    public void actualizarIngrediente(IngredienteDTO ingrediente) throws NegocioException{
+        bo.actualizarIngrediente(ingrediente);
     }
     
     

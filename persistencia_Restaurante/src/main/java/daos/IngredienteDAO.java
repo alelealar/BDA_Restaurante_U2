@@ -7,6 +7,7 @@ package daos;
 
 import conexion.ConexionBD;
 import entidades.Ingrediente;
+import enumerators.Unidad;
 import excepciones.PersistenciaException;
 import interfaces.IIngredienteDAO;
 import java.util.List;
@@ -15,30 +16,56 @@ import javax.persistence.TypedQuery;
 
 
 /**
- *
+ * Objeto de acceso a datos encargado de la gestión de ingredientes.
+ * 
+ * Se encarga de realizar las operaciones de persistencia en la base de datos,
+ * como inserciones, consultas, actualizaciones y eliminaciones de ingredientes.
+ * 
  * @author Alejandra Leal Armenta, 262719
  */
 
 public class IngredienteDAO implements IIngredienteDAO{
     
+    /**
+     * Instancia única del DAO de ingredientes (patrón Singleton).
+     */
     private static IngredienteDAO instancia;
 
-    public IngredienteDAO() {
+    /**
+     * Constructor privado para evitar la creación directa de instancias.
+     */
+    private IngredienteDAO() {
     }
     
-    public static IngredienteDAO getInstance(){
+    /**
+     * Obtiene la instancia única del DAO de ingredientes.
+     * @return 
+     */
+    public static IIngredienteDAO getInstance(){
         if(instancia == null){
             instancia = new IngredienteDAO();
         }
         return instancia;
     }
-
+    
+    /**
+     * Inserta un nuevo ingrediente en la base de datos.
+     * Guarda la información del ingrediente proporcionado.
+     * @param ingrediente
+     * @return
+     * @throws PersistenciaException 
+     */
     @Override
     public Ingrediente agregarIngrediente(Ingrediente ingrediente) throws PersistenciaException{
         EntityManager em = ConexionBD.crearConexion();
+        
+        if(existeIngredienteDuplicado(ingrediente.getId(), ingrediente.getNombre(), ingrediente.getUnidadMedida())){
+            throw new PersistenciaException("Ya existe un ingrediente de nombre "+ingrediente.getNombre()+" y unidad de medida "+ingrediente.getUnidadMedida());
+        }
+        
         try{
             em.getTransaction().begin();
-            
+  
             em.persist(ingrediente);
             
             em.getTransaction().commit();
@@ -47,12 +74,23 @@ public class IngredienteDAO implements IIngredienteDAO{
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("No fue posible guardar el ingrediente " + ingrediente.getNombre(), e);             
+            /*
+            if (e.getMessage().toLowerCase().contains("unique")) {
+                throw new PersistenciaException( "Ya existe un ingrediente de nombre " + ingrediente.getNombre() + " y unidad de medida " + ingrediente.getUnidadMedida() );
+            }*/
+            throw new PersistenciaException("Error al agregar ingrediente", e);     
         } finally {
             em.close();
         }
     }
-
+    
+    /**
+     * Actualiza el stock de un ingrediente en la base de datos.
+     * Modifica la cantidad disponible registrada.
+     * @param ingrediente
+     * @return
+     * @throws PersistenciaException 
+     */
     @Override
     public Ingrediente actualizarStock(Ingrediente ingrediente) throws PersistenciaException{
         EntityManager em = ConexionBD.crearConexion();
@@ -79,7 +117,13 @@ public class IngredienteDAO implements IIngredienteDAO{
         }
     }
 
-
+    /**
+     * Busca un ingrediente por su identificador.
+     * Recupera el ingrediente correspondiente si existe.
+     * @param id
+     * @return
+     * @throws PersistenciaException 
+     */
     @Override
     public Ingrediente buscarPorId(Long id) throws PersistenciaException{
         EntityManager em = ConexionBD.crearConexion();
@@ -93,6 +137,12 @@ public class IngredienteDAO implements IIngredienteDAO{
         }
     }
 
+    /**
+     * Obtiene todos los ingredientes registrados en la base de datos.
+     * Devuelve la lista completa de ingredientes.
+     * @return
+     * @throws PersistenciaException 
+     */
     @Override
     public List<Ingrediente> obtenerIngredientes() throws PersistenciaException{
         EntityManager em = ConexionBD.crearConexion();
@@ -108,6 +158,12 @@ public class IngredienteDAO implements IIngredienteDAO{
         }
     }
 
+    /**
+     * Obtiene el último identificador registrado.
+     * Permite generar nuevos identificadores consecutivos.
+     * @return
+     * @throws PersistenciaException 
+     */
     @Override
     public String obtenerUltimoIdentificador() throws PersistenciaException{
         EntityManager em = ConexionBD.crearConexion();
@@ -129,5 +185,120 @@ public class IngredienteDAO implements IIngredienteDAO{
             em.close();
         }
     }
+
+    /**
+     * Elimina un ingrediente de la base de datos.
+     * Remueve el registro correspondiente.
+     * @param ingrediente
+     * @return
+     * @throws PersistenciaException 
+     */
+    @Override
+    public Ingrediente eliminarIngrediente(Ingrediente ingrediente) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        
+        try{
+            em.getTransaction().begin();
+            
+            Ingrediente existente = em.find(Ingrediente.class, ingrediente.getId());
+            
+            if (existente == null) {
+                throw new PersistenciaException("El ingrediente no existe, no se puede eliminar");
+            }
+
+            em.remove(existente);
+            
+            em.getTransaction().commit();
+            
+            return existente;
+            
+        } catch (PersistenciaException e) {
+            throw new PersistenciaException("Error al eliminar el ingrediente", e);
+        } finally {
+            em.close();
+        }
+    }
     
+    /**
+     * Actualiza la información de un ingrediente en la base de datos.
+     * Aplica los cambios sobre el registro existente.
+     * @param ingrediente
+     * @return
+     * @throws PersistenciaException 
+     */
+    @Override
+    public Ingrediente actualizarIngrediente(Ingrediente ingrediente) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+
+        try {
+            em.getTransaction().begin();
+
+            Ingrediente existente = em.find(Ingrediente.class, ingrediente.getId());
+
+            if (existente == null) {
+                throw new PersistenciaException("El ingrediente no existe, no se puede actualizar");
+            }
+
+            existente.setNombre(ingrediente.getNombre());
+            existente.setUnidadMedida(ingrediente.getUnidadMedida());
+            existente.setStock(ingrediente.getStock());
+            existente.setUrlImagen(ingrediente.getUrlImagen());
+
+            em.merge(existente);
+
+            em.getTransaction().commit();
+
+            return existente;
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException("Error al actualizar el ingrediente", e);
+
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Verifica si existe un ingrediente con el mismo nombre y unidad.
+     * Permite evitar registros duplicados.
+     * @param id
+     * @param nombre
+     * @param unidad
+     * @return
+     * @throws PersistenciaException 
+     */
+    @Override
+    public boolean existeIngredienteDuplicado(Long id, String nombre, Unidad unidad) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        
+        String JPQL;
+        TypedQuery<Long> query;
+
+        
+        try {
+            if (id == null) {
+                JPQL = "SELECT COUNT(i) FROM Ingrediente i where i.nombre = :nom AND i.unidadMedida = :uni";
+                query = em.createQuery(JPQL, Long.class);
+                query.setParameter("nom", nombre);
+                query.setParameter("uni", unidad);
+            } else {
+                JPQL = "SELECT COUNT(i) FROM Ingrediente i where i.nombre = :nom AND i.unidadMedida = :uni AND i.id != :ID";
+                query = em.createQuery(JPQL, Long.class); 
+                query.setParameter("nom", nombre); 
+                query.setParameter("uni", unidad); 
+                query.setParameter("ID", id);
+            }
+            
+            Long conteo = query.getSingleResult();
+            return conteo > 0;
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al verificar el ingrediente duplicado", e);
+
+        } finally {
+            em.close();
+        }
+    }
 }
