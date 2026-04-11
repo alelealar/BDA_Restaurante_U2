@@ -303,7 +303,13 @@ public class Comanda implements Serializable {
      * @param detalles Nueva lista de detalles.
      */
     public void setDetalles(List<DetalleComanda> detalles) {
-        this.detalles = detalles;
+        this.detalles.clear();
+
+        if (detalles != null) {
+            for (DetalleComanda detalle : detalles) {
+                agregarDetalle(detalle);
+            }
+        }
     }
 
     /**

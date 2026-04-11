@@ -1,11 +1,13 @@
 package pantallas.moduloComandas.vistas;
-
-import controlador.Coordinador;
 import controlador.CoordinadorModuloComandas;
+import dtos.ComandaDTO;
+import dtos.DetalleComandaDTO;
 import dtos.ProductoDTO;
+import excepciones.NegocioException;
 import java.awt.Image;
 import java.net.URL;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -13,47 +15,106 @@ import javax.swing.ImageIcon;
  */
 public class panProducto extends javax.swing.JPanel {
 
-    private ProductoDTO producto;
+    private final DetalleComandaDTO detalle;
+    private final CoordinadorModuloComandas coordinador;
+    private ComandaDTO comanda;
 
-    private CoordinadorModuloComandas coordinador;
-
-    public panProducto(ProductoDTO producto, CoordinadorModuloComandas coordinador) {
+    public panProducto(DetalleComandaDTO detalle, CoordinadorModuloComandas coordinador, ComandaDTO comanda) {
         initComponents();
 
-        this.producto = producto;
+        this.detalle = detalle;
         this.coordinador = coordinador;
+        this.comanda = comanda;
 
-        this.setPreferredSize(new java.awt.Dimension(334, 163));
-        this.setMinimumSize(new java.awt.Dimension(334, 163));
-        this.setMaximumSize(new java.awt.Dimension(334, 163));
+        configurarPanel();
+        cargarDatos();
+        actualizarBotonDisminuir();
+    }
 
-        URL url = getClass().getResource(producto.getUrlImagen());
+    public DetalleComandaDTO getDetalle() {
+        return detalle;
+    }
 
-        if (url != null) {
-            ImageIcon iconoOriginal = new ImageIcon(url);
-            Image imagenEscalada = iconoOriginal.getImage()
-                    .getScaledInstance(136, 120, Image.SCALE_SMOOTH);
+    public void agregarOtraUnidad() {
+        aumentarCantidad();
 
-            lblImagen.setIcon(new ImageIcon(imagenEscalada));
-            lblImagen.setText("");
-        } else {
-            System.out.println("No se encontró la imagen: " + producto.getUrlImagen());
+    }
+
+    private void configurarPanel() {
+        setPreferredSize(new java.awt.Dimension(334, 163));
+        setMinimumSize(new java.awt.Dimension(334, 163));
+        setMaximumSize(new java.awt.Dimension(334, 163));
+    }
+
+    private void cargarDatos() {
+        try {
+            ProductoDTO producto = coordinador.obtenerProducto(detalle.getIdProducto());
+
+            cargarImagen(producto.getUrlImagen());
+
+            lblNombre.setText(producto.getNombre());
+            lblTipo.setText(producto.getTipo().name());
+            lblPrecio.setText("$" + detalle.getPrecioUnitario());
+            lblCantidad.setText(String.valueOf(detalle.getCantidad()));
+
+        } catch (NegocioException ex) {
+            mostrarError(ex.getMessage());
         }
-        lblCantidad.setText("1");
-        lblNombre.setText(producto.getNombre());
-        lblTipo.setText(producto.getTipo().name());
-        lblPrecio.setText(String.valueOf(producto.getPrecio()));
-        if (Integer.parseInt(lblCantidad.getText()) == 1) {
-            btnDisminuir.setEnabled(false);
-            btnDisminuir.setOpaque(false);
-            btnDisminuir.setContentAreaFilled(false);
-            btnDisminuir.setBorderPainted(false);
-        } else {
-            btnDisminuir.setEnabled(true);
-            btnDisminuir.setOpaque(true);
-            btnDisminuir.setContentAreaFilled(true);
-            btnDisminuir.setBorderPainted(false);
+    }
+
+    private void cargarImagen(String ruta) {
+        URL url = getClass().getResource(ruta);
+
+        if (url == null) {
+            return;
         }
+
+        ImageIcon icono = new ImageIcon(url);
+        Image imagen = icono.getImage()
+                .getScaledInstance(112, 110, Image.SCALE_SMOOTH);
+
+        lblImagen.setIcon(new ImageIcon(imagen));
+        lblImagen.setText("");
+    }
+
+    private void aumentarCantidad() {
+        detalle.setCantidad(detalle.getCantidad() + 1);
+
+        lblCantidad.setText(String.valueOf(detalle.getCantidad()));
+        coordinador.actualizarTotal(detalle.getPrecioUnitario());
+
+        actualizarBotonDisminuir();
+    }
+
+    private void disminuirCantidad() {
+        if (detalle.getCantidad() <= 1) {
+            return;
+        }
+
+        detalle.setCantidad(detalle.getCantidad() - 1);
+
+        lblCantidad.setText(String.valueOf(detalle.getCantidad()));
+        coordinador.actualizarTotal(-detalle.getPrecioUnitario());
+
+        actualizarBotonDisminuir();
+    }
+
+    private void actualizarBotonDisminuir() {
+        boolean activo = detalle.getCantidad() > 1;
+
+        btnDisminuir.setEnabled(activo);
+        btnDisminuir.setOpaque(activo);
+        btnDisminuir.setContentAreaFilled(activo);
+        btnDisminuir.setBorderPainted(false);
+    }
+
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(
+                this,
+                mensaje,
+                "Advertencia",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 
     /**
@@ -121,8 +182,8 @@ public class panProducto extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(46, 46, 46)
+                .addComponent(lblImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(42, 42, 42)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblNombre)
                     .addComponent(lblTipo)
@@ -142,17 +203,15 @@ public class panProducto extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(lblImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
                         .addComponent(lblNombre)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lblTipo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblPrecio)))
+                        .addComponent(lblPrecio))
+                    .addComponent(lblImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -164,34 +223,38 @@ public class panProducto extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIncrementarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncrementarActionPerformed
-        int valorActual = Integer.parseInt(lblCantidad.getText());
+        aumentarCantidad();
+        try {
+            ComandaDTO comandaActual = coordinador.obtenerComanda(comanda.getId());
 
-        valorActual++;
-        lblCantidad.setText(String.valueOf(valorActual));
+            for (DetalleComandaDTO d : comandaActual.getDetalles()) {
+                ProductoDTO productoRecuperado = coordinador.obtenerProducto(d.getIdProducto());
+                if (d.getIdProducto().equals(productoRecuperado.getId())
+                        && (d.getComentario() == null || d.getComentario().trim().isEmpty())) {
 
-        coordinador.actualizarTotal(producto.getPrecio());
+                    d.setCantidad(d.getCantidad() + 1);
+                    break;
+                }
+            }
 
-        if (valorActual > 1) {
-            btnDisminuir.setEnabled(true);
-            btnDisminuir.setOpaque(true);
-            btnDisminuir.setContentAreaFilled(true);
+            double totalCalculado = 0.0;
+            for (DetalleComandaDTO d : comandaActual.getDetalles()) {
+                totalCalculado += d.getCantidad() * d.getPrecioUnitario();
+            }
+            comandaActual.setTotal(totalCalculado);
+
+            coordinador.actualizarComanda(comandaActual);
+            this.comanda = comandaActual;
+
+        } catch (NegocioException ex) {
+            mostrarError(ex.getMessage());
         }
+
     }//GEN-LAST:event_btnIncrementarActionPerformed
 
     private void btnDisminuirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisminuirActionPerformed
-        int valorActual = Integer.parseInt(lblCantidad.getText());
+        disminuirCantidad();
 
-        coordinador.actualizarTotal(-producto.getPrecio());
-
-        if (valorActual > 1) {
-            valorActual--;
-            lblCantidad.setText(String.valueOf(valorActual));
-        }
-        if (valorActual == 1) {
-            btnDisminuir.setEnabled(false);
-            btnDisminuir.setOpaque(false);
-            btnDisminuir.setContentAreaFilled(false);
-        }
     }//GEN-LAST:event_btnDisminuirActionPerformed
 
 

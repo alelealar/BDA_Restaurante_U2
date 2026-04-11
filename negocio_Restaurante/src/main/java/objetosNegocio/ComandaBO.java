@@ -4,7 +4,6 @@ import adaptadores.ComandaAdapter;
 import adaptadores.MesaAdapter;
 import daos.ClienteDAO;
 import daos.ComandaDAO;
-import dtos.ClienteDTO;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
 import dtos.MesaDTO;
@@ -24,49 +23,34 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Clase de negocio encargada de gestionar las operaciones relacionadas con las
- * comandas.
+ * Implementa la lógica de negocio para la gestión de comandas.
  *
- * Contiene la lógica de negocio para la creación, actualización, eliminación y
- * consulta de comandas, así como la validación de datos y generación de folios.
+ * Se encarga de validar datos, comunicarse con la capa DAO y transformar
+ * entidades a DTOs para la capa de presentación.
  *
- * Implementa el patrón Singleton para asegurar una única instancia en el
- * sistema.
+ * Implementa patrón Singleton.
  *
- * @author Brian Kaleb Sandoval Rodríguez - 00000262741
+ * @author Brian Kaleb Sandoval Rodríguez
  */
 public class ComandaBO implements IComandaBO {
 
-    /**
-     * Instancia única de la clase.
-     */
     private static ComandaBO instancia;
 
-    /**
-     * DAO utilizado para operaciones de persistencia.
-     */
     private final IComandaDAO comandaDAO = ComandaDAO.getInstance();
-
-    /**
-     * DAO utilizado para operaciones con clientes.
-     */
     private final IClienteDAO clienteDAO = ClienteDAO.getInstance();
 
-    /**
-     * Logger para registrar eventos del sistema.
-     */
     private static final Logger LOG = Logger.getLogger(ComandaBO.class.getName());
 
     /**
-     * Constructor privado para patrón Singleton.
+     * Constructor privado para Singleton.
      */
-    public ComandaBO() {
+    private ComandaBO() {
     }
 
     /**
-     * Obtiene la instancia única de ComandaBO.
+     * Obtiene la única instancia de la clase.
      *
-     * @return instancia de ComandaBO.
+     * @return instancia de ComandaBO
      */
     public static ComandaBO getInstance() {
         if (instancia == null) {
@@ -76,64 +60,57 @@ public class ComandaBO implements IComandaBO {
     }
 
     /**
-     * Guarda una nueva comanda en el sistema.
+     * Registra una nueva comanda.
      *
-     * Inicializa valores como fecha, estado, total y folio antes de persistir.
+     * Asigna fecha, folio, estado inicial y cliente correspondiente.
      *
-     * @param comandaDTO Comanda a registrar.
-     * @throws NegocioException Si ocurre un error de validación o persistencia.
+     * @param comandaDTO datos de la comanda
+     * @return comanda registrada
+     * @throws NegocioException si ocurre un error
      */
     @Override
-    public void guardarComanda(ComandaDTO comandaDTO) throws NegocioException {
+    public ComandaDTO guardarComanda(ComandaDTO comandaDTO) throws NegocioException {
         try {
             validarCreacion(comandaDTO);
             validarDetalles(comandaDTO.getDetalles());
 
             comandaDTO.setFechaHora(LocalDateTime.now());
             comandaDTO.setEstadoComanda(EstadoComandaDTO.ABIERTA);
-            comandaDTO.setTotal(0.0);
+
+            comandaDTO.setTotal(null);
 
             Long consecutivo = comandaDAO.obtenerComandasDia() + 1;
             comandaDTO.setFolio(generarFolio(consecutivo));
-            Cliente clienteEntidad;
 
-            if (comandaDTO.getCliente() == null) {
-                clienteEntidad = clienteDAO.obtenerOcrearClienteGeneral();
-            } else {
-                clienteEntidad = clienteDAO.buscarClientePorId(
-                        comandaDTO.getCliente().getId()
-                );
-            }
+            Cliente cliente = obtenerClienteComanda(comandaDTO);
 
-            Comanda comanda = ComandaAdapter.dtoAEntidad(comandaDTO);
+            Comanda entidad = ComandaAdapter.dtoAEntidad(comandaDTO);
+            entidad.setCliente(cliente);
 
-            comanda.setCliente(clienteEntidad);
+            Comanda guardada = comandaDAO.guardarComanda(entidad);
 
-            Comanda registrada = comandaDAO.guardarComanda(comanda);
+            cambiarMesaOcupada(comandaDTO.getMesa().getId());
 
-            if (registrada.getId() != null) {
-                LOG.info("Comanda registrada exitosamente.");
-                IMesaBO mesaBO = MesaBO.getInstance();
-                mesaBO.cambiarEstadoMesa(comandaDTO.getMesa().getId(), "OCUPADA");
-            }
+            LOG.info("Comanda registrada correctamente.");
+
+            return ComandaAdapter.entidadADTO(guardada);
 
         } catch (PersistenciaException ex) {
-            LOG.severe(() -> "Error al guardar la comanda: " + ex.getMessage());
-            throw new NegocioException("No se pudo guardar la comanda", ex);
+            throw new NegocioException("No fue posible guardar la comanda.", ex);
         }
     }
 
     /**
-     * Elimina una comanda del sistema.
+     * Elimina una comanda existente.
      *
-     * @param idComanda Identificador de la comanda.
-     * @throws NegocioException Si ocurre un error o no se elimina.
+     * @param idComanda identificador de la comanda
+     * @throws NegocioException si ocurre un error
      */
     @Override
     public void eliminarComanda(Long idComanda) throws NegocioException {
         try {
             if (idComanda == null) {
-                throw new NegocioException("El id de la comanda no puede ser nulo.");
+                throw new NegocioException("El id de la comanda es obligatorio.");
             }
 
             ComandaDTO comanda = buscarComandaPorId(idComanda);
@@ -141,60 +118,61 @@ public class ComandaBO implements IComandaBO {
             boolean eliminada = comandaDAO.eliminarComanda(idComanda);
 
             if (!eliminada) {
-                throw new NegocioException("No se pudo eliminar la comanda.");
+                throw new NegocioException("No fue posible eliminar la comanda.");
             }
 
-            LOG.info("Comanda eliminada correctamente.");
+            cambiarMesaDisponible(comanda.getMesa().getId());
 
-            IMesaBO mesaBO = MesaBO.getInstance();
-            mesaBO.cambiarEstadoMesa(comanda.getMesa().getId(), "DISPONIBLE");
-
-        } catch (PersistenciaException e) {
-            LOG.warning(e.getMessage());
-            throw new NegocioException("Error al eliminar la comanda", e);
+        } catch (PersistenciaException ex) {
+            throw new NegocioException("Error al eliminar la comanda.", ex);
         }
     }
 
     /**
      * Actualiza una comanda existente.
      *
-     * @param comandaDTO Datos actualizados.
-     * @throws NegocioException Si ocurre un error.
+     * @param comandaDTO nuevos datos
+     * @return comanda actualizada
+     * @throws NegocioException si ocurre un error
      */
     @Override
-    public void actualizarComanda(ComandaDTO comandaDTO) throws NegocioException {
+    public ComandaDTO actualizarComanda(ComandaDTO comandaDTO) throws NegocioException {
         try {
             validarActualizacion(comandaDTO);
+            validarDetalles(comandaDTO.getDetalles());
 
-            ComandaDTO comandaGuardada = buscarComandaPorId(comandaDTO.getId());
-            if (comandaGuardada.getEstadoComanda() != EstadoComandaDTO.ABIERTA) {
-                throw new NegocioException("No es posible modificar una comanda que ya fue cerrada o pagada.");
+            ComandaDTO actual = buscarComandaPorId(comandaDTO.getId());
+
+            if (actual.getEstadoComanda() != EstadoComandaDTO.ABIERTA) {
+                throw new NegocioException("Solo se pueden modificar comandas abiertas.");
             }
 
-            Comanda comanda = ComandaAdapter.dtoAEntidad(comandaDTO);
-            Comanda actualizada = comandaDAO.actualizarComanda(comanda);
+            Cliente cliente = obtenerClienteComanda(comandaDTO);
 
-            if (actualizada != null) {
-                LOG.info("Comanda actualizada correctamente.");
+            Comanda entidad = ComandaAdapter.dtoAEntidad(comandaDTO);
+            entidad.setCliente(cliente);
 
-                if (comandaDTO.getEstadoComanda() != EstadoComandaDTO.ABIERTA) {
-                    IMesaBO mesaBO = MesaBO.getInstance();
-                    mesaBO.cambiarEstadoMesa(comandaDTO.getMesa().getId(), "DISPONIBLE");
-                }
+            Comanda actualizada = comandaDAO.actualizarComanda(entidad);
+
+            if (comandaDTO.getEstadoComanda() != EstadoComandaDTO.ABIERTA) {
+                cambiarMesaDisponible(comandaDTO.getMesa().getId());
             }
 
-        } catch (PersistenciaException e) {
-            LOG.warning(e.getMessage());
-            throw new NegocioException("Error al actualizar la comanda", e);
+            LOG.info("Comanda actualizada correctamente.");
+
+            return ComandaAdapter.entidadADTO(actualizada);
+
+        } catch (PersistenciaException ex) {
+            throw new NegocioException("No fue posible actualizar la comanda.", ex);
         }
     }
 
     /**
      * Busca una comanda por su identificador.
      *
-     * @param idComanda Identificador.
-     * @return Comanda encontrada.
-     * @throws NegocioException Si no existe o hay error.
+     * @param idComanda id de la comanda
+     * @return comanda encontrada
+     * @throws NegocioException si no existe o hay error
      */
     @Override
     public ComandaDTO buscarComandaPorId(Long idComanda) throws NegocioException {
@@ -208,47 +186,49 @@ public class ComandaBO implements IComandaBO {
             return ComandaAdapter.entidadADTO(comanda);
 
         } catch (PersistenciaException ex) {
-            throw new NegocioException("Error al buscar la comanda", ex);
+            throw new NegocioException("Error al buscar la comanda.", ex);
         }
     }
 
     /**
-     * Obtiene todas las comandas del sistema.
+     * Obtiene todas las comandas registradas.
      *
-     * @return Lista de comandas.
-     * @throws NegocioException Si ocurre un error.
+     * @return lista de comandas
+     * @throws NegocioException si ocurre un error
      */
     @Override
     public List<ComandaDTO> obtenerComandas() throws NegocioException {
         try {
-            List<Comanda> comandas = comandaDAO.obtenerComandas();
-            return ComandaAdapter.listaEntidadADTO(comandas);
-        } catch (PersistenciaException e) {
-            throw new NegocioException("Error al obtener comandas", e);
+            return ComandaAdapter.listaEntidadADTO(
+                    comandaDAO.obtenerComandas()
+            );
+        } catch (PersistenciaException ex) {
+            throw new NegocioException("Error al obtener comandas.", ex);
         }
     }
 
     /**
-     * Obtiene todas las mesas del sistema.
+     * Obtiene todas las mesas registradas.
      *
-     * @return Lista de mesas.
-     * @throws NegocioException Si ocurre un error.
+     * @return lista de mesas
+     * @throws NegocioException si ocurre un error
      */
     @Override
     public List<MesaDTO> obtenerMesas() throws NegocioException {
         try {
             List<Mesa> mesas = comandaDAO.obtenerMesas();
             return MesaAdapter.listaEntidadADTO(mesas);
-        } catch (PersistenciaException e) {
-            throw new NegocioException("Error al obtener mesas", e);
+
+        } catch (PersistenciaException ex) {
+            throw new NegocioException("Error al obtener mesas.", ex);
         }
     }
 
     /**
      * Genera un folio único con formato OB-YYYYMMDD-XXX.
      *
-     * @param consecutivo Número consecutivo del día.
-     * @return Folio generado.
+     * @param consecutivo número consecutivo diario
+     * @return folio generado
      */
     public String generarFolio(Long consecutivo) {
         String fecha = LocalDate.now().toString().replace("-", "");
@@ -256,65 +236,99 @@ public class ComandaBO implements IComandaBO {
     }
 
     /**
-     * Valida los datos para la creación de una comanda.
+     * Obtiene el cliente que tendrá la comanda.
      *
-     * @param dto Comanda a validar.
-     * @throws NegocioException Si los datos son inválidos.
+     * @param dto comanda recibida
+     * @return cliente entidad
+     * @throws PersistenciaException si ocurre un error
+     */
+    private Cliente obtenerClienteComanda(ComandaDTO dto) throws PersistenciaException {
+        if (dto.getCliente() == null) {
+            return clienteDAO.obtenerOcrearClienteGeneral();
+        }
+
+        return clienteDAO.buscarClientePorId(dto.getCliente().getId());
+    }
+
+    /**
+     * Cambia una mesa a estado ocupada.
+     *
+     * @param idMesa id de la mesa
+     * @throws NegocioException si ocurre error
+     */
+    private void cambiarMesaOcupada(Long idMesa) throws NegocioException {
+        IMesaBO mesaBO = MesaBO.getInstance();
+        mesaBO.cambiarEstadoMesa(idMesa, "OCUPADA");
+    }
+
+    /**
+     * Cambia una mesa a estado disponible.
+     *
+     * @param idMesa id de la mesa
+     * @throws NegocioException si ocurre error
+     */
+    private void cambiarMesaDisponible(Long idMesa) throws NegocioException {
+        IMesaBO mesaBO = MesaBO.getInstance();
+        mesaBO.cambiarEstadoMesa(idMesa, "DISPONIBLE");
+    }
+
+    /**
+     * Valida datos mínimos para registrar.
+     *
+     * @param dto comanda a validar
+     * @throws NegocioException si es inválida
      */
     private void validarCreacion(ComandaDTO dto) throws NegocioException {
         if (dto == null) {
-            throw new NegocioException("La comanda no puede ser nula");
+            throw new NegocioException("La comanda no puede ser nula.");
         }
 
         if (dto.getMesa() == null) {
-            throw new NegocioException("La mesa es obligatoria");
+            throw new NegocioException("La mesa es obligatoria.");
         }
     }
 
     /**
-     * Valida los datos para actualizar una comanda.
+     * Valida datos mínimos para actualizar.
      *
-     * @param dto Comanda a validar.
-     * @throws NegocioException Si los datos son inválidos.
+     * @param dto comanda a validar
+     * @throws NegocioException si es inválida
      */
     private void validarActualizacion(ComandaDTO dto) throws NegocioException {
-        if (dto == null) {
-            throw new NegocioException("La comanda no puede ser nula");
-        }
+        validarCreacion(dto);
 
         if (dto.getId() == null) {
-            throw new NegocioException("El ID es obligatorio para actualizar");
+            throw new NegocioException("El id es obligatorio.");
         }
     }
 
     /**
-     * Valida un detalle de comanda.
+     * Valida la lista de detalles de una comanda.
      *
-     * @param detalle Detalle a validar.
-     * @throws NegocioException Si los datos son inválidos.
+     * @param detalles lista de detalles
+     * @throws NegocioException si algún detalle es inválido
      */
     private void validarDetalles(List<DetalleComandaDTO> detalles) throws NegocioException {
-
         if (detalles == null || detalles.isEmpty()) {
-            return; // ✅ permitido: comanda sin consumo
+            return;
         }
 
         for (DetalleComandaDTO detalle : detalles) {
 
             if (detalle == null) {
-                throw new NegocioException("El detalle no puede ser nulo");
-            }
-
-            if (detalle.getCantidad() <= 0) {
-                throw new NegocioException("La cantidad debe ser mayor a 0");
-            }
-
-            if (detalle.getPrecioUnitario() < 0) {
-                throw new NegocioException("El precio no puede ser negativo");
+                throw new NegocioException("Existe un detalle nulo.");
             }
 
             if (detalle.getIdProducto() == null) {
-                throw new NegocioException("El producto es obligatorio en el detalle");
+                throw new NegocioException("El producto es obligatorio.");
+            }
+
+            if (detalle.getCantidad() <= 0) {
+                throw new NegocioException("La cantidad debe ser mayor a cero.");
+            }
+
+            if (detalle.getPrecioUnitario() < 0) {
+                throw new NegocioException("El precio no puede ser negativo.");
             }
         }
     }

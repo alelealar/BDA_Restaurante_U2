@@ -240,4 +240,38 @@ public class ComandaDTO {
         this.cliente = cliente;
     }
 
+    /**
+     * Agrega un detalle a la comanda.
+     *
+     * @param nuevo
+     */
+    public void agregarDetalle(DetalleComandaDTO nuevo) {
+        if (nuevo == null) {
+            return;
+        }
+
+        for (DetalleComandaDTO d : detalles) {
+            if (d.getIdProducto().equals(nuevo.getIdProducto())) {
+                d.setCantidad(nuevo.getCantidad());
+                d.setComentario(nuevo.getComentario());
+                d.setPrecioUnitario(nuevo.getPrecioUnitario());
+                return;
+            }
+        }
+        detalles.add(nuevo);
+        nuevo.setIdComanda(null);
+    }
+
+    /**
+     * Elimina un detalle de la comanda.
+     *
+     * @param d Detalle a eliminar.
+     */
+    public void removerDetalle(DetalleComandaDTO d) {
+        if (d != null && detalles.contains(d)) {
+            detalles.remove(d);
+            d.setIdComanda(null);
+        }
+    }
+
 }

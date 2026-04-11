@@ -1,81 +1,263 @@
 package pantallas.moduloComandas;
 
 import controlador.CoordinadorModuloComandas;
+import dtos.ComandaDTO;
+import dtos.DetalleComandaDTO;
 import dtos.MesaDTO;
 import dtos.ProductoDTO;
 import excepciones.NegocioException;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import pantallas.moduloComandas.vistas.panProducto;
 import pantallas.moduloComandas.vistas.panProductoMenu;
 
 /**
+ * Pantalla para gestionar los pedidos de una comanda. Permite agregar
+ * productos, visualizar pedidos y calcular el total.
  *
  * @author Kaleb
  */
 public class frmPedidos extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmPedidos.class.getName());
-
-    private CoordinadorModuloComandas coordinador;
-
-    private MesaDTO mesa;
-
-    private Double total = 0.0;
+    private final CoordinadorModuloComandas coordinador;
+    private final MesaDTO mesa;
+    private double total = 0.0;
+    private ComandaDTO comanda;
 
     /**
-     * Creates new form frmMesas
+     * Constructor de la pantalla de pedidos.
+     *
+     * @param coordinador Coordinador del módulo
+     * @param mesa Mesa asociada
+     * @param comanda Comanda actual
      */
-    public frmPedidos(CoordinadorModuloComandas coordinador, MesaDTO mesa) {
+    public frmPedidos(CoordinadorModuloComandas coordinador, MesaDTO mesa, ComandaDTO comanda) {
         initComponents();
-        jScrollPane1.getViewport().setLayout(new java.awt.BorderLayout());
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            jPanel1.requestFocusInWindow();
-        });
+        this.coordinador = coordinador;
+        this.mesa = mesa;
+        this.comanda = comanda;
+
+        configurarPantalla();
+        cargarProductos();
+    }
+
+    /**
+     * Configura layouts y enfoque inicial.
+     */
+    private void configurarPantalla() {
+        jScrollPane1.getViewport().setLayout(new BorderLayout());
+        SwingUtilities.invokeLater(() -> jPanel1.requestFocusInWindow());
+
         panContenedorProductos.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
         panProductosPedidos.setLayout(new BoxLayout(panProductosPedidos, BoxLayout.Y_AXIS));
-
-        this.mesa = mesa;
-        this.coordinador = coordinador;
-        agregarProductos();
     }
 
-    public void agregarProductos() {
+    /**
+     * Carga todos los productos disponibles en la interfaz.
+     */
+    private void cargarProductos() {
         try {
             List<ProductoDTO> productos = coordinador.consultarProductos();
+
             for (ProductoDTO producto : productos) {
-                panProductoMenu panelProducto = new panProductoMenu(producto, coordinador);
-                panContenedorProductos.add(panelProducto);
+                panContenedorProductos.add(new panProductoMenu(producto, coordinador));
             }
 
+            actualizarPanel(panContenedorProductos);
+
         } catch (NegocioException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Advertencia", JOptionPane.WARNING_MESSAGE);
+            mostrarError(ex.getMessage());
         }
-        panContenedorProductos.revalidate();
-        panContenedorProductos.repaint();
     }
 
+    /**
+     * Agrega un producto a la comanda.
+     *
+     * @param producto Producto seleccionado
+     */
     public void agregarProductosComanda(ProductoDTO producto) {
-        panProducto panelProductoComanda = new panProducto(producto, coordinador);
 
-        panelProductoComanda.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+        String comentario = pedirComentario();
 
-        panProductosPedidos.add(panelProductoComanda);
+        if (sumarSiYaExiste(producto, comentario)) {
+            return;
+        }
+
+        DetalleComandaDTO detalle = new DetalleComandaDTO();
+        detalle.setIdProducto(producto.getId());
+        detalle.setCantidad(1);
+        detalle.setPrecioUnitario(producto.getPrecio());
+        detalle.setComentario(comentario);
+
+        actualizarComanda(detalle);
+
+        agregarPanelProducto(detalle);
+        actualizarTotal(detalle.getPrecioUnitario());
+    }
+
+    /**
+     * Actualiza la comanda en persistencia.
+     *
+     * @param detalle Detalle a agregar
+     */
+    private void actualizarComanda(DetalleComandaDTO detalle) {
+        try {
+            ComandaDTO actual = coordinador.obtenerComanda(comanda.getId());
+
+            actual.getDetalles().add(detalle);
+            actual.setTotal(calcularTotal(actual.getDetalles()));
+
+            coordinador.actualizarComanda(actual);
+            this.comanda = actual;
+
+        } catch (NegocioException ex) {
+            mostrarError(ex.getMessage());
+        }
+    }
+
+    /**
+     * Calcula el total de la comanda.
+     *
+     * @param detalles Lista de detalles
+     * @return Total calculado
+     */
+    private double calcularTotal(List<DetalleComandaDTO> detalles) {
+        double totalCalculado = 0.0;
+
+        for (DetalleComandaDTO d : detalles) {
+            totalCalculado += d.getCantidad() * d.getPrecioUnitario();
+        }
+
+        return totalCalculado;
+    }
+
+    /**
+     * Agrega el panel visual de un producto.
+     *
+     * @param detalle Detalle a mostrar
+     */
+    private void agregarPanelProducto(DetalleComandaDTO detalle) {
+        panProducto panel = new panProducto(detalle, coordinador, comanda);
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+
+        panProductosPedidos.add(panel);
         panProductosPedidos.add(Box.createVerticalStrut(10));
 
-        panProductosPedidos.revalidate();
-        panProductosPedidos.repaint();
+        actualizarPanel(panProductosPedidos);
     }
 
-    public void actualizarTotal(Double monto) {
-        total += monto;
+    /**
+     * Verifica si el producto ya existe sin comentario y suma cantidad.
+     *
+     * @param producto Producto a buscar
+     * @return true si se sumó, false si no
+     */
+    private boolean sumarSiYaExiste(ProductoDTO producto, String comentarioNuevo) {
 
-        // Formateamos a 2 decimales para que se vea como dinero (ej. Total: $125.50)
+        for (Component comp : panProductosPedidos.getComponents()) {
+
+            if (!(comp instanceof panProducto panel)) {
+                continue;
+            }
+
+            try {
+                ProductoDTO actual = coordinador.obtenerProducto(panel.getDetalle().getIdProducto());
+
+                String comentarioExistente = panel.getDetalle().getComentario();
+
+                boolean mismosComentarios
+                        = (comentarioExistente == null || comentarioExistente.isBlank())
+                        && comentarioNuevo.isBlank()
+                        || (comentarioExistente != null
+                        && comentarioExistente.equalsIgnoreCase(comentarioNuevo));
+
+                if (actual.getId().equals(producto.getId()) && mismosComentarios) {
+                    panel.agregarOtraUnidad();
+                    return true;
+                }
+
+            } catch (NegocioException ex) {
+                mostrarError(ex.getMessage());
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Verifica si un detalle no tiene comentario.
+     *
+     * @param panel Panel del producto
+     * @return true si no tiene comentario
+     */
+    private boolean sinComentario(panProducto panel) {
+        String comentario = panel.getDetalle().getComentario();
+        return comentario == null || comentario.isBlank();
+    }
+
+    /**
+     * Solicita un comentario al usuario.
+     *
+     * @return Comentario ingresado
+     */
+    private String pedirComentario() {
+        String texto = JOptionPane.showInputDialog(this, "Ingrese un comentario", "Comentario", JOptionPane.PLAIN_MESSAGE);
+        return (texto == null) ? "" : texto.trim();
+    }
+
+    /**
+     * Actualiza el total mostrado.
+     *
+     * @param monto Monto a agregar
+     */
+    public void actualizarTotal(double monto) {
+        total += monto;
         lblTotal.setText(String.format("Total: $%.2f", total));
+    }
+
+    /**
+     * Refresca un panel.
+     *
+     * @param panel Panel a actualizar
+     */
+    private void actualizarPanel(JPanel panel) {
+        panel.revalidate();
+        panel.repaint();
+    }
+
+    /**
+     * Compara comentarios ignorando mayúsculas/minúsculas.
+     *
+     * @param comentarioExistente Comentario del detalle actual
+     * @return true si coincide con el nuevo comentario
+     */
+    private boolean mismoComentario(String comentarioExistente) {
+
+        String nuevoComentario = pedirComentario();
+
+        if ((comentarioExistente == null || comentarioExistente.isBlank())
+                && nuevoComentario.isBlank()) {
+            return true;
+        }
+
+        return comentarioExistente != null
+                && comentarioExistente.equalsIgnoreCase(nuevoComentario);
+    }
+
+    /**
+     * Muestra un mensaje de error.
+     *
+     * @param mensaje Mensaje a mostrar
+     */
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Advertencia", JOptionPane.WARNING_MESSAGE);
     }
 
     @SuppressWarnings("unchecked")
@@ -372,7 +554,7 @@ public class frmPedidos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscadorActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_txtBuscadorActionPerformed
 
     private void txtBuscadorFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtBuscadorFocusGained
@@ -383,15 +565,16 @@ public class frmPedidos extends javax.swing.JFrame {
 
     private void btnOrdenarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrdenarActionPerformed
 
+        int respuesta = JOptionPane.showConfirmDialog(null, "¿Desea confirmar los productos?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+
+        if (respuesta == JOptionPane.OK_OPTION) {
+            coordinador.mostrarPantallaComandas(mesa);
+        }
     }//GEN-LAST:event_btnOrdenarActionPerformed
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
-        int respuesta = JOptionPane.showConfirmDialog(
-                null,
-                "¿Desea continuar, se borraran los productos ingresados?",
-                "Advertencia",
-                JOptionPane.OK_CANCEL_OPTION
-        );
+        int respuesta = JOptionPane.showConfirmDialog(null, "¿Desea continuar, se borraran los productos ingresados?", "Advertencia", JOptionPane.OK_CANCEL_OPTION);
+
         if (respuesta == JOptionPane.OK_OPTION) {
             coordinador.mostrarPantallaComandas(mesa);
         }

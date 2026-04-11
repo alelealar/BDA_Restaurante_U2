@@ -3,41 +3,43 @@ package pantallas.moduloComandas;
 import controlador.CoordinadorModuloComandas;
 import dtos.ClienteDTO;
 import dtos.ComandaDTO;
+import dtos.DetalleComandaDTO;
 import dtos.MesaDTO;
+import dtos.ProductoDTO;
 import enumerators.EstadoComandaDTO;
+import enumerators.EstadoMesaDTO;
 import excepciones.NegocioException;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
-import java.util.List;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import pantallas.moduloComandas.vistas.panPedidos;
 
 /**
+ * Pantalla principal para la gestión de comandas de una mesa. Permite crear,
+ * visualizar pedidos y cerrar la comanda.
  *
  * @author Kaleb
  */
 public class frmComandas extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmComandas.class.getName());
-
     private boolean creada = false;
 
-    private CoordinadorModuloComandas coordinador;
-
+    private final CoordinadorModuloComandas coordinador;
     private ClienteDTO cliente;
-
     private ComandaDTO comanda;
-
-    private MesaDTO mesa;
+    private final MesaDTO mesa;
 
     /**
-     * Creates new form frmMesas
+     * Constructor de la pantalla de comandas.
      *
-     * @param coordinador
+     * @param coordinador Coordinador del módulo
+     * @param mesa Mesa seleccionada
      */
     public frmComandas(CoordinadorModuloComandas coordinador, MesaDTO mesa) {
         initComponents();
@@ -45,42 +47,109 @@ public class frmComandas extends javax.swing.JFrame {
         this.mesa = mesa;
         cargarEstado();
 
+        if (creada) {
+            agregarPedidos();
+        }
     }
 
+    /**
+     * Verifica si ya existe una comanda abierta para la mesa y actualiza el
+     * estado visual.
+     */
     public void cargarEstado() {
         try {
-            this.creada = false;
-            List<ComandaDTO> comandasRegistradas = coordinador.obtenerComandas();
+            creada = false;
 
-            for (ComandaDTO c : comandasRegistradas) {
-                if (c.getMesa() != null && c.getEstadoComanda() != null) {
+            for (ComandaDTO c : coordinador.obtenerComandas()) {
+                if (c.getMesa() != null
+                        && c.getEstadoComanda() == EstadoComandaDTO.ABIERTA
+                        && c.getMesa().getId().equals(mesa.getId())) {
 
-                    if (c.getMesa().getId().equals(mesa.getId()) && c.getEstadoComanda().equals(EstadoComandaDTO.ABIERTA)) {
-                        this.creada = true;
-                        this.comanda = c;
-                        break; // Detenemos la búsqueda porque ya la encontramos
-                    }
+                    creada = true;
+                    comanda = c;
+                    break;
                 }
             }
+
         } catch (NegocioException ex) {
-            System.getLogger(frmComandas.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            mostrarMensajeError(ex.getMessage());
         }
-        if (creada) {
-            btnCrear.setText("+Crear Pedido");
-            jblAviso.setVisible(false);
-        } else {
-            btnCrear.setText("+Crear Comanda");
-            jblAviso.setVisible(true);
-        }
-        cargarComanda();
+
+        btnCrear.setText(creada ? "+Crear Pedido" : "+Crear Comanda");
+        jblAviso.setVisible(!creada);
     }
 
-    public void cargarComanda() {
-
+    /**
+     * Muestra un mensaje de error en pantalla.
+     *
+     * @param mensaje Mensaje a mostrar
+     */
+    public void mostrarMensajeError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Advertencia", JOptionPane.WARNING_MESSAGE);
     }
 
+    /**
+     * Carga los pedidos actuales de la comanda en pantalla.
+     */
     public void agregarPedidos() {
+        try {
+            ComandaDTO actual = coordinador.obtenerComanda(comanda.getId());
 
+            panContenedorPedidos.removeAll();
+            panContenedorPedidos.setLayout(new BoxLayout(panContenedorPedidos, BoxLayout.Y_AXIS));
+
+            panContenedorPedidos.add(new panPedidos(actual, coordinador));
+
+            panContenedorPedidos.revalidate();
+            panContenedorPedidos.repaint();
+
+        } catch (NegocioException ex) {
+            mostrarMensajeError(ex.getMessage());
+        }
+    }
+
+    /**
+     * Construye el mensaje detallado de la comanda.
+     *
+     * @param comanda Comanda a mostrar
+     * @return Texto formateado
+     */
+    private String construirMensajeComanda(ComandaDTO comanda) {
+        StringBuilder mensaje = new StringBuilder();
+
+        if (comanda.getCliente() != null) {
+            mensaje.append("Cliente: ")
+                    .append(comanda.getCliente().getNombres())
+                    .append(" ")
+                    .append(comanda.getCliente().getApellidoPaterno())
+                    .append("\n\n");
+        }
+
+        mensaje.append("Detalles:\n");
+
+        for (DetalleComandaDTO d : comanda.getDetalles()) {
+            try {
+                ProductoDTO producto = coordinador.obtenerProducto(d.getIdProducto());
+
+                mensaje.append("- ")
+                        .append(producto.getNombre())
+                        .append(" x").append(d.getCantidad())
+                        .append(" $").append(d.getPrecioUnitario());
+
+                if (d.getComentario() != null && !d.getComentario().isBlank()) {
+                    mensaje.append(" (").append(d.getComentario()).append(")");
+                }
+
+                mensaje.append("\n");
+
+            } catch (NegocioException e) {
+                mensaje.append("- Producto desconocido\n");
+            }
+        }
+
+        mensaje.append("\nTotal: $").append(comanda.getTotal());
+
+        return mensaje.toString();
     }
 
     @SuppressWarnings("unchecked")
@@ -96,6 +165,8 @@ public class frmComandas extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         btnMesas = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
+        btnCerrarComanda = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         panContenedorPedidos = new javax.swing.JPanel();
         jblAviso = new javax.swing.JLabel();
@@ -103,8 +174,8 @@ public class frmComandas extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
-        setMinimumSize(new java.awt.Dimension(1029, 656));
-        setResizable(false);
+        setMaximumSize(new java.awt.Dimension(1119, 670));
+        setMinimumSize(new java.awt.Dimension(1119, 670));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -193,12 +264,53 @@ public class frmComandas extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        btnCerrarComanda.setBackground(new java.awt.Color(255, 246, 222));
+        btnCerrarComanda.setForeground(new java.awt.Color(255, 246, 222));
+        btnCerrarComanda.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCerrarComandaMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnCerrarComandaMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnCerrarComandaMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                btnCerrarComandaMousePressed(evt);
+            }
+        });
+
+        jLabel6.setBackground(new java.awt.Color(74, 68, 89));
+        jLabel6.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(74, 68, 89));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Cerrar Comanda");
+
+        javax.swing.GroupLayout btnCerrarComandaLayout = new javax.swing.GroupLayout(btnCerrarComanda);
+        btnCerrarComanda.setLayout(btnCerrarComandaLayout);
+        btnCerrarComandaLayout.setHorizontalGroup(
+            btnCerrarComandaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnCerrarComandaLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        btnCerrarComandaLayout.setVerticalGroup(
+            btnCerrarComandaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnCerrarComandaLayout.createSequentialGroup()
+                .addContainerGap(18, Short.MAX_VALUE)
+                .addComponent(jLabel6)
+                .addGap(16, 16, 16))
+        );
+
         javax.swing.GroupLayout panMenuLayout = new javax.swing.GroupLayout(panMenu);
         panMenu.setLayout(panMenuLayout);
         panMenuLayout.setHorizontalGroup(
             panMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(btnComandas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnMesas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnCerrarComanda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panMenuLayout.setVerticalGroup(
             panMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -206,6 +318,8 @@ public class frmComandas extends javax.swing.JFrame {
                 .addComponent(btnComandas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(btnMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(btnCerrarComanda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -241,9 +355,9 @@ public class frmComandas extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 728, Short.MAX_VALUE)
                         .addComponent(btnCrear))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -253,7 +367,7 @@ public class frmComandas extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                         .addComponent(btnCrear)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -277,84 +391,47 @@ public class frmComandas extends javax.swing.JFrame {
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
 
         if (!creada) {
-            int seleccion = JOptionPane.showConfirmDialog(null, "¿Desea abrir la comanda?", "Confirmar", JOptionPane.OK_CANCEL_OPTION);
-
-            if (seleccion == JOptionPane.OK_OPTION) {
-                ComandaDTO comanda = new ComandaDTO();
-                comanda.setMesa(mesa);
-                try {
-                    coordinador.registrarComanda(comanda);
-                } catch (NegocioException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-                this.comanda = comanda;
-                creada = true;
-                cargarEstado();
-            }
-        } else {
-            final int[] eleccion = {-1};
-
-            JButton boton1 = new JButton("Registrado");
-            boton1.setBackground(Color.decode("#FFAE0B"));
-            boton1.setForeground(Color.decode("#2C2C2C"));
-            boton1.setOpaque(true);
-            boton1.setContentAreaFilled(true);
-            boton1.setBorderPainted(false);
-
-            JButton boton2 = new JButton("Sin Registro");
-            boton2.setBackground(Color.decode("#2C2C2C"));
-            boton2.setForeground(Color.decode("#F5F5F5"));
-            boton2.setOpaque(true);
-            boton2.setContentAreaFilled(true);
-            boton2.setBorderPainted(false);
-
-            Object[] opciones = {boton1, boton2};
-            JLabel mensajeCentrado = new JLabel("Seleccionar cliente", SwingConstants.CENTER);
-            mensajeCentrado.setFont(new Font("Arial", Font.PLAIN, 14));
-
-            JOptionPane pane = new JOptionPane(
-                    mensajeCentrado,
-                    JOptionPane.PLAIN_MESSAGE,
-                    JOptionPane.DEFAULT_OPTION,
-                    null,
-                    opciones,
-                    opciones[0]
+            int confirmacion = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Desea abrir la comanda?",
+                    "Confirmar",
+                    JOptionPane.OK_CANCEL_OPTION
             );
 
-            JDialog dialog = pane.createDialog("Tipo de Cliente");
+            if (confirmacion == JOptionPane.OK_OPTION) {
+                try {
+                    ComandaDTO nueva = new ComandaDTO();
+                    nueva.setMesa(mesa);
 
-            BufferedImage imagenVacia = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-            dialog.setIconImage(imagenVacia);
+                    comanda = coordinador.registrarComanda(nueva);
+                    creada = true;
 
-            boton1.addActionListener(e -> {
-                eleccion[0] = 0;
-                dialog.dispose();
-            });
+                    cargarEstado();
 
-            boton2.addActionListener(e -> {
-                eleccion[0] = 1;
-                dialog.dispose();
-            });
-
-            dialog.setSize(350, 150);
-
-            dialog.setLocationRelativeTo(null);
-
-            dialog.setVisible(true);
-
-            switch (eleccion[0]) {
-                case 0:
-
-                    break;
-                case 1:
-                    coordinador.mostrarPantallaCrearPedido(mesa);
-                    this.comanda.setCliente(cliente);
-                    break;
-                default:
-                    break;
+                } catch (NegocioException ex) {
+                    mostrarMensajeError(ex.getMessage());
+                }
             }
-            cargarEstado();
+            return;
         }
+
+        int opcion = JOptionPane.showOptionDialog(
+                this,
+                "Seleccionar cliente",
+                "Tipo de Cliente",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                new Object[]{"Registrado", "Sin Registro"},
+                "Registrado"
+        );
+
+        if (opcion == 1) {
+            coordinador.mostrarPantallaCrearPedido(mesa, comanda);
+            comanda.setCliente(cliente);
+        }
+
+        cargarEstado();
 
 
     }//GEN-LAST:event_btnCrearActionPerformed
@@ -363,8 +440,55 @@ public class frmComandas extends javax.swing.JFrame {
         coordinador.mostrarPantallaMesas();
     }//GEN-LAST:event_btnMesasMouseClicked
 
+    private void btnCerrarComandaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCerrarComandaMousePressed
+
+    }//GEN-LAST:event_btnCerrarComandaMousePressed
+
+    private void btnCerrarComandaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCerrarComandaMouseEntered
+        btnCerrarComanda.setBackground(Color.decode("#FFE484"));
+    }//GEN-LAST:event_btnCerrarComandaMouseEntered
+
+    private void btnCerrarComandaMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCerrarComandaMouseExited
+        btnCerrarComanda.setBackground(Color.decode("#FFF6DE"));
+    }//GEN-LAST:event_btnCerrarComandaMouseExited
+
+    private void btnCerrarComandaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCerrarComandaMouseClicked
+        try {
+            if (comanda == null) {
+                mostrarMensajeError("No hay comanda activa.");
+                return;
+            }
+
+            int confirmacion = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Desea cerrar la comanda?",
+                    "Confirmar cierre",
+                    JOptionPane.OK_CANCEL_OPTION
+            );
+
+            if (confirmacion != JOptionPane.OK_OPTION) {
+                return;
+            }
+
+            ComandaDTO actualizada = coordinador.obtenerComanda(comanda.getId());
+            actualizada.setEstadoComanda(EstadoComandaDTO.ENTREGADA);
+            actualizada = coordinador.actualizarComanda(actualizada);
+
+            coordinador.cambiarEstadoMesa(mesa.getId(), EstadoMesaDTO.DISPONIBLE);
+
+            JOptionPane.showMessageDialog(this, construirMensajeComanda(actualizada));
+
+            comanda = actualizada;
+            coordinador.mostrarPantallaMesas();
+
+        } catch (NegocioException ex) {
+            mostrarMensajeError(ex.getMessage());
+        }
+    }//GEN-LAST:event_btnCerrarComandaMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel btnCerrarComanda;
     private javax.swing.JPanel btnComandas;
     private javax.swing.JButton btnCrear;
     private javax.swing.JPanel btnMesas;
@@ -372,6 +496,7 @@ public class frmComandas extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jblAviso;
