@@ -16,15 +16,34 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 /**
+ * Implementación de la interfaz IProductoDAO para la gestión de productos en la
+ * base de datos utilizando JPA.
  *
+ * Esta clase contiene la lógica necesaria para realizar operaciones CRUD sobre
+ * la entidad Producto, manejando transacciones y excepciones de persistencia.
+ *
+ * Se apoya en la clase ConexionBD para obtener instancias de EntityManager.
+ * 
  * @author María José Valdez Iglesias - 262775
  */
 public class ProductoDAO implements IProductoDAO {
 
+    /**
+     * Atributo que representa la instancia única que se usará de la clase.
+     */
     private static IProductoDAO instance;
     
+    /**
+     * Cosntructor vacío y privado, para que no se puedan crear instancias de
+     * la clase fuera de ella.
+     */
     private ProductoDAO(){}
     
+    /**
+     * Método estático que regresa el atributo instance, que es la instancia
+     * que se usará fuera de la clase. 
+     * @return 
+     */
     public static IProductoDAO getInstance(){
         if(instance == null){
             instance = new ProductoDAO();
@@ -32,6 +51,16 @@ public class ProductoDAO implements IProductoDAO {
         return instance;
     }
     
+    /**
+     * Guarda un nuevo producto en la base de datos.
+     *
+     * Inicia una transacción, persiste el objeto Producto y confirma los
+     * cambios. En caso de error, realiza un rollback.
+     *
+     * @param producto objeto Producto que contiene la información a guardar.
+     * @return el producto guardado.
+     * @throws PersistenciaException si ocurre un error durante la operación.
+     */
     @Override
     public Producto agregarProducto(Producto producto) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
@@ -50,6 +79,16 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
+    /**
+     * Actualiza la información de un producto existente en la base de datos.
+     *
+     * Utiliza el método merge para sincronizar el estado del objeto con la base
+     * de datos. Maneja transacciones y rollback en caso de error.
+     *
+     * @param producto objeto Producto con la información actualizada.
+     * @return el producto actualizado.
+     * @throws PersistenciaException si ocurre un error durante la actualización.
+     */
     @Override
     public Producto actualizarProducto(Producto producto) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
@@ -89,28 +128,16 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
-    @Override
-    public boolean eliminarProducto(Long idProducto) throws PersistenciaException {
-        EntityManager em = ConexionBD.crearConexion();
-        try{
-            em.getTransaction().begin();
-            Producto p = em.find(Producto.class, idProducto);
-            if(p == null){
-                return false;
-            }
-            em.remove(p);
-            em.getTransaction().commit();
-            return true;
-        } catch(Exception e){
-            if(em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            throw new PersistenciaException("Se revirtió la acción de eliminar el producto con ID=" + idProducto);
-        } finally {
-            em.close();
-        }
-    }
-
+    /**
+     * Obtiene la lista completa de productos registrados en la base de datos.
+     *
+     * Este método permite recuperar todos los productos almacenados en el
+     * sistema, facilitando su visualización en interfaces como tablas o
+     * listados dentro de la aplicación.
+     *
+     * @return lista de productos registrados.
+     * @throws PersistenciaException si ocurre un error durante la consulta.
+     */
     @Override
     public List<Producto> consultarTodos() throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
@@ -125,6 +152,12 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
+    /**
+     * Cambia el estado de un producto a 'ACTIVO' por medio de su ID.
+     * @param idProducto ID del producto a modificar.
+     * @return true si se cambió, false si falló.
+     * @throws PersistenciaException si ocurre un error durante la operación.
+     */
     @Override
     public boolean activarProducto(Long idProducto) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
@@ -147,6 +180,12 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
+    /**
+     * Cambia el estado de un producto a 'INACTIVO' por medio de su ID.
+     * @param idProducto ID del producto a modificar.
+     * @return true si se cambió, false si falló.
+     * @throws PersistenciaException si ocurre un error durante la operación.
+     */
     @Override
     public boolean desactivarProducto(Long idProducto) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
@@ -169,6 +208,15 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
+    /**
+     * Consulta un producto en la base de datos a partir de su identificador.
+     *
+     * Utiliza el método find de JPA para recuperar la entidad.
+     *
+     * @param idProducto identificador del producto.
+     * @return el producto encontrado o null si no existe.
+     * @throws PersistenciaException si ocurre un error durante la búsqueda.
+     */
     @Override
     public Producto consultarProductoPorID(Long idProducto) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
@@ -181,6 +229,16 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
+    /**
+     * Busca el último identificador registrado en la base de datos según el 
+     * tipo de producto.
+     * 
+     * Filtra por tipo y regresa el identificador más alto/último registrado.
+     * 
+     * @param tipo Tipo de producto a buscar.
+     * @return El identificador encontrado o null si no existe.
+     * @throws PersistenciaException si ocurre un error durante la búsqueda.
+     */
     @Override
     public String obtenerUltimoIdentificador(TipoProducto tipo) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
@@ -201,4 +259,28 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
     
+    /**
+     * Obtiene la lista completa de productos registrados de estado 'ACTIVO' en 
+     * la base de datos.
+     *
+     * Este método permite recuperar todos los productos almacenados en el
+     * sistema los cuales su estado sea 'ACTIVO'.
+     *
+     * @return lista de productos activos.
+     * @throws PersistenciaException si ocurre un error durante la consulta.
+     */
+    @Override
+    public List<Producto> consultarProductosActivos() throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        try{
+            String jpql = "select p from Producto p where p = activo";
+            TypedQuery<Producto> query = em.createQuery(jpql, Producto.class);
+            List<Producto> resultados = query.getResultList();
+            return resultados;
+        } catch(Exception e){
+            throw new PersistenciaException("");
+        } finally {
+            em.close();
+        }
+    }
 }

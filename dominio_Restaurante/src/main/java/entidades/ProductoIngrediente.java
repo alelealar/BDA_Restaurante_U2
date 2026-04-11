@@ -17,7 +17,13 @@ import javax.persistence.Table;
 
 
 /**
- *
+ * Clase de la entidad ProductoIngredientes.
+ * 
+ * Establece la configuración de los datos y cómo será creada la tabla
+ * productoIngrediente en la base de datos.
+ * 
+ * Mappea la relación y recopila los datos necesarios para crearla.
+ * 
  * @author Alejandra Leal Armenta, 262719
  * @author Maria Jose Valdez Iglesias - 262775
  */

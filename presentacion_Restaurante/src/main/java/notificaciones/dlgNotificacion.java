@@ -9,32 +9,53 @@ import java.util.logging.Logger;
 import javax.swing.JDialog;
 
 /**
- *
+ * Clase JDialog para mostrar notificaciones con un diseño personalizado que 
+ * asemeja al diseño del resto del sistema.
+ * 
  * @author María José Valdez Iglesias - 262775
  */
 public class dlgNotificacion extends JDialog {
-    
+   
+    /**
+     * Logger de la clase para notificar resultados de las operaciones. 
+     */
     private static final Logger logger = Logger.getLogger(dlgNotificacion.class.getName());
 
+    /**
+     * Opción que el usuario selecciona del JDialog.
+     */
     private int opcion;
     
     /**
-     * A return status code - returned if Cancel button has been pressed
+     * Variable estática que representa que el usuario canceló la operación.
      */
     public static final int RET_CANCELAR = 0;
+    
     /**
-     * A return status code - returned if OK button has been pressed
+     * Variable estática que representa que el usuario aceptó la operación.
      */
     public static final int RET_ACEPTAR = 1;
 
     /**
-     * Creates new form dlgNotificacion
+     * Constructor de la clase.
+     * 
+     * Recibe el frame donde se mostrará, el mensaje que contendrá y el tipo de
+     * notificación que es.
+     * 
+     * Es privado para que no se pueda instanciar la clase, solo usar el método
+     * estático para mostrar diálogos. 
      */
     private dlgNotificacion(Frame parent, String mensaje, TipoNotificacion tipo) {
         super(parent, true);
         initComponents();
+        /*
+        Esto es para que se centre el diálogo y se vea bonito.
+        */
         this.mensaje.setText("<html><div style='width: 250px; text-align: center;'>" + mensaje + "</div></html>");
         this.tipoNotificacion.setText(tipo.toString());
+        /*
+        Según el tipo de notificación, define cuáles botones serán visibles.
+        */
         switch(tipo){
             case TipoNotificacion.CONFIRMACIÓN:
                 btnAceptar.setVisible(true);
@@ -174,18 +195,28 @@ public class dlgNotificacion extends JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Closes the dialog
+     * Es para cerrar el JDialog pero pues ni botón de cerrar tiene.
      */
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
 
     }//GEN-LAST:event_closeDialog
 
+    /**
+     * Botón para cancelar la operación del JDialog.
+     * 
+     * Guarda la opción y cierra el JDialog.
+     */
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         // TODO add your handling code here:
         opcion = RET_CANCELAR;
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
+    /**
+     * Botón para aceptar la operación del JDialog.
+     * 
+     * Guarda la opción y cierra el JDialog.
+     */
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
         // TODO add your handling code here:
         opcion = RET_ACEPTAR;

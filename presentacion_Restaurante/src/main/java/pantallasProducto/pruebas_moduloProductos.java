@@ -8,7 +8,7 @@ import controlador.Coordinador_ModuloProductos;
 
 /**
  *
- * @author maria
+ * @author María José Valdez Iglesias - 262775
  */
 public class pruebas_moduloProductos {
 

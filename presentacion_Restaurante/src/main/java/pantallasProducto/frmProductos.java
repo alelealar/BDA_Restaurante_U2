@@ -7,7 +7,6 @@ package pantallasProducto;
 import controlador.Coordinador_ModuloProductos;
 import dtos.ProductoDTO;
 import enumerators.EstadoProductoDTO;
-import excepciones.NegocioException;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
@@ -17,17 +16,35 @@ import notificaciones.TipoNotificacion;
 import notificaciones.dlgNotificacion;
 
 /**
- *
+ * Clase del frame Productos.
+ * 
+ * Aquí están declarados todos los componentes del JFrame junto con el 
+ * compartamiento según la acción/evento que se realice con los mismos. 
+ * 
  * @author María José Valdez Iglesias - 262775
  */
 public class frmProductos extends javax.swing.JFrame {
     
+    /**
+     * Atributo que representa el coordinador de las interfaces que representan
+     * al módulo de los productos.
+     */
     private Coordinador_ModuloProductos coordinador;
+    
+    /**
+     * Sirve para guardar si los métodos de la BO dan verdadero/falso y saber 
+     * cómo trabajar en base a ello.
+     */
     private boolean resultado = false;
+    
+    /**
+     * Logger para mandar mensajes de las operaciones.
+     */
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmProductos.class.getName());
 
     /**
-     * Creates new form frmProductos
+     * Constructor del frame, donde establece el coordinador del frame y prepara
+     * su vista.
      */
     public frmProductos(Coordinador_ModuloProductos coordinador) {
         this.coordinador = coordinador;
@@ -232,7 +249,6 @@ public class frmProductos extends javax.swing.JFrame {
             tblProductos.getColumnModel().getColumn(4).setResizable(false);
         }
 
-        txtBusqueda.addActionListener(this::txtBusquedaActionPerformed);
         txtBusqueda.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtBusquedaKeyReleased(evt);
@@ -379,49 +395,67 @@ public class frmProductos extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Botón que abre el módulo de clientes.
+     */
     private void btnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientesActionPerformed
         // TODO add your handling code here:
          JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
     }//GEN-LAST:event_btnClientesActionPerformed
 
+    /**
+     * Botón que abre el módulo de prductos.
+     */
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
          JOptionPane.showMessageDialog(this, "Ya está en la opción de Productos.");
     }//GEN-LAST:event_btnProductosActionPerformed
 
+    /**
+     * Botón que abre el módulo de reportes.
+     */
     private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
         // TODO add your handling code here:
          JOptionPane.showMessageDialog(this, "Aún no está disponible");
     }//GEN-LAST:event_btnReportesActionPerformed
 
+    /**
+     * Botón que abre el módulo reportes - clientes.
+     */
     private void btnRepCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepCliActionPerformed
         // TODO add your handling code here:
          JOptionPane.showMessageDialog(this, "Aún no está disponible.");
     }//GEN-LAST:event_btnRepCliActionPerformed
 
+    /**
+     * Botón que abre el módulo de inventario-ingredientes.
+     */
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
          JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
     }//GEN-LAST:event_btnInventarioActionPerformed
 
-    private void txtBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBusquedaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtBusquedaActionPerformed
-
+    /**
+     * Botón para regresar al panel de inicio del sistema.
+     */
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
         // TODO add your handling code here:
          JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
     }//GEN-LAST:event_btnAtrasActionPerformed
 
+    /**
+     * Acción del botón activar.
+     * 
+     * Cuando un usuario desde activar un producto de la tabla, usa este botón 
+     * para realizarlo.
+     */
     private void btnActivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActivarActionPerformed
         // TODO add your handling code here:
-        int fila = tblProductos.getSelectedRow();
-        
+        int fila = tblProductos.getSelectedRow();        
         if(fila == -1){
             dlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para activar.", TipoNotificacion.MENSAJE);
             return;
-        }
-        
+        }        
         ProductoDTO producto = (ProductoDTO) tblProductos.getValueAt(fila, 0);
         if(producto == null){
             dlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
@@ -439,11 +473,22 @@ public class frmProductos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnActivarActionPerformed
 
+    /**
+     * Botón para agregar un nuevo Producto.
+     * 
+     * Se encarga de llamar al método del coordinador que se se mueve a la otra
+     * pantalla.
+     */
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
         coordinador.abrirFrmAgregarProducto();
     }//GEN-LAST:event_btnAgregarActionPerformed
 
+    /**
+     * Acción que busca entre los registros gracias al buscador del frame, que 
+     * se va actualizando de forma dinámica a cómo vaya ingresando datos el
+     * usuario.
+     */
     private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
         // TODO add your handling code here:
         String busqueda = txtBusqueda.getText().trim();
@@ -471,6 +516,12 @@ public class frmProductos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtBusquedaKeyReleased
 
+    /**
+     * Botón para modificar un Producto de la tabla.
+     * 
+     * Se encarga de validar el producto seleccionado y llamar al método del
+     * coordinador que viaja a la siguiente pantalla.
+     */
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         // TODO add your handling code here:
         int fila = tblProductos.getSelectedRow();
@@ -488,6 +539,12 @@ public class frmProductos extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnModificarActionPerformed
 
+    /**
+     * Acción del botón desactivar.
+     * 
+     * Cuando un usuario desde desactivar un producto de la tabla, usa este botón 
+     * para realizarlo.
+     */
     private void btnDesactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesactivarActionPerformed
         // TODO add your handling code here:
         int fila = tblProductos.getSelectedRow();
@@ -514,6 +571,10 @@ public class frmProductos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDesactivarActionPerformed
 
+    /**
+     * Método que consulta todos los registros y se encarga de mostrarlos
+     * en la tabla.
+     */
     public void cargarTabla() {
         List<ProductoDTO> lista = coordinador.consultarTodosLosProductos();
 

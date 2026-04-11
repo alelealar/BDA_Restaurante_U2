@@ -5,7 +5,8 @@
 package enumerators;
 
 /**
- *
+ * Clase enumeradora de la disponibilidad del producto para la clase Producto.
+ * 
  * @author María José Valdez Iglesias - 262775
  */
 public enum DisponibilidadProducto {

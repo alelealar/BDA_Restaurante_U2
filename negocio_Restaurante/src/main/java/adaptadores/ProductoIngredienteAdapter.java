@@ -13,7 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Clase adaptadora encargada de convertir objetos entre la entidad ProductoIngredientes
+ * y su correspondiente DTO (ProductoIngredienteDTO).
  *
+ * Esta clase permite desacoplar la capa de persistencia de la capa de
+ * presentación o lógica de negocio, facilitando el manejo de datos y evitando
+ * exponer directamente las entidades.
+ *
+ * Proporciona métodos para convertir objetos individuales y listas de entidades
+ * a DTOs.
+ * 
+ * 
  * @author Alejandra Leal Armenta - 262719
  * @author María José Valdez Iglesias - 262775
  */

@@ -24,22 +24,61 @@ import notificaciones.TipoNotificacion;
 import notificaciones.dlgNotificacion;
 
 /**
- *
+ * Clase del frame AgregarProductos.
+ * 
+ * Aquí están declarados todos los componentes del JFrame junto con el 
+ * compartamiento según la acción/evento que se realice con los mismos. 
+ * 
  * @author María José Valdez Iglesias - 262775
  */
 public class frmAgregarProducto extends javax.swing.JFrame {
     
+    /**
+     * Cuando la pantalla está en modo 'modificar', este es el producto con el
+     * que va trabajando.
+     */
     private ProductoDTO producto;
+    
+    /**
+     * Para saber si la pantalla se encuentra en modo modificar.
+     */
     private boolean modificar = false;
+    
+    /**
+     * El coordinador de las pantallas del módulo Productos.
+     */
     private Coordinador_ModuloProductos coordinador;
+    
+    /**
+     * El modelo de la JList, donde se muestran los detallesProducto.
+     */
     private DefaultListModel<String> modelo;
+    
+    /**
+     * Archivo de la imagen que se está actualizando/subiendo como referencia 
+     * visual del producto.
+     */
     private File archivo;
+    
+    /**
+     * Guarda los resultados que otorgan las operaciones en el coordinador.
+     */
     private boolean resultado = false;
+    
+    /**
+     * Los detallesProducto, es la lista que se van compartiendo entre frames y
+     * coordinadores. 
+     */
     private List<ProductoIngredienteDTO> detallesProducto;
+    
+    /**
+     * Logger para informar sobre cómo van resultando las operaciones realizadas.
+     */
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmAgregarProducto.class.getName());
 
     /**
-     * Creates new form frmAgregarProducto
+     * Constructor del frame, recibe el coordinador para que se maneje el mismo
+     * en operaciones donde accede a otros módulos.
      */
     public frmAgregarProducto(Coordinador_ModuloProductos coordinador) {
         this.coordinador = coordinador;
@@ -64,7 +103,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
     
     /**
      * Es el método que se usa desde los coordinadores para ya pasar la lista
-     * actualizada y está pueda ser cargada al frm.
+     * actualizada y está pueda ser cargada al frame.
      * @param ingredientes Lista ta con registros a mostrar, no puede ser vacía.
      */
     public void setDetallesProducto(List<ProductoIngredienteDTO> ingredientes){
@@ -301,7 +340,6 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         lblTipo.setText("Tipo");
 
         txtNombre.setBorder(null);
-        txtNombre.addActionListener(this::txtNombreActionPerformed);
 
         cbTipo.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
 
@@ -328,7 +366,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
 
         btnAgregarIngrediente.setBackground(new java.awt.Color(181, 245, 255));
         btnAgregarIngrediente.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btnAgregarIngrediente.setText("+ Añadir Ingrediente");
+        btnAgregarIngrediente.setText("+ Añadir Ingredientes");
         btnAgregarIngrediente.setBorderPainted(false);
         btnAgregarIngrediente.setFocusPainted(false);
         btnAgregarIngrediente.setOpaque(true);
@@ -500,34 +538,53 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Botón que abre el módulo de reportes. 
+     */
     private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnReportesActionPerformed
 
+    /**
+     * Botón que abre el módulo de reporte -> clientes.
+     */
     private void btnRepCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepCliActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRepCliActionPerformed
 
+    /**
+     * Botón que abre el módulo de clientes.
+     */
     private void btnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientesActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnClientesActionPerformed
 
+    /**
+     * Botón que abre el módulo de productos.
+     */
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnProductosActionPerformed
 
+    /**
+     * Botón que abre el módulo de inventario-ingredientes. 
+     */
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnInventarioActionPerformed
 
+    /**
+     * Botón que abre el módulo de reportes -> comandas.
+     */
     private void btnRepComActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepComActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRepComActionPerformed
 
-    private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombreActionPerformed
-
+    /**
+     * Botón para agregar ingredientes al producto.
+     * 
+     * Se encarga de usar el coordinador para abrir el catálogo de ingredientes.
+     */
     private void btnAgregarIngredienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarIngredienteActionPerformed
         // TODO add your handling code here:
         coordinador.abrirMenuIngredientes();
@@ -535,8 +592,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
 
     /**
      * Por si el usuario quiere regresar, primero pide confirmación y en base 
-     * a su decisión regresa al frm anterior o se queda.
-     * @param evt 
+     * a su decisión regresa al frame anterior o se queda.
      */
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
         // TODO add your handling code here:
@@ -554,8 +610,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
 
     /**
      * Es el botón para cuando se desea guardar el registro/las modificaciones
-     * que el usuario haya hecho con el producto.
-     * @param evt 
+     * que el usuario haya hecho con el producto. 
      */
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
@@ -605,6 +660,10 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         // url imagen
         if(archivo != null){
             urlImagen = archivo.getAbsolutePath();
+            /*
+            esto de abajo era por unos detalles de cuando trabajamos con windows, 
+            para cuidar el formato, pero la nt no se ha requerido.
+            */
             // urlImagen = archivo.getAbsolutePath().replace("\\", "/");
         } else if(modificar && producto.getUrlImagen() != null){
             urlImagen = producto.getUrlImagen();
@@ -656,8 +715,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
 
     /**
      * Cuando el usuario le da click al label de subir, aquí se maneja el 
-     * fileChooser para buscar, guardar y mostrar la imagén seleccionada.
-     * @param evt 
+     * fileChooser para buscar, guardar y mostrar la imagén seleccionada. 
      */
     private void btnSubirImagenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubirImagenMouseClicked
         // TODO add your handling code here:

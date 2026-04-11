@@ -24,6 +24,10 @@ import javax.persistence.UniqueConstraint;
 
 /**
  * Clase de la entidad Producto.
+ * 
+ * Establece la configuración de los datos y cómo será creada la tabla
+ * producto en la base de datos.
+ * 
  * @author María José Valdez Iglesias - 262775
  */
 @Entity
@@ -363,7 +367,7 @@ public class Producto implements Serializable {
 
     /**
      * Establece la lista de detalles relacionados al producto.
-     * @param ingredientes lista de detalles a establecer al producto.
+     * @param detalles lista de detalles a establecer al producto.
      */
     public void setDetalles(List<DetalleComanda> detalles) {
         this.detalles = detalles;

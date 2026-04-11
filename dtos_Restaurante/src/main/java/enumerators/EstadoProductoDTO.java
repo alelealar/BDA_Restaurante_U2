@@ -5,7 +5,8 @@
 package enumerators;
 
 /**
- *
+ * Clase enumeradora de los estados del producto para la clase ProductoDTO y 
+ * ProductoNuevoDTO.
  * @author María José Valdez Iglesias - 262775
  */
 public enum EstadoProductoDTO {

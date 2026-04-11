@@ -19,17 +19,44 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
+ * Implementación de la interfaz IProductoBO que contiene la lógica de negocio
+ * para la gestión de productos.
  *
+ * Esta clase se encarga de validar los datos recibidos desde capas superiores,
+ * convertir DTOs a entidades y delegar las operaciones a la capa de acceso a
+ * datos (DAO).
+ *
+ * Además, maneja excepciones de negocio y registra eventos mediante Logger.
+ * 
  * @author María José Valdez Iglesias - 262775
  */
 public class ProductoBO implements IProductoBO {
 
+    /**
+     * Atributo instancia que la clase regresa para ser utilizado.
+     */
     private static ProductoBO instance;
+    
+    /**
+     * Logger para registrar eventos y errores del sistema.
+     */
     private static final Logger LOG = Logger.getLogger(ProductoBO.class.getName());
+    
+    /**
+     * Objeto DAO utilizado para interactuar con la base de datos.
+     */
     private final IProductoDAO productoDAO = ProductoDAO.getInstance();
     
+    /**
+     * Constructor vacío y privado, para que no se puedan crear instancias de 
+     * la clase.
+     */
     private ProductoBO(){}
     
+    /**
+     * Método estático para regresar la instancia ya creada de la clase.
+     * @return El ProductoBO de la clase.
+     */
     public static ProductoBO getInstance(){
         if(instance == null){
             instance = new ProductoBO();
@@ -75,28 +102,6 @@ public class ProductoBO implements IProductoBO {
         } catch(PersistenciaException ex){
             LOG.warning(() -> "Ocurrió un error al querer actualizar el producto: " + producto.getNombre().toUpperCase());
             throw new NegocioException("No fue posible actualizar el producto.", ex);
-        }
-    }
-
-    /**
-     * Método encargado de conectar con la DAO para eliminar el producto.
-     * @param idProducto ID del producto que se desea eliminar.
-     * @throws NegocioException Si ocurre un error al eliminar el producto 
-     * llamando a la DAO.
-     */
-    @Override
-    public void eliminarProducto(Long idProducto) throws NegocioException {
-        try{
-            boolean eliminado = productoDAO.eliminarProducto(idProducto);
-            
-            if(!eliminado){
-                throw new NegocioException("No se encuentra el producto que desea eliminar");
-            }
-            
-            LOG.info(() -> "Se eliminó el producto con ID=" + idProducto);
-        } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al querer eliminar el producto con ID=" + idProducto);
-            throw new NegocioException("No fue posible eliminar el producto.", ex);
         }
     }
 
@@ -299,6 +304,25 @@ public class ProductoBO implements IProductoBO {
         } catch(PersistenciaException ex){
             LOG.warning(() -> "Ocurrió un error al querer buscar el producto con ID=" + idProducto);
             throw new NegocioException("No fue posible buscar el producto.", ex);
+        }
+    }
+
+     /**
+     * Método que consulta todos los productos activos registrados por medio 
+     * de la DAO.
+     * @return Una lista de ProductoDTO con todos los registros de estado activo.
+     * @throws NegocioException Si ocurre un error al consultar todos los
+     * productos llamando a la DAO.
+     */
+    @Override
+    public List<ProductoDTO> consultarProductosActivos() throws NegocioException {
+        try{
+            List<Producto> activos = productoDAO.consultarProductosActivos();
+            LOG.info(() -> "Se consultaron los productos activos.");
+            return ProductoAdapter.listaEntidadADTO(activos);
+        } catch(PersistenciaException ex){
+            LOG.warning(() -> "Ocurrió un error al consultar los productos activos.");
+            throw new NegocioException("No fue posible consultar los productos activos.", ex);
         }
     }
     

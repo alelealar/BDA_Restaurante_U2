@@ -4,7 +4,6 @@
  */
 package controlador;
 
-import dtos.IngredienteDTO;
 import dtos.ProductoDTO;
 import dtos.ProductoIngredienteDTO;
 import dtos.ProductoNuevoDTO;
@@ -19,19 +18,37 @@ import pantallasProducto.frmAgregarProducto;
 import pantallasProducto.frmProductos;
 
 /**
- *
+ * Clase coordinadora de las operaciones y los frames en el módulo de productos.
+ * 
+ * Esta se emcarga de la conexión y de estar pasando las referencias a los objetos
+ * que se están intercambiando, en caso de requerirse.
+ * 
  * @author María José Valdez Iglesias - 262775
  */
 public class Coordinador_ModuloProductos {
     
+    /**
+     * Frame Productos que controla y comunica el coordinador.
+     */
     private frmProductos frmProductos;
+    
+    /**
+     * Frame AgregarProducto que controla y comunica el coordinador.
+     */
     private frmAgregarProducto frmAgregarProducto;
+    
     /**
      * El coordinador ingredientes es el que ayuda a que podamos entrar a la 
      * ventana de ingredientes para escoger los detallesProducto.
      */
     private Coordinador_ModuloIngredientes coordinadorIngredientes;
+    
+    /**
+     * Instancia de producto BO usada para todas las operaciones que involucren 
+     * a la base de datos.
+     */
     private IProductoBO productoBO = ProductoBO.getInstance();
+    
     /**
      * Aquí se crea esta lista, para que a lo largo de los coordinadores y los
      * frames involucrados, solo se campartan la lista y no creen otras, para no
@@ -39,6 +56,14 @@ public class Coordinador_ModuloProductos {
      */
     private List<ProductoIngredienteDTO> listaIngredientes = new ArrayList<>();
     
+    /**
+     * Método para abrir y usar el frmProductos.
+     * 
+     * En caso de no exstir lo crea.
+     * 
+     * Prepara el frame para ser utilizado y descarta aquellos frames que pasan
+     * a segundo plano/ya no se requieren.
+     */
     public void abrirFrmProductos(){
         if (frmProductos == null) {
             frmProductos = new frmProductos(this);
@@ -50,6 +75,14 @@ public class Coordinador_ModuloProductos {
         frmAgregarProducto.dispose();
     }
     
+    /**
+     * Método para abrir y usar el frmAgregarProductos.
+     * 
+     * En caso de no exstir lo crea.
+     * 
+     * Prepara el frame para ser utilizado y descarta aquellos frames que pasan
+     * a segundo plano/ya no se requieren.
+     */
     public void abrirFrmAgregarProducto(){
         if (frmAgregarProducto == null) {
             frmAgregarProducto = new frmAgregarProducto(this);
@@ -58,6 +91,11 @@ public class Coordinador_ModuloProductos {
         frmAgregarProducto.setVisible(true);
     }
     
+    /**
+     * Método que modifica el frmAgregarProducto para darle la vista de modificar.
+     * @param producto Recibe el producto que sea desea modificar para pasarle
+     * la información al frame y que trabaje con este.
+     */
     public void abrirFrmModificarProducto(ProductoDTO producto){
         if (this.frmAgregarProducto == null) {
             this.frmAgregarProducto = new frmAgregarProducto(this);
@@ -67,20 +105,27 @@ public class Coordinador_ModuloProductos {
         frmProductos.dispose();
     }
     
+    /**
+     * Método que vuelve a cargar la tabla de los registros de productos en el
+     * frmProductos.
+     */
     public void refrescarTablaProductos(){
         frmProductos.cargarTabla();
     }
     
     /**
-     * Cada que un producto ya fue modificado/agregado, se limpia la lista para 
-     * tenerla nueva para el siguiente registro.
+     * Método usado cada que un producto ya fue modificado/agregado, se limpia 
+     * la lista para tenerla nueva para el siguiente registro.
+     * 
+     * Esta lista es la referencia compartida que se van pasando entre frames y 
+     * coordinadores.
      */
     public void limpiarListaIngredientes(){
         listaIngredientes.clear();
     }
     
     /**
-     * Esto es para pasarle la lista desde ingredientes hasta el frmAgregarProducto.
+     * Método para pasarle la lista desde ingredientes hasta el frmAgregarProducto.
      * @param ingredientes La lista con los ProductoIngredienteDTO.
      */
     public void setDetallesProducto(List<ProductoIngredienteDTO> ingredientes){
@@ -89,10 +134,10 @@ public class Coordinador_ModuloProductos {
     }
     
     /**
-     * Por medio del coordinadorIngredientes aquí se abre la pantalla del módulo
-     * Ingredientes.
+     * Método para por medio del coordinadorIngredientes abrir la pantalla del 
+     * módulo Ingredientes.
      * 
-     * Crea el coordinador, le pasa la referencia a la lista compartida al frm
+     * Crea el coordinador, le pasa la referencia de la lista compartida al frm
      * Ingredientes y abre la pantalla.
      */
     public void abrirMenuIngredientes(){
@@ -105,6 +150,13 @@ public class Coordinador_ModuloProductos {
         frmAgregarProducto.setVisible(false);
     }
     
+    /**
+     * Método para comunicarse con la DAO y agregar productos, por medio de la BO.
+     * Esto es para que los frames puedan realizar dichas operaciones sin ellos
+     * tener una instancia de ProductoBO.
+     * @param producto ProductoNuevoDTO que se quiere agregar.
+     * @return true si la operación fu éxitosa, false si falló.
+     */
     public boolean agregarProducto(ProductoNuevoDTO producto) {
         try{
             productoBO.agregarProducto(producto);
@@ -115,6 +167,13 @@ public class Coordinador_ModuloProductos {
         }
     }
     
+    /**
+     * Método para comunicarse con la DAO y actualizar productos, por medio de la BO.
+     * Esto es para que los frames puedan realizar dichas operaciones sin ellos
+     * tener una instancia de ProductoBO.
+     * @param producto ProductoDTO que se quiere actualizar.
+     * @return true si la operación fue éxitosa, false si falló.
+     */
     public boolean actualizarProducto(ProductoDTO producto){
         try{
             productoBO.actualizarProducto(producto);
@@ -125,6 +184,13 @@ public class Coordinador_ModuloProductos {
         }
     }
     
+    /**
+     * Método para comunicarse con la DAO y activar un producto, por medio de la BO.
+     * Esto es para que los frames puedan realizar dichas operaciones sin ellos 
+     * tener una instancia de ProductoBO.
+     * @param idProducto ID del producto que se desea activar.
+     * @return true si la operación fue éxitosa, false si falló.
+     */
     public boolean activarProducto(Long idProducto){
         try{
             productoBO.activarProducto(idProducto);
@@ -135,6 +201,14 @@ public class Coordinador_ModuloProductos {
         }
     }
     
+    /**
+     * Método para comunicarse con la DAO y desactivar un producto, por medio de 
+     * la BO.
+     * Esto es para que los frames puedan realizar dichas operaciones sin ellos 
+     * tener una instancia de ProductoBO.
+     * @param idProducto ID del producto que se desea desactivar.
+     * @return true si la operación fue éxitosa, false si falló.
+     */
     public boolean desactivarProducto(Long idProducto){
         try{
             productoBO.desactivarProducto(idProducto);
@@ -145,6 +219,13 @@ public class Coordinador_ModuloProductos {
         }
     }
     
+    /**
+     * Método para comunicase con la DAO y consultar todos los productos en la 
+     * base de datos, por medio de la BO.
+     * Esto es para que los frames puedan realizar dichas operaciones sin ellos 
+     * tener una instancia de ProductoBO.
+     * @return Una lista de ProductoDTO con los registros.
+     */
     public List<ProductoDTO> consultarTodosLosProductos(){
         try{
             return productoBO.consultarTodosProductos();
@@ -154,11 +235,36 @@ public class Coordinador_ModuloProductos {
         }
     }
     
+    /**
+     * Método para comunicarse con la DAO y consultar un producto con su ID, por
+     * medio de la BO.
+     * Esto es para que los frames puedan realizar dichas operaciones sin ellos
+     * tener una instancia de ProductoBO.
+     * @param idProducto ID del producto que se quiere consultar.
+     * @return El ProductoDTO con todos sus datos.
+     */
     public ProductoDTO consultarProductoPorID(Long idProducto){
         try{
             return productoBO.consultarProductoPorID(idProducto);
         } catch(NegocioException ne){
             System.out.println("Error al buscar un producto con el id=" + idProducto + ", CAUSA=" + ne.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Método para comunicase con la DAO y consultar todos los productos activos
+     * en la base de datos, por medio de la BO.
+     * Esto es para que los frames puedan realizar dichas operaciones sin ellos 
+     * tener una instancia de ProductoBO.
+     * @return Una lista de ProductoDTO con los registros que tengan estado
+     * activo.
+     */
+    public List<ProductoDTO> consultarProductoActivos(){
+        try{
+            return productoBO.consultarProductosActivos();
+        } catch(NegocioException ne){
+            dlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al consultar todos los productos activos: " + ne.getMessage(), TipoNotificacion.ERROR);
             return null;
         }
     }
