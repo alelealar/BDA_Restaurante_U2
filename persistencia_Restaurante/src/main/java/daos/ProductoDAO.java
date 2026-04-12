@@ -273,8 +273,9 @@ public class ProductoDAO implements IProductoDAO {
     public List<Producto> consultarProductosActivos() throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
         try{
-            String jpql = "select p from Producto p where p = activo";
+            String jpql = "select p from Producto p where p.estado = :estado";
             TypedQuery<Producto> query = em.createQuery(jpql, Producto.class);
+            query.setParameter("estado", EstadoProducto.ACTIVO);
             List<Producto> resultados = query.getResultList();
             return resultados;
         } catch(Exception e){

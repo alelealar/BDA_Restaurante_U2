@@ -18,6 +18,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import notificaciones.TipoNotificacion;
@@ -66,6 +67,16 @@ public class frmAgregarProducto extends javax.swing.JFrame {
     private boolean resultado = false;
     
     /**
+     * Variable para saber si existía una imagen cargada y esta se eliminó.
+     */
+    private boolean imagenEliminada = false;
+    
+    /**
+     * Scroll para mostrar el texto en el apartado de descripción.
+     */
+    private JScrollPane scrollDescripcion;
+    
+    /**
      * Los detallesProducto, es la lista que se van compartiendo entre frames y
      * coordinadores. 
      */
@@ -87,6 +98,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.modelo = new DefaultListModel<>();
         listaIngredientes.setModel(modelo);
+        ocultarBotonEliminarImagen();
     }
 
     /**
@@ -136,6 +148,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         cbTipo.setEnabled(false);
         txtDescripcion.setText(producto.getDescripcion());
         txtPrecio.setText(String.valueOf(producto.getPrecio()));
+        this.detallesProducto = producto.getIngredientes();
         for(ProductoIngredienteDTO ingrediente : producto.getIngredientes()){
             modelo.addElement(ingrediente.toString());
         }   
@@ -143,6 +156,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
             ImageIcon icono = new ImageIcon(producto.getUrlImagen());
             Image img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
             btnSubirImagen.setIcon(new ImageIcon(img));
+            mostrarBotonEliminarImagen();
         }
     }
     
@@ -178,7 +192,6 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         txtNombre = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         cbTipo = new javax.swing.JComboBox<>();
-        txtDescripcion = new javax.swing.JTextField();
         txtPrecio = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
@@ -190,6 +203,8 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         btnAgregarIngrediente = new javax.swing.JButton();
         btnAtras = new javax.swing.JButton();
         btnAgregar = new javax.swing.JButton();
+        btnEliminarImagen = new javax.swing.JButton();
+        txtDescripcion = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -215,7 +230,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(iconLogo)
@@ -311,7 +326,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
                 .addComponent(btnRepCom, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnRepCli)
-                .addContainerGap(218, Short.MAX_VALUE))
+                .addContainerGap(212, Short.MAX_VALUE))
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 220, 175));
@@ -339,13 +354,12 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         lblTipo.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         lblTipo.setText("Tipo");
 
+        txtNombre.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         txtNombre.setBorder(null);
 
         cbTipo.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
 
-        txtDescripcion.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
-        txtDescripcion.setBorder(null);
-
+        txtPrecio.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         txtPrecio.setBorder(null);
 
         lblSimboloDinero.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
@@ -390,6 +404,19 @@ public class frmAgregarProducto extends javax.swing.JFrame {
         btnAgregar.setOpaque(true);
         btnAgregar.addActionListener(this::btnAgregarActionPerformed);
 
+        btnEliminarImagen.setBackground(new java.awt.Color(255, 0, 0));
+        btnEliminarImagen.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btnEliminarImagen.setForeground(new java.awt.Color(255, 255, 255));
+        btnEliminarImagen.setText("Eliminar");
+        btnEliminarImagen.setBorderPainted(false);
+        btnEliminarImagen.setFocusPainted(false);
+        btnEliminarImagen.addActionListener(this::btnEliminarImagenActionPerformed);
+
+        txtDescripcion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        txtDescripcion.setBorder(null);
+        txtDescripcion.setMaximumSize(new java.awt.Dimension(308, 31));
+        txtDescripcion.setMinimumSize(new java.awt.Dimension(308, 31));
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -410,7 +437,6 @@ public class frmAgregarProducto extends javax.swing.JFrame {
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane1)
                             .addComponent(jSeparator2)
-                            .addComponent(txtDescripcion)
                             .addComponent(lblNombre)
                             .addComponent(lblDescripcion)
                             .addGroup(jPanel4Layout.createSequentialGroup()
@@ -418,7 +444,8 @@ public class frmAgregarProducto extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                                 .addComponent(btnAgregarIngrediente))
                             .addComponent(txtNombre)
-                            .addComponent(jSeparator1))
+                            .addComponent(jSeparator1)
+                            .addComponent(txtDescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -434,6 +461,10 @@ public class frmAgregarProducto extends javax.swing.JFrame {
                                             .addComponent(jSeparator5))))
                                 .addContainerGap())
                             .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(51, 51, 51)
+                                .addComponent(btnSubirImagen)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                                 .addGap(18, 18, Short.MAX_VALUE)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
@@ -444,11 +475,10 @@ public class frmAgregarProducto extends javax.swing.JFrame {
                                         .addGap(95, 95, 95))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                                         .addComponent(lblImagen)
-                                        .addGap(47, 47, 47))))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGap(51, 51, 51)
-                                .addComponent(btnSubirImagen)
-                                .addGap(0, 0, Short.MAX_VALUE))))))
+                                        .addGap(47, 47, 47))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                        .addComponent(btnEliminarImagen)
+                                        .addGap(28, 28, 28))))))))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -474,11 +504,15 @@ public class frmAgregarProducto extends javax.swing.JFrame {
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(lblPrecio)
                                     .addComponent(lblDescripcion))
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblSimboloDinero))
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addGap(26, 26, 26)
+                                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblSimboloDinero)))
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addGap(16, 16, 16)
+                                        .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -490,12 +524,14 @@ public class frmAgregarProducto extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(137, 137, 137)
-                        .addComponent(btnSubirImagen)))
-                .addGap(33, 33, 33)
+                        .addComponent(btnSubirImagen)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEliminarImagen)))
+                .addGap(15, 15, 15)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -505,13 +541,13 @@ public class frmAgregarProducto extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(152, 152, 152)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(197, Short.MAX_VALUE))
+                .addContainerGap(166, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 517, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -665,7 +701,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
             para cuidar el formato, pero la nt no se ha requerido.
             */
             // urlImagen = archivo.getAbsolutePath().replace("\\", "/");
-        } else if(modificar && producto.getUrlImagen() != null){
+        } else if(modificar && producto.getUrlImagen() != null && !imagenEliminada){
             urlImagen = producto.getUrlImagen();
         } else {
             urlImagen = null;
@@ -687,7 +723,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
             ProductoDTO original = coordinador.consultarProductoPorID(producto.getId());
             producto.setPrecio(precio);
             producto.setDescripcion(descripcion);
-            if(!detallesProducto.isEmpty()){
+            if(detallesProducto != null && !detallesProducto.isEmpty()){
                 producto.setIngredientes(detallesProducto);
             }
             producto.setUrlImagen(urlImagen);
@@ -733,30 +769,86 @@ public class frmAgregarProducto extends javax.swing.JFrame {
             ImageIcon icono = new ImageIcon(archivo.getAbsolutePath());
             Image img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
             btnSubirImagen.setIcon(new ImageIcon(img));
-
+            mostrarBotonEliminarImagen();
         }
     }//GEN-LAST:event_btnSubirImagenMouseClicked
+
+    /**
+     * Método de acción del botón de eliminar imagen, por si el usuario sube
+     * una imagen y luego se arrepiente, o si está modificando el producto y
+     * quiere dejarlo sin imagen.
+     */
+    private void btnEliminarImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarImagenActionPerformed
+        // TODO add your handling code here:
+        int opcion = dlgNotificacion.mostrarNotificacion(this, "¿Seguro de eliminar la imagen cargada?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == dlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        archivo = null;
+        imagenEliminada = true;
+        btnSubirImagen.setIcon(new ImageIcon(getClass().getResource("/img/subir-archivo icon.png")));
+        ocultarBotonEliminarImagen();
+    }//GEN-LAST:event_btnEliminarImagenActionPerformed
     
     /**
      * Ya que se agrega/modifica un producto, limpia el frame para dejarlo listo 
      * para la siguiente vez.
      */
-    private void limpiar(){
+    public void limpiar(){
+        btnAgregar.setText("Agregar");
+        lblTitulo.setText("Agregar Producto");
+        producto = null;
+        modificar = false;
         resultado = false;
         txtNombre.setText("");
         txtNombre.setEditable(true);
         cbTipo.setEnabled(true);
         txtDescripcion.setText("");
         txtDescripcion.setEditable(true);
+        txtDescripcion.setEnabled(true);
         txtPrecio.setText("");
         txtPrecio.setEditable(true);
         archivo = null;
+        imagenEliminada = false;
         btnSubirImagen.setIcon(new ImageIcon(getClass().getResource("/img/subir-archivo icon.png")));
         modelo.clear();
         if(detallesProducto != null){
             detallesProducto.clear();
         }
+        ocultarBotonEliminarImagen();
         coordinador.limpiarListaIngredientes();
+    }
+    
+    /**
+     * Método para modificar el botón de eliminar imagen, que solo es visible si
+     * hay una imagen cargada.
+     * 
+     * Ajusta sus detalles para ocultar el botón sin que se pierda o cambie la
+     * forma del resto del frame.
+     */
+    private void ocultarBotonEliminarImagen() {
+        btnEliminarImagen.setForeground(new java.awt.Color(0, 0, 0, 0)); 
+        btnEliminarImagen.setBackground(new java.awt.Color(0, 0, 0, 0));
+        btnEliminarImagen.setOpaque(false);
+        btnEliminarImagen.setContentAreaFilled(false);
+        btnEliminarImagen.setText("");
+        btnEliminarImagen.setEnabled(false);
+    }
+    
+    /**
+     * Método para modificar el botón de eliminar imagen, que solo es visible si
+     * hay una imagen cargada.
+     * 
+     * Ajusta sus detalles para mostrar el botón sin que se pierda o cambie la
+     * forma del resto del frame.
+     */
+    private void mostrarBotonEliminarImagen() {
+        btnEliminarImagen.setForeground(new java.awt.Color(255, 255, 255)); 
+        btnEliminarImagen.setBackground(new java.awt.Color(255, 0, 0));
+        btnEliminarImagen.setOpaque(true);
+        btnEliminarImagen.setContentAreaFilled(true);
+        btnEliminarImagen.setText("Eliminar");
+        btnEliminarImagen.setEnabled(true); 
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -764,6 +856,7 @@ public class frmAgregarProducto extends javax.swing.JFrame {
     private javax.swing.JButton btnAgregarIngrediente;
     private javax.swing.JButton btnAtras;
     private javax.swing.JButton btnClientes;
+    private javax.swing.JButton btnEliminarImagen;
     private javax.swing.JButton btnInventario;
     private javax.swing.JButton btnProductos;
     private javax.swing.JButton btnRepCli;
