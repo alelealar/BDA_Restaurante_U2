@@ -9,6 +9,7 @@ import controlador.Coordinador_ModuloIngredientes;
 import dtos.IngredienteDTO;
 import dtos.ProductoIngredienteDTO;
 import enumerators.TipoMovimiento;
+import enumerators.UnidadDTO;
 import excepciones.NegocioException;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -59,6 +60,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
     public FrmIngredientes() {
         initComponents();
         this.setLocationRelativeTo(null);
+        cargarCBXUnidad();
         //cargarTabla();
     }
     
@@ -115,6 +117,8 @@ public class FrmIngredientes extends javax.swing.JFrame {
         lblResumen = new javax.swing.JLabel();
         lblIngredientes = new javax.swing.JLabel();
         btnAgregarIngredientes = new javax.swing.JButton();
+        cbxUnidadMedida = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -370,7 +374,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("Buscar");
+        jLabel2.setText("Unidad");
 
         scrollMenuLateral.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -411,6 +415,8 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setText("Nombre");
+
         javax.swing.GroupLayout panPrincipalLayout = new javax.swing.GroupLayout(panPrincipal);
         panPrincipal.setLayout(panPrincipalLayout);
         panPrincipalLayout.setHorizontalGroup(
@@ -431,15 +437,21 @@ public class FrmIngredientes extends javax.swing.JFrame {
                         .addGap(31, 31, 31))
                     .addGroup(panPrincipalLayout.createSequentialGroup()
                         .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panPrincipalLayout.createSequentialGroup()
-                                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(306, 306, 306)
-                                .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panPrincipalLayout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(275, 275, 275)
-                                .addComponent(lblTitulo)))
+                                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cbxUnidadMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panPrincipalLayout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(185, 185, 185)
+                                        .addComponent(lblTitulo))
+                                    .addGroup(panPrincipalLayout.createSequentialGroup()
+                                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(217, 217, 217)
+                                        .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(scrollMenuLateral, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -469,17 +481,27 @@ public class FrmIngredientes extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(scrollMenuLateral, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panPrincipalLayout.createSequentialGroup()
-                                .addGap(11, 11, 11)
-                                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(lblTitulo))
-                                .addGap(10, 10, 10)
-                                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panPrincipalLayout.createSequentialGroup()
+                                        .addGap(11, 11, 11)
+                                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(lblTitulo)
+                                            .addComponent(jLabel2)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panPrincipalLayout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel3)))
+                                .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panPrincipalLayout.createSequentialGroup()
+                                        .addGap(14, 14, 14)
+                                        .addComponent(btnAnadirIngrediente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(panPrincipalLayout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(cbxUnidadMedida)
+                                            .addComponent(txtBusqueda))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(21, 21, 21)
                         .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnRestarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -487,7 +509,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
                                 .addComponent(btnActualizarIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(btnAgregarStock, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(btnAgregarIngredientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap(34, Short.MAX_VALUE))))
+                        .addGap(34, 34, 34))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -762,7 +784,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
                     ing,
                     ing.getNombre(),
                     ing.getUnidadMedida(),
-                    ing.getStock()
+                    ing.getStockActual()
                 });
             }
         } catch (NegocioException ex){
@@ -901,6 +923,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         });
     }
     
+    private void cargarCBXUnidad() {
+        cbxUnidadMedida.setModel(new javax.swing.DefaultComboBoxModel<>(UnidadDTO.values()));
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizarIngrediente;
@@ -915,8 +940,10 @@ public class FrmIngredientes extends javax.swing.JFrame {
     private javax.swing.JButton btnReportesClientes;
     private javax.swing.JButton btnReportesComandas;
     private javax.swing.JButton btnRestarStock;
+    private javax.swing.JComboBox<UnidadDTO> cbxUnidadMedida;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;

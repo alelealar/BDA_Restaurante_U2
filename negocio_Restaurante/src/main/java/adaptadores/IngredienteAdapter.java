@@ -31,7 +31,8 @@ public class IngredienteAdapter {
                 ingrediente.getIdentificador(),
                 ingrediente.getNombre(),
                 UnidadDTO.valueOf(ingrediente.getUnidadMedida().name()),
-                ingrediente.getStock(),
+                ingrediente.getStockActual(),
+                ingrediente.getStockMinimo(),
                 ingrediente.getUrlImagen()
         );
     }
@@ -46,6 +47,7 @@ public class IngredienteAdapter {
                 i.getNombre(),
                 Unidad.valueOf(i.getUnidadMedida().name()),
                 i.getStockInicial(),
+                i.getStockMinimo(),
                 i.getUrlImagen()
         );
     }
@@ -59,7 +61,8 @@ public class IngredienteAdapter {
                 i.getIdentificador(),
                 i.getNombre(),
                 Unidad.valueOf(i.getUnidadMedida().name()),
-                i.getStock(),
+                i.getStockActual(),
+                i.getStockMinimo(),
                 i.getUrlImagen()
         );
     }

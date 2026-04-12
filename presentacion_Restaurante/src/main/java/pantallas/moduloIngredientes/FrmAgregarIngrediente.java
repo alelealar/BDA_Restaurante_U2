@@ -83,12 +83,15 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         txtStockInicial = new javax.swing.JTextField();
         lblMedida = new javax.swing.JLabel();
         lblStockInicial1 = new javax.swing.JLabel();
-        cbxMedida = new javax.swing.JComboBox<>();
         btnCancelar = new javax.swing.JButton();
         btnAgregar = new javax.swing.JButton();
         lblAgregarImagen = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         btnSubirImagen = new javax.swing.JLabel();
+        lblStockMinimo = new javax.swing.JLabel();
+        txtStockMinimo = new javax.swing.JTextField();
+        jSeparator7 = new javax.swing.JSeparator();
+        cbxMedida = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -265,8 +268,6 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         lblStockInicial1.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         lblStockInicial1.setText("Stock Inicial");
 
-        cbxMedida.setFont(new java.awt.Font("Trebuchet MS", 0, 14)); // NOI18N
-
         btnCancelar.setBackground(new java.awt.Color(47, 47, 47));
         btnCancelar.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btnCancelar.setForeground(new java.awt.Color(255, 255, 255));
@@ -325,6 +326,23 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
             .addComponent(btnSubirImagen, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
         );
 
+        lblStockMinimo.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        lblStockMinimo.setText("Stock Minimo");
+
+        txtStockMinimo.setFont(new java.awt.Font("Trebuchet MS", 0, 15)); // NOI18N
+        txtStockMinimo.setBorder(null);
+        txtStockMinimo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStockMinimoActionPerformed(evt);
+            }
+        });
+
+        cbxMedida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxMedidaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -344,24 +362,30 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
                                 .addComponent(lblNombre)
                                 .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
                                 .addComponent(jSeparator2))
-                            .addComponent(lblStockInicial1, javax.swing.GroupLayout.Alignment.LEADING))))
+                            .addComponent(lblStockInicial1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtStockMinimo)
+                                    .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(lblStockMinimo, javax.swing.GroupLayout.Alignment.LEADING)))))
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(74, 74, 74)
-                        .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 128, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(87, 87, 87)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                                .addComponent(lblMedida)
-                                .addGap(96, 96, 96))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblAgregarImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cbxMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(90, 90, 90))))))
+                                    .addComponent(lblAgregarImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(90, 90, 90))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblMedida)
+                                    .addComponent(cbxMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(96, 96, 96))))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(74, 74, 74)
+                        .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblTitulo)
@@ -373,25 +397,34 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addComponent(lblTitulo)
                 .addGap(39, 39, 39)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblMedida, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblNombre))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblMedida, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblNombre))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbxMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(65, 65, 65)
-                        .addComponent(lblStockInicial1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(cbxMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblStockInicial1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(txtStockInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator6, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(61, 61, 61))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(lblStockMinimo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtStockMinimo, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(23, 23, 23))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(lblAgregarImagen)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -490,6 +523,7 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private void btnAgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarMouseClicked
         String nombre = txtNombre.getText();
         String stock = txtStockInicial.getText();
+        String stockBajo = txtStockMinimo.getText();
         
         if(ValidadorCampos.nombreVacio(nombre)){
             JOptionPane.showMessageDialog(this, "Nombre obligatorio");
@@ -506,9 +540,20 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
             return;
         }
         
+        if(!ValidadorCampos.soloNumeros(stockBajo)){
+            JOptionPane.showMessageDialog(this, "El stock solo puede contener numeros");
+            return;
+        }
+        
         Integer stockInt = Integer.valueOf(stock);
+        Integer stockBajoInt = Integer.valueOf(stockBajo);
         
         if(stockInt < 0){
+            JOptionPane.showMessageDialog(this, "El Stock debe ser positivo");
+            return;
+        }
+        
+        if(stockBajoInt < 0){
             JOptionPane.showMessageDialog(this, "El Stock debe ser positivo");
             return;
         }
@@ -536,7 +581,8 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
 
             if (modoActualizar) {
                 ingredienteOriginal.setNombre(txtNombre.getText());
-                ingredienteOriginal.setStock(stockInt);
+                ingredienteOriginal.setStockActual(stockInt);
+                ingredienteOriginal.setStockMinimo(stockBajoInt);
                 ingredienteOriginal.setUnidadMedida(unidad);
 
                 if (archivoImagen != null) {
@@ -549,7 +595,7 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
 
             } else {
                 try{
-                    coordinador.agregarIngrediente( new IngredienteNuevoDTO(txtNombre.getText(), unidad, stockInt, rutaImagen) );
+                    coordinador.agregarIngrediente( new IngredienteNuevoDTO(txtNombre.getText(), unidad, stockInt, stockBajoInt, rutaImagen) );
                     JOptionPane.showMessageDialog(this, "Ingrediente agregado correctamente.");
                     coordinador.abrirFrmIngredientes();
                     this.dispose();
@@ -574,11 +620,20 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
             if (opcion == JOptionPane.YES_OPTION) {
                 txtNombre.setText("");
                 txtStockInicial.setText("");
+                txtStockMinimo.setText("");
                 coordinador.abrirFrmIngredientes();
                 this.dispose();
             }
         }
     }//GEN-LAST:event_btnCancelarMouseClicked
+
+    private void txtStockMinimoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStockMinimoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStockMinimoActionPerformed
+
+    private void cbxMedidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxMedidaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxMedidaActionPerformed
     
     /**
      * Agrega la imagen al campo de imagen del frame.
@@ -626,7 +681,8 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         btnAgregar.setText("Actualizar");
 
         txtNombre.setText(ingrediente.getNombre());
-        txtStockInicial.setText(String.valueOf(ingrediente.getStock()));
+        txtStockInicial.setText(String.valueOf(ingrediente.getStockActual()));
+        txtStockMinimo.setText(String.valueOf(ingrediente.getStockMinimo()));
         cbxMedida.setSelectedItem(ingrediente.getUnidadMedida());
 
         if (ingrediente.getUrlImagen() != null) {
@@ -660,13 +716,17 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator7;
     private javax.swing.JLabel lblAgregarImagen;
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblMedida;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblStockInicial1;
+    private javax.swing.JLabel lblStockMinimo;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtStockInicial;
+    private javax.swing.JTextField txtStockMinimo;
     // End of variables declaration//GEN-END:variables
+
 }

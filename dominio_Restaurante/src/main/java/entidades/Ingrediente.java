@@ -77,8 +77,12 @@ public class Ingrediente implements Serializable {
      * 
      * Se mide según su unidad (gramos, piezas, ml, etc.).
      */
-    @Column(name = "stock", nullable = false)
-    private Integer stock;
+    @Column(name = "stockActual", nullable = false)
+    private Integer stockActual;
+    
+    
+    @Column(name = "stockMinimo", nullable = false)
+    private Integer stockMinimo;
     
     /**
      * Ruta para extraer su imagen.
@@ -104,22 +108,26 @@ public class Ingrediente implements Serializable {
     )
     private List<ProductoIngrediente> productosAsociados = new ArrayList<>();
 
-    public Ingrediente(Long id, String identificador, String nombre, Unidad unidadMedida, Integer stock, String urlImagen) {
+    public Ingrediente(Long id, String identificador, String nombre, Unidad unidadMedida, Integer stockActual, Integer stockMinimo, String urlImagen) {
         this.id = id;
         this.identificador = identificador;
         this.nombre = nombre;
         this.unidadMedida = unidadMedida;
-        this.stock = stock;
+        this.stockActual = stockActual;
+        this.stockMinimo = stockMinimo;
         this.urlImagen = urlImagen;
     }
 
-    public Ingrediente(String identificador, String nombre, Unidad unidadMedida, Integer stock, String urlImagen) {
+    public Ingrediente(String identificador, String nombre, Unidad unidadMedida, Integer stockActual, Integer stockMinimo, String urlImagen) {
         this.identificador = identificador;
         this.nombre = nombre;
         this.unidadMedida = unidadMedida;
-        this.stock = stock;
+        this.stockActual = stockActual;
+        this.stockMinimo = stockMinimo;
         this.urlImagen = urlImagen;
     }
+
+    
 
     /**
      * Constructor vacio requerido por JPA.
@@ -195,17 +203,27 @@ public class Ingrediente implements Serializable {
      * Devuelve el stock disponible del ingrediente.
      * @return cantidad en inventario
      */
-    public Integer getStock() {
-        return stock;
+    public Integer getStockActual() {
+        return stockActual;
     }
 
     /**
      * Asigna el stock del ingrediente.
      * @param stock cantidad disponible en inventario
      */
-    public void setStock(Integer stock) {
-        this.stock = stock;
+    public void setStockActual(Integer stock) {
+        this.stockActual = stock;
     }
+
+    public Integer getStockMinimo() {
+        return stockMinimo;
+    }
+
+    public void setStockMinimo(Integer stockMinimo) {
+        this.stockMinimo = stockMinimo;
+    }
+    
+    
 
     /**
      * Devuelve la URL de la imagen del ingrediente.

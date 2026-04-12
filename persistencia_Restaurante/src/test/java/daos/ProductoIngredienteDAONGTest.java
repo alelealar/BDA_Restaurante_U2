@@ -56,7 +56,7 @@ public class ProductoIngredienteDAONGTest {
     @Test
     public void existeIngredienteEnReceta_Existe() throws PersistenciaException{
         
-        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, null );
+        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, 10, null );
         Producto producto = new Producto( null, "PR-TEST-01", "Producto de prueba", TipoProducto.BEBIDA, "Descripción de prueba", 50.0, EstadoProducto.ACTIVO, DisponibilidadProducto.DISPONIBLE, null );
         ingredienteDao.agregarIngrediente(ingrediente);
         productoDao.agregarProducto(producto);                
@@ -72,7 +72,7 @@ public class ProductoIngredienteDAONGTest {
     @Test
     public void existeIngredienteEnReceta_noExiste() throws PersistenciaException{
         
-        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, null );
+        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, 10, null );
         Producto producto = new Producto( null, "PR-TEST-01", "Producto de prueba", TipoProducto.BEBIDA, "Descripción de prueba", 50.0, EstadoProducto.ACTIVO, DisponibilidadProducto.DISPONIBLE, null );             
         
         ProductoIngrediente proIng = new ProductoIngrediente(1L, 2, ingrediente, producto);
@@ -85,7 +85,7 @@ public class ProductoIngredienteDAONGTest {
     @Test
     public void agregarProductoIngrediente_correcto() throws PersistenciaException {
 
-        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, null );
+        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, 10, null );
         Producto producto = new Producto( null, "PR-TEST-01", "Producto de prueba", TipoProducto.BEBIDA, "Descripción de prueba", 50.0, EstadoProducto.ACTIVO, DisponibilidadProducto.DISPONIBLE, null );
         ingredienteDao.agregarIngrediente(ingrediente);
         productoDao.agregarProducto(producto);     
@@ -102,7 +102,7 @@ public class ProductoIngredienteDAONGTest {
     @Test
     public void agregarProductoIngrediente_duplicado() throws PersistenciaException {
 
-        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, null );
+        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, 10, null );
         Producto producto = new Producto( null, "PR-TEST-01", "Producto de prueba", TipoProducto.BEBIDA, "Descripción de prueba", 50.0, EstadoProducto.ACTIVO, DisponibilidadProducto.DISPONIBLE, null );
         ingredienteDao.agregarIngrediente(ingrediente);
         productoDao.agregarProducto(producto);     
@@ -120,7 +120,7 @@ public class ProductoIngredienteDAONGTest {
     @Test
     public void eliminarProductoIngrediente_correcto() throws PersistenciaException {
 
-        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, null );
+        Ingrediente ingrediente = new Ingrediente("IN-001", "Temp-1", Unidad.PIEZA, 20, 10, null );
         Producto producto = new Producto( null, "PR-TEST-01", "Producto de prueba", TipoProducto.BEBIDA, "Descripción de prueba", 50.0, EstadoProducto.ACTIVO, DisponibilidadProducto.DISPONIBLE, null );
         ingredienteDao.agregarIngrediente(ingrediente);
         productoDao.agregarProducto(producto);     

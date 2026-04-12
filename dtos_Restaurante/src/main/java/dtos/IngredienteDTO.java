@@ -17,17 +17,19 @@ public class IngredienteDTO {
     private String identificador;
     private String nombre;
     private UnidadDTO unidadMedida;
-    private Integer stock;
+    private Integer stockActual;
+    private Integer stockMinimo;
     private String urlImagen;
 
-    public IngredienteDTO(Long id, String identificador, String nombre, UnidadDTO unidadMedida, Integer stock, String urlImagen) {
+    public IngredienteDTO(Long id, String identificador, String nombre, UnidadDTO unidadMedida, Integer stockActual, Integer stockMinimo, String urlImagen) {
         this.id = id;
         this.identificador = identificador;
         this.nombre = nombre;
         this.unidadMedida = unidadMedida;
-        this.stock = stock;
+        this.stockActual = stockActual;
+        this.stockMinimo = stockMinimo;
         this.urlImagen = urlImagen;
-    }
+    }   
 
     public IngredienteDTO() {
     }
@@ -64,14 +66,22 @@ public class IngredienteDTO {
         this.unidadMedida = unidadMedida;
     }
 
-    public Integer getStock() {
-        return stock;
+    public Integer getStockActual() {
+        return stockActual;
     }
 
-    public void setStock(Integer stock) {
-        this.stock = stock;
+    public void setStockActual(Integer stock) {
+        this.stockActual = stock;
     }
 
+    public Integer getStockMinimo() {
+        return stockMinimo;
+    }
+
+    public void setStockMinimo(Integer stockMinimo) {
+        this.stockMinimo = stockMinimo;
+    }
+    
     public String getUrlImagen() {
         return urlImagen;
     }

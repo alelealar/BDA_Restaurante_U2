@@ -103,7 +103,7 @@ public class IngredienteDAO implements IIngredienteDAO{
                 throw new PersistenciaException("Ingrediente no encontrado");
             }
 
-            ingredienteBD.setStock(ingrediente.getStock());
+            ingredienteBD.setStockActual(ingrediente.getStockActual());
             
             em.getTransaction().commit();
             return ingredienteBD;
@@ -241,7 +241,8 @@ public class IngredienteDAO implements IIngredienteDAO{
 
             existente.setNombre(ingrediente.getNombre());
             existente.setUnidadMedida(ingrediente.getUnidadMedida());
-            existente.setStock(ingrediente.getStock());
+            existente.setStockActual(ingrediente.getStockActual());
+            existente.setStockMinimo(ingrediente.getStockMinimo());
             existente.setUrlImagen(ingrediente.getUrlImagen());
 
             em.merge(existente);

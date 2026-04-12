@@ -17,14 +17,17 @@ public class IngredienteNuevoDTO {
     private String nombre;
     private UnidadDTO unidadMedida;
     private Integer stockInicial;
+    private Integer stockMinimo;
     private String urlImagen;
 
-    public IngredienteNuevoDTO(String nombre, UnidadDTO unidadMedida, Integer stockInicial, String urlImagen) {
+    public IngredienteNuevoDTO(String nombre, UnidadDTO unidadMedida, Integer stockInicial, Integer stockMinimo, String urlImagen) {
         this.nombre = nombre;
         this.unidadMedida = unidadMedida;
         this.stockInicial = stockInicial;
+        this.stockMinimo = stockMinimo;
         this.urlImagen = urlImagen;
     }
+
 
     public IngredienteNuevoDTO() {
     }
@@ -53,6 +56,14 @@ public class IngredienteNuevoDTO {
         this.stockInicial = stockInicial;
     }
 
+    public Integer getStockMinimo() {
+        return stockMinimo;
+    }
+
+    public void setStockMinimo(Integer stockMinimo) {
+        this.stockMinimo = stockMinimo;
+    }
+    
     public String getUrlImagen() {
         return urlImagen;
     }

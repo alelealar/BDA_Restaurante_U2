@@ -102,7 +102,7 @@ public class IngredienteBO implements IIngredienteBO{
                 throw new NegocioException("No existe el ingrediente con id: " + idIngrediente);
             }
             
-            int stockActual = ingrediente.getStock();
+            int stockActual = ingrediente.getStockActual();
             int nuevoStock;
             
             switch(tipo){
@@ -121,7 +121,7 @@ public class IngredienteBO implements IIngredienteBO{
                     throw new NegocioException("Tipo de movimiento no soportado");
             }            
             
-            ingrediente.setStock(nuevoStock);
+            ingrediente.setStockActual(nuevoStock);
             ingredienteDAO.actualizarStock(ingrediente);
             
         } catch (PersistenciaException ex) {
@@ -190,7 +190,8 @@ public class IngredienteBO implements IIngredienteBO{
                   
             entidad.setNombre(ingrediente.getNombre());
             entidad.setUnidadMedida(Unidad.valueOf(ingrediente.getUnidadMedida().name()));
-            entidad.setStock(ingrediente.getStock());
+            entidad.setStockActual(ingrediente.getStockActual());
+            entidad.setStockMinimo(ingrediente.getStockMinimo());
             entidad.setUrlImagen(ingrediente.getUrlImagen());
             
             ingredienteDAO.actualizarIngrediente(entidad);
@@ -239,11 +240,11 @@ public class IngredienteBO implements IIngredienteBO{
             throw new NegocioException("La unidad de medida es obligatoria.");
         }
 
-        if (ingredienteDto.getStock() == null) {
+        if (ingredienteDto.getStockActual() == null) {
             throw new NegocioException("El stock es obligatorio.");
         }
 
-        if (ingredienteDto.getStock() < 0) {
+        if (ingredienteDto.getStockActual() < 0) {
             throw new NegocioException("El stock no puede ser negativo.");
         }
 
