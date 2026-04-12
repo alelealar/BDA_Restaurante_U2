@@ -47,9 +47,6 @@ public class CoordinadorInterfaces {
             formAgregarClientes = new frmAgregarCliente(this);
         }
         formClientes.setVisible(true);
-        formInicio.dispose();
-        formAgregarClientes.dispose();
-
     }
 
     /**
@@ -131,7 +128,7 @@ public class CoordinadorInterfaces {
     }
 
     public void abrirProductos() {
-        formClientes.dispose();
         coordinadorProducto.abrirFrmProductos();
     }
+    
 }

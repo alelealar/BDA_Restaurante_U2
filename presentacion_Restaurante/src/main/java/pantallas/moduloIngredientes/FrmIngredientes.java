@@ -11,6 +11,7 @@ import dtos.ProductoIngredienteDTO;
 import enumerators.TipoMovimiento;
 import enumerators.UnidadDTO;
 import excepciones.NegocioException;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ import notificaciones.dlgNotificacion;
 public class FrmIngredientes extends javax.swing.JFrame {
     
     /**
-     * majojo:
      * Quite el que se creara aquí mismo el coordinador por lo mismo que 
      * comentaba en setCoordinadorIngredientes
      */
@@ -60,6 +60,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         cargarCBXUnidad();
+        aplicarRendererStock();
         //cargarTabla();
     }
     
@@ -179,9 +180,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         btnProductos.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnProductos.setText("Productos");
         btnProductos.setBorder(null);
-        btnProductos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnProductosActionPerformed(evt);
+        btnProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnProductosMouseClicked(evt);
             }
         });
 
@@ -533,7 +534,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * majojo:
      * Es para que se pasen la misma referencia a la lista que se creó desde
      * el coordinador de productos.
      * @param lista 
@@ -546,11 +546,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "No disponible aún...");
     }//GEN-LAST:event_btnInventarioActionPerformed
-
-    private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnProductosActionPerformed
 
     private void btnReportesClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesClientesActionPerformed
         // TODO add your handling code here:
@@ -764,6 +759,11 @@ public class FrmIngredientes extends javax.swing.JFrame {
             aplicarFiltro();
         }
     }//GEN-LAST:event_cbxUnidadMedidaItemStateChanged
+
+    private void btnProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProductosMouseClicked
+        interfaces.abrirProductos();
+        this.dispose();
+    }//GEN-LAST:event_btnProductosMouseClicked
     
     /**
      * Actualiza la tabla donde se ven los ingredientes
@@ -783,6 +783,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
                     ing.getStockActual()
                 });
             }
+            
         } catch (NegocioException ex){
             JOptionPane.showMessageDialog(this, "Error al cargar ingredientes: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -806,7 +807,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
         try {
             String busqueda = txtBusqueda.getText().trim();
             UnidadDTO unidad = (UnidadDTO) cbxUnidadMedida.getSelectedItem();
-
+                        
             List<IngredienteDTO> lista = coordinador.filtrarIngredientes(busqueda, unidad);
             cargarTabla(lista);
 
@@ -874,7 +875,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
     }
     
     /**
-     * majojo:
      * Por si en el panIngredienresProducto le dan click al botón de eliminar, 
      * usa este método para eliminar el panel de esta pantalla.
      * @param panel El panel que se quiere eliminar.
@@ -910,14 +910,12 @@ public class FrmIngredientes extends javax.swing.JFrame {
         item.setImagen(ing.getUrlImagen());
         item.setCantidad(1);
         /**
-         * majojo:
          * Igual, para que se vean kawaii.
          */
         item.setMaximumSize(new Dimension(Integer.MAX_VALUE, item.getPreferredSize().height));  
         item.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         /**
-         * majojo:
          * Como quedaba un espacio sin rellenar, este lo rellena.
          */
         for (Component c : pnlSeleccion.getComponents()) {
@@ -927,7 +925,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
         }
         pnlSeleccion.add(item);
         /*
-        majojo:
         Es para que no se amontonen los componentes, a lo que estuve leyendo.
         */
         pnlSeleccion.add(Box.createVerticalGlue());
@@ -935,7 +932,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
         pnlSeleccion.repaint();
         
         /**
-         * majojo:
          * Según yo esto es para que vayan apilandose de forma ascendente (o sea
          * el último agregado va hacía abajo), aunq no me creas tanto porque esto
          * sí se lo pregunté al geminicio.
@@ -947,8 +943,47 @@ public class FrmIngredientes extends javax.swing.JFrame {
     }
     
     private void cargarCBXUnidad() {
-        cbxUnidadMedida.addItem(null);
         cbxUnidadMedida.setModel(new javax.swing.DefaultComboBoxModel<>(UnidadDTO.values()));
+        cbxUnidadMedida.insertItemAt(null, 0);
+        cbxUnidadMedida.setSelectedIndex(0);
+    }
+    
+    private void aplicarRendererStock() {
+
+        javax.swing.table.DefaultTableCellRenderer renderer = new javax.swing.table.DefaultTableCellRenderer() {
+        
+
+            @Override
+            public java.awt.Component getTableCellRendererComponent( javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+                java.awt.Component c = super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column);
+
+                try {
+                    IngredienteDTO ing = (IngredienteDTO) table.getValueAt(row, 0);
+
+                    if (ing != null && ing.getStockActual() <= ing.getStockMinimo()) {
+                        c.setBackground(Color.decode("#FFCFCF"));
+                    } else {
+                        c.setBackground(java.awt.Color.WHITE);
+                    }
+
+                    if (isSelected) {
+                        c.setBackground(new java.awt.Color(184, 207, 229));
+                    }
+
+                } catch (Exception e) {
+                    c.setBackground(java.awt.Color.WHITE);
+                }
+
+                return c;
+            }
+        };
+        
+        for (int i = 0; i < tblIngredientes.getColumnCount(); i++) {
+            tblIngredientes.getColumnModel()
+                .getColumn(i)
+                .setCellRenderer(renderer);
+        }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
