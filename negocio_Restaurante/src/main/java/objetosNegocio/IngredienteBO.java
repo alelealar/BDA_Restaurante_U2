@@ -14,6 +14,7 @@ import dtos.IngredienteStockDTO;
 import entidades.Ingrediente;
 import enumerators.TipoMovimiento;
 import enumerators.Unidad;
+import enumerators.UnidadDTO;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import interfaces.IIngredienteBO;
@@ -219,6 +220,24 @@ public class IngredienteBO implements IIngredienteBO{
             throw new NegocioException("No fue posible consultar los ingredientes", ex);
         }
     } 
+    
+    @Override
+    public List<IngredienteDTO> buscarIngredientes(String nombre, UnidadDTO unidadDTO) throws NegocioException{
+        try{
+            Unidad unidad = null;
+
+            if (unidadDTO != null) {
+                unidad = Unidad.valueOf(unidadDTO.name());
+            }
+            
+            List<Ingrediente> ingredientes = ingredienteDAO.buscarIngredientes(nombre, unidad);
+            
+            return IngredienteAdapter.listaEntidadADTO(ingredientes);
+        } catch (PersistenciaException ex) {
+            LOG.warning(() -> "No se pudieron obtener los ingredientes");
+            throw new NegocioException("Error al buscar ingredientes", ex);
+        }
+    }
     
     /**
      * Valida los datos de un ingrediente para actualización.

@@ -55,7 +55,9 @@ public interface IIngredienteDAO {
      * @throws PersistenciaException 
      */
     public List<Ingrediente> obtenerIngredientes() throws PersistenciaException;
+  
     
+    public List<Ingrediente> buscarIngredientes(String nombre, Unidad unidad) throws PersistenciaException;
     /**
      * Obtiene el último identificador registrado.
      * Permite generar nuevos identificadores consecutivos.

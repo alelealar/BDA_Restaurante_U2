@@ -10,6 +10,7 @@ import dtos.IngredienteNuevoDTO;
 import dtos.ProductoIngredienteDTO;
 import enumerators.TipoMovimiento;
 import enumerators.Unidad;
+import enumerators.UnidadDTO;
 import excepciones.NegocioException;
 import java.io.File;
 import java.io.IOException;
@@ -221,6 +222,10 @@ public class Coordinador_ModuloIngredientes {
      */
     public void actualizarIngrediente(IngredienteDTO ingrediente) throws NegocioException{
         bo.actualizarIngrediente(ingrediente);
+    }
+    
+    public List<IngredienteDTO> filtrarIngredientes(String nombre, UnidadDTO unidad) throws NegocioException{
+        return bo.buscarIngredientes(nombre, unidad);
     }
     
     

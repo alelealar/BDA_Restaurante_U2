@@ -46,7 +46,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
     Coordinador_ModuloIngredientes coordinador;
     CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
     /**
-     * majojo:
      * Es la lista que se van pasando entre coordinadores y frms, para que
      * manejen la misma referencia y no se pierda.
      */
@@ -65,7 +64,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
     }
     
     /**
-     * majojo:
      * Hice este método porqué si no manejaban coordinadores diferentes y pues
      * perdia comunicación ya que andaba en otro rollo el frm, y fue aquí donde
      * puse el cargar tabla que había en el constructor.
@@ -415,6 +413,12 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         });
 
+        cbxUnidadMedida.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxUnidadMedidaItemStateChanged(evt);
+            }
+        });
+
         jLabel3.setText("Nombre");
 
         javax.swing.GroupLayout panPrincipalLayout = new javax.swing.GroupLayout(panPrincipal);
@@ -568,21 +572,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
     }//GEN-LAST:event_txtBusquedaActionPerformed
 
     private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
-        // TODO add your handling code here:
-        String busqueda = txtBusqueda.getText().trim();
-
-        TableRowSorter<DefaultTableModel> ordenador = new TableRowSorter(tblIngredientes.getModel());
-        tblIngredientes.setRowSorter(ordenador);
-
-        if(busqueda.isBlank() || busqueda.isEmpty() || busqueda.length() == 0){
-            ordenador.setRowFilter(null);
-        } else {
-            /*
-            el (?i) es para que busque sin importar mayúsculas y minúsculas.
-            falta q busque sin importar acentos.
-            */
-            ordenador.setRowFilter(RowFilter.regexFilter("(?i)" + busqueda, 1, 2));
-        }
+        aplicarFiltro();
     }//GEN-LAST:event_txtBusquedaKeyReleased
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
@@ -768,6 +758,12 @@ public class FrmIngredientes extends javax.swing.JFrame {
         coordinador.abrirFrmAgregarProducto();
         
     }//GEN-LAST:event_btnAgregarIngredientesActionPerformed
+
+    private void cbxUnidadMedidaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxUnidadMedidaItemStateChanged
+        if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+            aplicarFiltro();
+        }
+    }//GEN-LAST:event_cbxUnidadMedidaItemStateChanged
     
     /**
      * Actualiza la tabla donde se ven los ingredientes
@@ -789,6 +785,33 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         } catch (NegocioException ex){
             JOptionPane.showMessageDialog(this, "Error al cargar ingredientes: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void cargarTabla(List<IngredienteDTO> lista){
+        DefaultTableModel modelo = (DefaultTableModel) tblIngredientes.getModel();
+        modelo.setRowCount(0);
+
+        for (IngredienteDTO ing : lista) {
+            modelo.addRow(new Object[]{
+                ing,
+                ing.getNombre(),
+                ing.getUnidadMedida(),
+                ing.getStockActual()
+            });
+        }
+    }
+    
+    private void aplicarFiltro() {
+        try {
+            String busqueda = txtBusqueda.getText().trim();
+            UnidadDTO unidad = (UnidadDTO) cbxUnidadMedida.getSelectedItem();
+
+            List<IngredienteDTO> lista = coordinador.filtrarIngredientes(busqueda, unidad);
+            cargarTabla(lista);
+
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -924,6 +947,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
     }
     
     private void cargarCBXUnidad() {
+        cbxUnidadMedida.addItem(null);
         cbxUnidadMedida.setModel(new javax.swing.DefaultComboBoxModel<>(UnidadDTO.values()));
     }
     

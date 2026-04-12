@@ -10,9 +10,14 @@ import entidades.Ingrediente;
 import enumerators.Unidad;
 import excepciones.PersistenciaException;
 import interfaces.IIngredienteDAO;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 
 /**
@@ -156,6 +161,29 @@ public class IngredienteDAO implements IIngredienteDAO{
         } finally {
             em.close();
         }
+    }
+    
+    public List<Ingrediente> buscarIngredientes(String nombre, Unidad unidad)throws PersistenciaException{
+        EntityManager em = ConexionBD.crearConexion();
+        
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Ingrediente> query = cb.createQuery(Ingrediente.class);
+        Root<Ingrediente> ingrediente = query.from(Ingrediente.class);
+        
+        List<Predicate> filtros = new ArrayList<>();
+        
+        if (nombre != null && !nombre.trim().isEmpty()){
+            filtros.add(cb.like(cb.lower(ingrediente.get("nombre")), "%" + nombre.toLowerCase() + "%" ));
+        }
+        
+        if(unidad != null){
+            filtros.add(cb.equal(ingrediente.get("unidadMedida"), unidad));
+        }
+        
+        query.where(cb.and(filtros.toArray(Predicate[]::new)));
+        
+        query.select(ingrediente);
+        return em.createQuery(query).getResultList();
     }
 
     /**

@@ -8,6 +8,8 @@ package interfaces;
 import dtos.IngredienteNuevoDTO;
 import dtos.*;
 import enumerators.TipoMovimiento;
+import enumerators.Unidad;
+import enumerators.UnidadDTO;
 import excepciones.NegocioException;
 import java.util.List;
 
@@ -62,4 +64,6 @@ public interface IIngredienteBO {
      * @throws NegocioException 
      */
     public List<IngredienteDTO> obtenerIngredientes() throws NegocioException;
+    
+    public List<IngredienteDTO> buscarIngredientes(String nombre, UnidadDTO unidad) throws NegocioException;
 }
