@@ -7,7 +7,9 @@ package pantallasProducto;
 import controlador.Coordinador_ModuloProductos;
 import dtos.ProductoDTO;
 import enumerators.EstadoProductoDTO;
+import enumerators.TipoProductoDTO;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -49,6 +51,8 @@ public class frmProductos extends javax.swing.JFrame {
     public frmProductos(Coordinador_ModuloProductos coordinador) {
         this.coordinador = coordinador;
         initComponents();
+        tipoBusqueda.setModel(new DefaultComboBoxModel<>(TipoProductoDTO.values()));
+        tipoBusqueda.addItem(null);
         tblProductos.setFillsViewportHeight(true);
         this.setLocationRelativeTo(null);
         cargarTabla();
@@ -86,7 +90,7 @@ public class frmProductos extends javax.swing.JFrame {
         btnModificar = new javax.swing.JButton();
         btnDesactivar = new javax.swing.JButton();
         btnAgregar = new javax.swing.JButton();
-        opcionBusqueda = new javax.swing.JComboBox<>();
+        tipoBusqueda = new javax.swing.JComboBox<>();
         lblBuscarPor = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -302,7 +306,7 @@ public class frmProductos extends javax.swing.JFrame {
         btnAgregar.setOpaque(true);
         btnAgregar.addActionListener(this::btnAgregarActionPerformed);
 
-        opcionBusqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nombre", "Tipo" }));
+        tipoBusqueda.addItemListener(this::tipoBusquedaItemStateChanged);
 
         lblBuscarPor.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lblBuscarPor.setText("Buscar Por:");
@@ -320,7 +324,7 @@ public class frmProductos extends javax.swing.JFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(lblBuscarpORLayout.createSequentialGroup()
                         .addGroup(lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(opcionBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tipoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblBuscarPor))
                         .addGap(18, 18, 18)
                         .addComponent(iconBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -357,7 +361,7 @@ public class frmProductos extends javax.swing.JFrame {
                     .addGroup(lblBuscarpORLayout.createSequentialGroup()
                         .addComponent(lblBuscarPor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(opcionBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(tipoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(lblBuscarpORLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(lblBuscarpORLayout.createSequentialGroup()
@@ -491,29 +495,7 @@ public class frmProductos extends javax.swing.JFrame {
      */
     private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
         // TODO add your handling code here:
-        String busqueda = txtBusqueda.getText().trim();
-        
-        TableRowSorter<DefaultTableModel> ordenador = new TableRowSorter(tblProductos.getModel());
-        tblProductos.setRowSorter(ordenador);
-        
-        if(busqueda.isBlank() || busqueda.isEmpty() || busqueda.length() == 0){
-            ordenador.setRowFilter(null);
-        } else {
-            /*
-                según la opción que hayan escogido en el combo box, en esa columna
-                se centra en buscar.
-             */
-            switch((String) opcionBusqueda.getSelectedItem()){
-                case "Tipo":
-                    ordenador.setRowFilter(RowFilter.regexFilter("(?i)" + busqueda, 2));
-                    break;
-                case "Nombre":
-                    ordenador.setRowFilter(RowFilter.regexFilter("(?i)" + busqueda, 1));
-                    break;
-                default:
-                    ordenador.setRowFilter(null);
-            }
-        }
+        filtrar();
     }//GEN-LAST:event_txtBusquedaKeyReleased
 
     /**
@@ -571,13 +553,19 @@ public class frmProductos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDesactivarActionPerformed
 
+    private void tipoBusquedaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tipoBusquedaItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+            filtrar();
+        }
+    }//GEN-LAST:event_tipoBusquedaItemStateChanged
+
     /**
      * Método que consulta todos los registros y se encarga de mostrarlos
      * en la tabla.
      */
     public void cargarTabla() {
         List<ProductoDTO> lista = coordinador.consultarTodosLosProductos();
-
         DefaultTableModel model = (DefaultTableModel) tblProductos.getModel();
         model.setRowCount(0);
 
@@ -591,6 +579,41 @@ public class frmProductos extends javax.swing.JFrame {
                 p.getEstado()
             });
         }
+    }
+    
+    /**
+     * Método para cargar la tabla con los registros filtrados.
+     * @param lista Lista de registros filtrados.
+     */
+    public void cargarTablaFiltrada(List<ProductoDTO> lista){
+        DefaultTableModel model = (DefaultTableModel) tblProductos.getModel();
+        model.setRowCount(0);
+
+        for (ProductoDTO p : lista) {
+            model.addRow(new Object[]{
+                p,
+                p.getNombre(),
+                p.getTipo(),
+                p.getDescripcion(),
+                p.getPrecio(),
+                p.getEstado()
+            });
+        }
+    }
+    
+    /**
+     * Método para que filtre la información entre los registros que existan en
+     * la BD.
+     */
+    private void filtrar(){
+        String busqueda = txtBusqueda.getText().trim();
+        Object opcionSeleccionado = tipoBusqueda.getSelectedItem();
+        TipoProductoDTO tipo = null;
+        if(opcionSeleccionado instanceof TipoProductoDTO){
+            tipo = (TipoProductoDTO) opcionSeleccionado;
+        }
+        List<ProductoDTO> lista = coordinador.buscarProductos(busqueda, tipo);
+        cargarTablaFiltrada(lista);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -616,8 +639,8 @@ public class frmProductos extends javax.swing.JFrame {
     private javax.swing.JPanel lblBuscarpOR;
     private javax.swing.JLabel lblProReg;
     private javax.swing.JLabel lblProductos;
-    private javax.swing.JComboBox<String> opcionBusqueda;
     private javax.swing.JTable tblProductos;
+    private javax.swing.JComboBox<enumerators.TipoProductoDTO> tipoBusqueda;
     private javax.swing.JTextField txtBusqueda;
     // End of variables declaration//GEN-END:variables
 }

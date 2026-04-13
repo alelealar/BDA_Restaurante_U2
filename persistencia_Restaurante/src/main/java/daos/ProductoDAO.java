@@ -11,9 +11,14 @@ import enumerators.EstadoProducto;
 import enumerators.TipoProducto;
 import excepciones.PersistenciaException;
 import interfaces.IProductoDAO;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 /**
  * Implementación de la interfaz IProductoDAO para la gestión de productos en la
@@ -283,5 +288,38 @@ public class ProductoDAO implements IProductoDAO {
         } finally {
             em.close();
         }
+    }
+    
+    /**
+     * Obtiene una lista con los productos que cumplan con los filtros 
+     * especificados en los parámetros.
+     * 
+     * @param nombre Nombre que se desea buscar.
+     * @param tipo Tipo de producto que se desea buscar.
+     * @return La lista con los productos que cumplan con dicho filtro.
+     * @throws PersistenciaException Si ocurre un error durante la búsqueda.
+     */
+    @Override
+    public List<Producto> buscarProductos(String nombre, TipoProducto tipo) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery query = cb.createQuery(Producto.class);
+        Root<Producto> producto = query.from(Producto.class);
+        
+        List<Predicate> filtros = new ArrayList<>();
+        
+        if(nombre != null && !nombre.isEmpty() && !nombre.isBlank()){
+            filtros.add(cb.like(cb.lower(producto.get("nombre")), "%" + nombre.toLowerCase() + "%"));
+        }
+        
+        if(tipo != null){
+            filtros.add(cb.equal(producto.get("tipo"), tipo));
+        }
+        
+        query.where(cb.and(filtros.toArray(Predicate[]::new)));
+        
+        query.select(producto);
+        
+        return em.createQuery(query).getResultList();
     }
 }

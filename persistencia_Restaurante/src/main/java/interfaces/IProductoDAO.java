@@ -122,4 +122,15 @@ public interface IProductoDAO {
      */
     public List<Producto> consultarProductosActivos() throws PersistenciaException;
     
+    /**
+     * Obtiene una lista completa de todos los productos que cumplan con los
+     * filtros establecidos en los parámetros, útil para búsquedas dinámicas.
+     * 
+     * @param nombre Nombre del producto que se busca.
+     * @param tipo Tipo de producto que se busca.
+     * @return La lista de los productos que cumplan con los parámetros.
+     * @throws PersistenciaException si ocurre un error durante la búsqueda.
+     */
+    public List<Producto> buscarProductos(String nombre, TipoProducto tipo) throws PersistenciaException;
+    
 }

@@ -297,4 +297,42 @@ public class ProductoDAOTest {
             assertEquals(EstadoProducto.ACTIVO, activos.get(0).getEstado());
         });
     }
+    
+    /**
+     * Prueba que el método devuelve una lista con resultados cuando se busca un 
+     * producto que SÍ existe en la base de datos.
+     */
+    @Test
+    public void buscarProductosExiste() {
+        String nombre = "Producto Test";
+        TipoProducto tipo = TipoProducto.BEBIDA;
+        
+        assertDoesNotThrow(() -> instance.agregarProducto(productoPrueba()));
+
+        List<Producto> resultados = assertDoesNotThrow(() -> 
+            instance.buscarProductos(nombre, tipo));
+
+        assertNotNull(resultados);
+        assertFalse(resultados.isEmpty());
+        
+        Producto p = resultados.get(0);
+        assertTrue(p.getNombre().toLowerCase().contains(nombre.toLowerCase()));
+        assertEquals(tipo, p.getTipo());
+    }
+
+    /**
+     * Prueba que el método devuelve una lista vacía cuando se busca un producto 
+     * que NO existe en la base de datos.
+     */
+    @Test
+    public void buscarProductosNoExiste() {
+        String nombreNoExiste = "abcd";
+        TipoProducto tipoNoExiste = null; 
+
+        List<Producto> resultados = assertDoesNotThrow(() -> 
+            instance.buscarProductos(nombreNoExiste, tipoNoExiste));
+
+        assertNotNull(resultados);
+        assertTrue(resultados.isEmpty());
+    }
 }

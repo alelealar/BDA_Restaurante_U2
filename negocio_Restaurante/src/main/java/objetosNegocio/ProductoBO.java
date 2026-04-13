@@ -326,4 +326,28 @@ public class ProductoBO implements IProductoBO {
         }
     }
     
+    /**
+     * Método que consulta los productos que cumplan los parámetros establecidos.
+     * @param nombre Nombre a buscar.
+     * @param tipo Tipo de producto a buscar.
+     * @return Una lista de ProductoDTO con todas las coincidencias.
+     * @throws NegocioException Si ocurre un error al consultar los productos 
+     * filtrados llamando a la DAO.
+     */
+    @Override
+    public List<ProductoDTO> buscarProductos(String nombre, TipoProductoDTO tipo) throws NegocioException {
+        try{
+            TipoProducto tipoEntidad = null;
+            if(tipo != null){
+                tipoEntidad = TipoProducto.valueOf(tipo.name());
+            }
+            List<Producto> filtrados = productoDAO.buscarProductos(nombre, tipoEntidad);
+            LOG.info(() -> "Se consultaron los productos: " + nombre + ", " + tipo);
+            return ProductoAdapter.listaEntidadADTO(filtrados);
+        } catch(PersistenciaException ex){
+            LOG.warning(() -> "Ocurrió un error al consultar los productos: " + nombre + ", " + tipo);
+            throw new NegocioException("No fue posible consultar los productos: " + nombre + ", " + tipo, ex);
+        }
+    }
+    
 }

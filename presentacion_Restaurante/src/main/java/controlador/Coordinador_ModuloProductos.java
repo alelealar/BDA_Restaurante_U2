@@ -7,6 +7,7 @@ package controlador;
 import dtos.ProductoDTO;
 import dtos.ProductoIngredienteDTO;
 import dtos.ProductoNuevoDTO;
+import enumerators.TipoProductoDTO;
 import excepciones.NegocioException;
 import interfaces.IProductoBO;
 import java.util.ArrayList;
@@ -253,7 +254,7 @@ public class Coordinador_ModuloProductos {
     }
     
     /**
-     * Método para comunicase con la DAO y consultar todos los productos activos
+     * Método para comunicarse con la DAO y consultar todos los productos activos
      * en la base de datos, por medio de la BO.
      * Esto es para que los frames puedan realizar dichas operaciones sin ellos 
      * tener una instancia de ProductoBO.
@@ -265,6 +266,25 @@ public class Coordinador_ModuloProductos {
             return productoBO.consultarProductosActivos();
         } catch(NegocioException ne){
             dlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al consultar todos los productos activos: " + ne.getMessage(), TipoNotificacion.ERROR);
+            return null;
+        }
+    }
+    
+    /**
+     * Método para comunicarse con la DAO y consultar todos los productos que 
+     * cumplan con los filtros en la base de datos, por medio de la BO.
+     * Esto es para que los frames puedan realizar dichas operaciones sin ellos 
+     * tener una instancia de ProductoBO.
+     * @param nombre Nombre a buscar.
+     * @param tipo Tipo de producto a buscar.
+     * @return Una lista de ProductoDTO con los registros que coincidan con los
+     * filtros aplicados.
+     */
+    public List<ProductoDTO> buscarProductos(String nombre, TipoProductoDTO tipo){
+        try{
+            return productoBO.buscarProductos(nombre, tipo);
+        } catch(NegocioException ne){
+            dlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al buscar coincidencias con=" + nombre + ", " + tipo + ": " + ne.getMessage(), TipoNotificacion.ERROR);
             return null;
         }
     }

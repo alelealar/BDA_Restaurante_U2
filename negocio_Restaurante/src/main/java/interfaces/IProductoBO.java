@@ -6,6 +6,7 @@ package interfaces;
 
 import dtos.ProductoDTO;
 import dtos.ProductoNuevoDTO;
+import enumerators.TipoProductoDTO;
 import excepciones.NegocioException;
 import java.util.List;
 
@@ -88,5 +89,17 @@ public interface IProductoBO {
      * @throws NegocioException Si ocurre un error en las reglas del negocio.
      */
     List<ProductoDTO> consultarProductosActivos() throws NegocioException;
+    
+    /**
+     * Obtiene todos los productos registrados en la BD que cumplan con los
+     * filtros establecidos en los parámetros.
+     * 
+     * @param nombre Nombre de producto que se desea buscar.
+     * @param tipo Tipo de producto que se desea buscar.
+     * @return La lista con los productos registrados que cumplan con los 
+     * parámetros.
+     * @throws NegocioException Si ocurre un error en las reglas del negocio.
+     */
+    List<ProductoDTO> buscarProductos(String nombre, TipoProductoDTO tipo) throws NegocioException;
     
 }
