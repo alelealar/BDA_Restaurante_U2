@@ -79,10 +79,6 @@ public class IngredienteDAO implements IIngredienteDAO{
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            /*
-            if (e.getMessage().toLowerCase().contains("unique")) {
-                throw new PersistenciaException( "Ya existe un ingrediente de nombre " + ingrediente.getNombre() + " y unidad de medida " + ingrediente.getUnidadMedida() );
-            }*/
             throw new PersistenciaException("Error al agregar ingrediente", e);     
         } finally {
             em.close();
@@ -265,6 +261,10 @@ public class IngredienteDAO implements IIngredienteDAO{
     @Override
     public Ingrediente actualizarIngrediente(Ingrediente ingrediente) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
+        
+        if(existeIngredienteDuplicado(ingrediente.getId(), ingrediente.getNombre(), ingrediente.getUnidadMedida())){
+            throw new PersistenciaException("Ya existe un ingrediente de nombre "+ingrediente.getNombre()+" y unidad de medida "+ingrediente.getUnidadMedida());
+        }
 
         try {
             em.getTransaction().begin();
@@ -316,6 +316,7 @@ public class IngredienteDAO implements IIngredienteDAO{
 
         
         try {
+            
             if (id == null) {
                 JPQL = "SELECT COUNT(i) FROM Ingrediente i where i.nombre = :nom AND i.unidadMedida = :uni";
                 query = em.createQuery(JPQL, Long.class);

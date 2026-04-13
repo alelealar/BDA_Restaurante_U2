@@ -153,17 +153,8 @@ public class IngredienteBO implements IIngredienteBO{
             if (enUso) {
                 throw new NegocioException("No se puede eliminar, el ingrediente está en uso en recetas");
             }
-            
-            String urlImagen = entidad.getUrlImagen();
                        
             ingredienteDAO.eliminarIngrediente(entidad);
-            
-            if (urlImagen != null && !urlImagen.isEmpty()) {
-                File archivo = new File(urlImagen);
-                if(archivo.exists()){
-                    archivo.delete();
-                }
-            }
             
         } catch (PersistenciaException ex) {
             LOG.warning(() -> "No fue posible eliminar el ingrediente: " + ingrediente.toString());
