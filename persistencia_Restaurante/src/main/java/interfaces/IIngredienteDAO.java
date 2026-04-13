@@ -56,7 +56,13 @@ public interface IIngredienteDAO {
      */
     public List<Ingrediente> obtenerIngredientes() throws PersistenciaException;
   
-    
+    /**
+     * Filtra los ingredientes registrados en la base de datos por nombre y unidad de medida.
+     * @param nombre
+     * @param unidad
+     * @return
+     * @throws PersistenciaException 
+     */
     public List<Ingrediente> buscarIngredientes(String nombre, Unidad unidad) throws PersistenciaException;
     /**
      * Obtiene el último identificador registrado.

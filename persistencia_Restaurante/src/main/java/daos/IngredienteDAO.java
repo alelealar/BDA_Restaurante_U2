@@ -163,6 +163,14 @@ public class IngredienteDAO implements IIngredienteDAO{
         }
     }
     
+    /**
+     * Filtra los ingredientes registrados en la base de datos por nombre y unidad de medida.
+     * @param nombre
+     * @param unidad
+     * @return
+     * @throws PersistenciaException 
+     */
+    @Override
     public List<Ingrediente> buscarIngredientes(String nombre, Unidad unidad)throws PersistenciaException{
         EntityManager em = ConexionBD.crearConexion();
         

@@ -221,6 +221,15 @@ public class IngredienteBO implements IIngredienteBO{
         }
     } 
     
+    /**
+     * Busca ingredientes según nombre y unidad de medida.
+     * Convierte los resultados a DTO para su uso en la aplicación.
+     * 
+     * @param nombre nombre o parte del nombre del ingrediente
+     * @param unidadDTO unidad de medida del ingrediente
+     * @return lista de ingredientes encontrados en formato DTO
+     * @throws NegocioException si ocurre un error en la búsqueda
+     */
     @Override
     public List<IngredienteDTO> buscarIngredientes(String nombre, UnidadDTO unidadDTO) throws NegocioException{
         try{

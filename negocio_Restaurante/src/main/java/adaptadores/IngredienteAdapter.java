@@ -1,8 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 package adaptadores;
 
 import dtos.IngredienteDTO;
@@ -14,13 +9,24 @@ import enumerators.UnidadDTO;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- *
+ * Clase encargada de convertir entre la entidad Ingrediente
+ * y sus diferentes DTOs.
+ * 
+ * Centraliza las transformaciones entre capas del sistema.
+ * 
  * @author Alejandra Leal Armenta, 262719
+ * 
  */
 
 public class IngredienteAdapter {
+
+    /**
+     * Convierte una entidad Ingrediente a IngredienteDTO.
+     * 
+     * @param ingrediente entidad a convertir
+     * @return DTO con los datos del ingrediente o null si es null
+     */
     public static IngredienteDTO entidadADTO(Ingrediente ingrediente) {
         if (ingrediente == null) {
             return null;
@@ -37,7 +43,12 @@ public class IngredienteAdapter {
         );
     }
     
-    
+    /**
+     * Convierte un IngredienteNuevoDTO a entidad Ingrediente.
+     * 
+     * @param i DTO de creación
+     * @return entidad nueva o null si el DTO es null
+     */
     public static Ingrediente nuevoDTOAEntidad(IngredienteNuevoDTO i) {
         if (i == null) return null;
 
@@ -52,7 +63,12 @@ public class IngredienteAdapter {
         );
     }
     
-        
+    /**
+     * Convierte un IngredienteDTO a entidad Ingrediente.
+     * 
+     * @param i DTO a convertir
+     * @return entidad con los datos del DTO o null si es null
+     */
     public static Ingrediente dtoAEntidad(IngredienteDTO i) {
         if (i == null) return null;
 
@@ -67,6 +83,12 @@ public class IngredienteAdapter {
         );
     }
 
+    /**
+     * Convierte una lista de entidades a lista de DTOs.
+     * 
+     * @param ingredientes lista de entidades
+     * @return lista de DTOs (vacía si no hay elementos)
+     */
     public static List<IngredienteDTO> listaEntidadADTO(List<Ingrediente> ingredientes) {
         List<IngredienteDTO> listaDtos = new ArrayList<>();
 
@@ -77,5 +99,3 @@ public class IngredienteAdapter {
         return listaDtos;
     }
 }
-
-
