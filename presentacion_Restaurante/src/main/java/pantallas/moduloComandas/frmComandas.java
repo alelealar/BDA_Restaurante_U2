@@ -7,17 +7,10 @@ import dtos.DetalleComandaDTO;
 import dtos.MesaDTO;
 import dtos.ProductoDTO;
 import enumerators.EstadoComandaDTO;
-import enumerators.EstadoMesaDTO;
 import excepciones.NegocioException;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
 import pantallas.moduloComandas.vistas.panPedidos;
 
 /**
@@ -150,6 +143,20 @@ public class frmComandas extends javax.swing.JFrame {
         mensaje.append("\nTotal: $").append(comanda.getTotal());
 
         return mensaje.toString();
+    }
+
+    public void recibirClienteFrecuente(ClienteDTO cliente) {
+        try {
+            ComandaDTO nueva = new ComandaDTO();
+            nueva.setMesa(mesa);
+            nueva.setCliente(cliente);
+
+            comanda = coordinador.registrarComanda(nueva);
+            creada = true;
+            cargarEstado();
+        } catch (NegocioException ex) {
+            mostrarMensajeError(ex.getMessage());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -389,8 +396,8 @@ public class frmComandas extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-
         if (!creada) {
+
             int confirmacion = JOptionPane.showConfirmDialog(
                     this,
                     "¿Desea abrir la comanda?",
@@ -398,7 +405,33 @@ public class frmComandas extends javax.swing.JFrame {
                     JOptionPane.OK_CANCEL_OPTION
             );
 
-            if (confirmacion == JOptionPane.OK_OPTION) {
+            if (confirmacion != JOptionPane.OK_OPTION) {
+                return;
+            }
+
+            int opcion = JOptionPane.showOptionDialog(
+                    this,
+                    "Seleccionar cliente",
+                    "Tipo de Cliente",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    new Object[]{"Registrado", "Sin Registro"},
+                    "Registrado"
+            );
+
+            if (opcion == JOptionPane.CLOSED_OPTION) {
+                return;
+            }
+
+            // Cliente registrado
+            if (opcion == 0) {
+                coordinador.abrirClientesParaComanda();
+                return;
+            }
+
+            // Cliente general
+            if (opcion == 1) {
                 try {
                     ComandaDTO nueva = new ComandaDTO();
                     nueva.setMesa(mesa);
@@ -407,31 +440,15 @@ public class frmComandas extends javax.swing.JFrame {
                     creada = true;
 
                     cargarEstado();
-
                 } catch (NegocioException ex) {
                     mostrarMensajeError(ex.getMessage());
                 }
+
+                return;
             }
-            return;
         }
 
-        int opcion = JOptionPane.showOptionDialog(
-                this,
-                "Seleccionar cliente",
-                "Tipo de Cliente",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                new Object[]{"Registrado", "Sin Registro"},
-                "Registrado"
-        );
-
-        if (opcion == 1) {
-            coordinador.mostrarPantallaCrearPedido(mesa, comanda);
-            comanda.setCliente(cliente);
-        }
-
-        cargarEstado();
+        coordinador.mostrarPantallaCrearPedido(mesa, comanda);
 
 
     }//GEN-LAST:event_btnCrearActionPerformed
@@ -470,15 +487,12 @@ public class frmComandas extends javax.swing.JFrame {
                 return;
             }
 
-            ComandaDTO actualizada = coordinador.obtenerComanda(comanda.getId());
-            actualizada.setEstadoComanda(EstadoComandaDTO.ENTREGADA);
-            actualizada = coordinador.actualizarComanda(actualizada);
+            comanda.setEstadoComanda(EstadoComandaDTO.ENTREGADA);
+            coordinador.actualizarComanda(comanda);
+            ComandaDTO comandaActualizada = coordinador.obtenerComanda(comanda.getId());
+            coordinador.actualizarRegistrosClienteFrecuente(comandaActualizada);
 
-            coordinador.cambiarEstadoMesa(mesa.getId(), EstadoMesaDTO.DISPONIBLE);
-
-            JOptionPane.showMessageDialog(this, construirMensajeComanda(actualizada));
-
-            comanda = actualizada;
+            JOptionPane.showMessageDialog(this, construirMensajeComanda(comandaActualizada));
             coordinador.mostrarPantallaMesas();
 
         } catch (NegocioException ex) {

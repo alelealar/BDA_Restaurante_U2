@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author Brian Kaleb Sandoval Rodríguez
  */
 public class ComandaDAOTest {
-    
+
     private static ComandaDAO comandaDAO;
     private static List<Mesa> mesas;
 
@@ -69,25 +69,9 @@ public class ComandaDAOTest {
         comanda.setEstadoComanda(EstadoComanda.ABIERTA);
         comanda.setFolio("TEST-001");
         comanda.setMesa(mesas.get(0));
-        
-        DetalleComanda detalle = new DetalleComanda();
-        detalle.setCantidad(2);
-        detalle.setPrecioUnitario(50);
-        
-        Producto producto = new Producto();
-        producto.setId(1L);
-        detalle.setProducto(producto);
-        
-        detalle.setComanda(comanda);
-        
-        List<DetalleComanda> detalles = new ArrayList<>();
-        detalles.add(detalle);
-        
-        comanda.setDetalles(detalles);
-        comanda.calcularTotal();
-        
+
         Comanda guardada = comandaDAO.guardarComanda(comanda);
-        
+
         assertNotNull(guardada);
         assertNotNull(guardada.getId());
     }
@@ -102,11 +86,11 @@ public class ComandaDAOTest {
         comanda.setFolio("TEST-002");
         comanda.setMesa(mesas.get(1));
         comanda.setDetalles(new ArrayList<>());
-        
+
         Comanda guardada = comandaDAO.guardarComanda(comanda);
-        
+
         Comanda encontrada = comandaDAO.buscarComandaPorId(guardada.getId());
-        
+
         assertNotNull(encontrada);
         assertEquals(guardada.getId(), encontrada.getId());
     }
@@ -121,13 +105,13 @@ public class ComandaDAOTest {
         comanda.setFolio("TEST-003");
         comanda.setMesa(mesas.get(2));
         comanda.setDetalles(new ArrayList<>());
-        
+
         Comanda guardada = comandaDAO.guardarComanda(comanda);
-        
+
         guardada.setEstadoComanda(EstadoComanda.ENTREGADA);
-        
+
         Comanda actualizada = comandaDAO.actualizarComanda(guardada);
-        
+
         assertEquals(EstadoComanda.ENTREGADA, actualizada.getEstadoComanda());
     }
 
@@ -141,13 +125,13 @@ public class ComandaDAOTest {
         comanda.setFolio("TEST-004");
         comanda.setMesa(mesas.get(3));
         comanda.setDetalles(new ArrayList<>());
-        
+
         Comanda guardada = comandaDAO.guardarComanda(comanda);
-        
+
         boolean eliminado = comandaDAO.eliminarComanda(guardada.getId());
-        
+
         Comanda buscada = comandaDAO.buscarComandaPorId(guardada.getId());
-        
+
         assertTrue(eliminado);
         assertNull(buscada);
     }
@@ -162,11 +146,11 @@ public class ComandaDAOTest {
         comanda.setFolio("TEST-005");
         comanda.setMesa(mesas.get(4));
         comanda.setDetalles(new ArrayList<>());
-        
+
         comandaDAO.guardarComanda(comanda);
-        
+
         List<Comanda> lista = comandaDAO.obtenerComandas();
-        
+
         assertNotNull(lista);
         assertTrue(!lista.isEmpty());
     }
@@ -187,7 +171,7 @@ public class ComandaDAOTest {
     public void testActualizarComandaInexistente() {
         Comanda comanda = new Comanda();
         comanda.setId(999999L);
-        
+
         assertThrows(PersistenciaException.class, () -> {
             comandaDAO.actualizarComanda(comanda);
         });

@@ -3,6 +3,7 @@ package adaptadores;
 import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
 import entidades.Cliente;
+import entidades.ClienteFrecuente;
 import excepciones.NegocioException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,11 +31,26 @@ public class ClienteAdapter {
      *
      * @param cliente objeto Cliente a convertir
      * @return objeto ClienteNuevoDTO con los datos del cliente, o null si el
- parámetro es null
+     * parámetro es null
      */
     public static ClienteDTO entidadADTO(Cliente cliente) {
         if (cliente == null) {
             return null;
+        }
+
+        if (cliente instanceof ClienteFrecuente cf) {
+            return new ClienteDTO(
+                    cf.getId(),
+                    cf.getNombres(),
+                    cf.getApellidoPaterno(),
+                    cf.getApellidoMaterno(),
+                    cf.getTelefono(),
+                    cf.getCorreo(),
+                    cf.getFechaRegistro(),
+                    cf.getNumVisitas(),
+                    cf.getTotalGastado(),
+                    cf.getPuntos()
+            );
         }
 
         return new ClienteDTO(
@@ -56,8 +72,10 @@ public class ClienteAdapter {
      * null
      */
     public static Cliente dtoAEntidad(Object dto) throws NegocioException {
-        if (dto == null) return null;
-        
+        if (dto == null) {
+            return null;
+        }
+
         if (dto instanceof ClienteNuevoDTO c) {
             return new Cliente(
                     null,
@@ -83,8 +101,35 @@ public class ClienteAdapter {
     }
 
     /**
+     * Convierte un ClienteDTO a ClienteFrecuente.
+     *
+     * Se utiliza cuando se necesita actualizar información de fidelidad.
+     *
+     * @param dto cliente DTO
+     * @return entidad ClienteFrecuente
+     */
+    public static ClienteFrecuente dtoAFrecuente(ClienteDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        return new ClienteFrecuente(
+                dto.getNumVisitas(),
+                dto.getTotalGastado(),
+                dto.getPuntos(),
+                dto.getId(),
+                dto.getNombres(),
+                dto.getApellidoPaterno(),
+                dto.getApellidoMaterno(),
+                dto.getTelefono(),
+                dto.getCorreo()
+        );
+    }
+
+    /**
      * Convierte una lista de objetos Cliente (entidades) a una lista de
-     * ClienteDTO.Recorre la lista de entidades y transforma cada elemento en su representación DTO.
+     * ClienteDTO.Recorre la lista de entidades y transforma cada elemento en su
+     * representación DTO.
      *
      *
      * @param clientes lista de objetos Cliente

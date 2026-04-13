@@ -30,6 +30,12 @@ public class ClienteDTO {
     private String correo;
     private LocalDate fechaRegistro;
 
+    private Integer numVisitas;
+
+    private Double totalGastado;
+
+    private Integer puntos;
+
     public ClienteDTO(Long id, String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String correo, LocalDate fechaRegistro) {
         this.id = id;
         this.nombres = nombres;
@@ -38,6 +44,19 @@ public class ClienteDTO {
         this.telefono = telefono;
         this.correo = correo;
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public ClienteDTO(Long id, String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String correo, LocalDate fechaRegistro, Integer numVisitas, Double totalGastado, Integer puntos) {
+        this.id = id;
+        this.nombres = nombres;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.telefono = telefono;
+        this.correo = correo;
+        this.fechaRegistro = fechaRegistro;
+        this.numVisitas = numVisitas;
+        this.totalGastado = totalGastado;
+        this.puntos = puntos;
     }
 
     public ClienteDTO() {
@@ -97,6 +116,30 @@ public class ClienteDTO {
 
     public void setFechaRegistro(LocalDate fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public Integer getNumVisitas() {
+        return numVisitas;
+    }
+
+    public void setNumVisitas(Integer numVisitas) {
+        this.numVisitas = numVisitas;
+    }
+
+    public Double getTotalGastado() {
+        return totalGastado;
+    }
+
+    public void setTotalGastado(Double totalGastado) {
+        this.totalGastado = totalGastado;
+    }
+
+    public Integer getPuntos() {
+        return puntos;
+    }
+
+    public void setPuntos(Integer puntos) {
+        this.puntos = puntos;
     }
 
     @Override

@@ -1,19 +1,23 @@
 package controlador;
 
+import dtos.ClienteDTO;
 import dtos.ComandaDTO;
 import dtos.MesaDTO;
 import dtos.ProductoDTO;
 import enumerators.EstadoMesaDTO;
 import excepciones.NegocioException;
+import interfaces.IClienteBO;
 import interfaces.IComandaBO;
 import interfaces.IMesaBO;
 import interfaces.IMeseroBO;
 import interfaces.IProductoBO;
 import java.util.List;
+import objetosNegocio.ClienteBO;
 import objetosNegocio.ComandaBO;
 import objetosNegocio.MesaBO;
 import objetosNegocio.MeseroBO;
 import objetosNegocio.ProductoBO;
+import pantallas.frmInicio;
 import pantallas.moduloComandas.frmComandas;
 import pantallas.moduloComandas.frmISMesero;
 import pantallas.moduloComandas.frmMesas;
@@ -51,6 +55,11 @@ public class CoordinadorModuloComandas {
     private frmPedidos pedidos;
 
     /**
+     * Pantalla inicio del sistema
+     */
+    private frmInicio inicio;
+
+    /**
      * Objeto de negocio para comandas
      */
     private final IComandaBO comandaBO;
@@ -71,6 +80,16 @@ public class CoordinadorModuloComandas {
     private final IProductoBO productoBO;
 
     /**
+     * Objeto de negocio para clientes
+     */
+    private final IClienteBO clienteBO;
+
+    /**
+     * Coordinador principal del sistema
+     */
+    private CoordinadorInterfaces coordinador;
+
+    /**
      * Constructor que inicializa las instancias de negocio mediante patrón
      * Singleton.
      */
@@ -79,6 +98,46 @@ public class CoordinadorModuloComandas {
         meseroBO = MeseroBO.getInstance();
         mesaBO = MesaBO.getInstance();
         productoBO = ProductoBO.getInstance();
+        clienteBO = ClienteBO.getInstance();
+    }
+
+    /**
+     * Establecer el coordinador para permitirnos movernos por el sistema desde
+     * principal.
+     *
+     * @param coordinador coordinador de interfaces principal.
+     */
+    public void setCoordinador(CoordinadorInterfaces coordinador) {
+        this.coordinador = coordinador;
+    }
+
+    public void volverInicio() {
+        if (coordinador != null) {
+            coordinador.regresarInicio();
+        }
+    }
+
+    public void cerrarPantallas() {
+
+        if (isMesero != null) {
+            isMesero.dispose();
+            isMesero = null;
+        }
+
+        if (mesas != null) {
+            mesas.dispose();
+            mesas = null;
+        }
+
+        if (comandas != null) {
+            comandas.dispose();
+            comandas = null;
+        }
+
+        if (pedidos != null) {
+            pedidos.dispose();
+            pedidos = null;
+        }
     }
 
     /**
@@ -155,6 +214,23 @@ public class CoordinadorModuloComandas {
         }
     }
 
+    public void abrirClientesParaComanda() {
+        if (comandas != null) {
+            comandas.setVisible(false);
+        }
+        if (coordinador != null) {
+            coordinador.mostrarClientesParaComanda();
+        }
+
+    }
+
+    public void recibirClienteComanda(ClienteDTO cliente) {
+        if (comandas != null) {
+            comandas.recibirClienteFrecuente(cliente);
+            comandas.setVisible(true);
+        }
+    }
+
     /**
      * Refresca la información de la pantalla de comandas.
      */
@@ -184,6 +260,10 @@ public class CoordinadorModuloComandas {
      */
     public ComandaDTO actualizarComanda(ComandaDTO comandaDTO) throws NegocioException {
         return comandaBO.actualizarComanda(comandaDTO);
+    }
+
+    public void actualizarRegistrosClienteFrecuente(ComandaDTO comanda) throws NegocioException {
+        comandaBO.actualizarClienteFrecuente(comanda);
     }
 
     /**

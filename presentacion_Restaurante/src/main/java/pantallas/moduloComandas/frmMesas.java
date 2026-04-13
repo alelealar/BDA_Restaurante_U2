@@ -2,10 +2,9 @@ package pantallas.moduloComandas;
 
 import pantallas.moduloComandas.vistas.panMesa;
 import controlador.CoordinadorModuloComandas;
-import dtos.ComandaDTO;
 import dtos.MesaDTO;
-import enumerators.EstadoComandaDTO;
 import excepciones.NegocioException;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.Comparator;
 import java.util.List;
@@ -24,6 +23,7 @@ public class frmMesas extends javax.swing.JFrame {
 
     /**
      * Creates new form frmMesas
+     *
      * @param coordinador
      */
     public frmMesas(CoordinadorModuloComandas coordinador) {
@@ -73,6 +73,8 @@ public class frmMesas extends javax.swing.JFrame {
         panMenu = new javax.swing.JPanel();
         btnMesas = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
+        btnInicio = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         panContenedorMesas = new javax.swing.JPanel();
 
@@ -127,7 +129,7 @@ public class frmMesas extends javax.swing.JFrame {
             btnMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnMesasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
                 .addContainerGap())
         );
         btnMesasLayout.setVerticalGroup(
@@ -135,6 +137,42 @@ public class frmMesas extends javax.swing.JFrame {
             .addGroup(btnMesasLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
+        );
+
+        btnInicio.setBackground(new java.awt.Color(255, 246, 222));
+        btnInicio.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnInicioMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnInicioMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnInicioMouseExited(evt);
+            }
+        });
+
+        jLabel5.setBackground(new java.awt.Color(74, 68, 89));
+        jLabel5.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(74, 68, 89));
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("Volver al Inicio");
+
+        javax.swing.GroupLayout btnInicioLayout = new javax.swing.GroupLayout(btnInicio);
+        btnInicio.setLayout(btnInicioLayout);
+        btnInicioLayout.setHorizontalGroup(
+            btnInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(btnInicioLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        btnInicioLayout.setVerticalGroup(
+            btnInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(btnInicioLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -143,12 +181,15 @@ public class frmMesas extends javax.swing.JFrame {
         panMenuLayout.setHorizontalGroup(
             panMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(btnMesas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnInicio, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panMenuLayout.setVerticalGroup(
             panMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panMenuLayout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addComponent(btnMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(btnInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -195,12 +236,33 @@ public class frmMesas extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnInicioMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInicioMouseEntered
+        btnInicio.setBackground(Color.decode("#FFE484"));
+    }//GEN-LAST:event_btnInicioMouseEntered
+
+    private void btnInicioMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInicioMouseExited
+        btnInicio.setBackground(Color.decode("#FFF6DE"));
+    }//GEN-LAST:event_btnInicioMouseExited
+
+    private void btnInicioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInicioMouseClicked
+        int respuesta = JOptionPane.showConfirmDialog(null,
+                "¿Desea salir de registrar comandas?",
+                "Confirmar",
+                JOptionPane.OK_CANCEL_OPTION);
+
+        if (respuesta == JOptionPane.OK_OPTION) {
+            coordinador.volverInicio();
+        }
+    }//GEN-LAST:event_btnInicioMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel btnInicio;
     private javax.swing.JPanel btnMesas;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panContenedorMesas;

@@ -1,6 +1,7 @@
 package interfaces;
 
 import entidades.Cliente;
+import entidades.ClienteFrecuente;
 import entidades.ClienteGeneral;
 import excepciones.PersistenciaException;
 import java.util.List;
@@ -80,6 +81,33 @@ public interface IClienteDAO {
      * @throws PersistenciaException Si ocurre un error en la operación.
      */
     public ClienteGeneral obtenerOcrearClienteGeneral() throws PersistenciaException;
+
+    /**
+     * Obtiene todos los clientes frecuentes registrados en el sistema.
+     *
+     * Se consideran clientes frecuentes aquellos que pertenecen a la subclase
+     * ClienteFrecuente, excluyendo al ClienteGeneral.
+     *
+     * Este método no evalúa la cantidad de comandas, ya que el criterio de
+     * cliente frecuente está definido por el tipo de entidad.
+     *
+     * @return lista de clientes frecuentes registrados
+     * @throws PersistenciaException si ocurre un error durante la consulta
+     */
+    public List<ClienteFrecuente> obtenerClientesFrecuentes() throws PersistenciaException;
+
+    /**
+     * Obtiene un cliente frecuente a partir de su identificador.
+     *
+     * Se valida que el cliente exista y que no sea una instancia de
+     * ClienteGeneral.
+     *
+     * @param id identificador del cliente
+     * @return cliente frecuente encontrado o null si no existe o es
+     * ClienteGeneral
+     * @throws PersistenciaException si ocurre un error durante la consulta
+     */
+    public ClienteFrecuente obtenerClienteFrecuentePorId(Long id) throws PersistenciaException;
 
     /**
      * Obtiene la lista completa de clientes registrados en la base de datos.

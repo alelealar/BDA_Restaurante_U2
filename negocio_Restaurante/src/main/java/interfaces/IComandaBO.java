@@ -2,6 +2,7 @@ package interfaces;
 
 import dtos.ComandaDTO;
 import dtos.MesaDTO;
+import entidades.Comanda;
 import excepciones.NegocioException;
 import java.util.List;
 
@@ -65,4 +66,6 @@ public interface IComandaBO {
      * @throws NegocioException si ocurre un error
      */
     List<MesaDTO> obtenerMesas() throws NegocioException;
+
+    public void actualizarClienteFrecuente(ComandaDTO comanda) throws NegocioException;
 }

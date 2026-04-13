@@ -5,6 +5,7 @@ import daos.ClienteDAO;
 import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
 import entidades.Cliente;
+import entidades.ClienteFrecuente;
 import entidades.ClienteGeneral;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
@@ -121,7 +122,7 @@ public class ClienteBO implements IClienteBO {
             throw new NegocioException("ERROR: " + ex.getMessage());
         }
     }
-
+    
     /**
      * Busca un cliente por su identificador.
      *

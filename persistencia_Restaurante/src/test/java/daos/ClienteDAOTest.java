@@ -1,6 +1,7 @@
 package daos;
 
 import entidades.Cliente;
+import entidades.ClienteFrecuente;
 import excepciones.PersistenciaException;
 import java.util.List;
 import static org.testng.Assert.*;
@@ -48,16 +49,27 @@ public class ClienteDAOTest {
     public void testGuardarCliente() throws Exception {
         ClienteDAO dao = new ClienteDAO();
 
-        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6444576879", "brian30@gmail.com");
+        // Asumiendo que es un cliente que se acaba de registrar en el programa de lealtad
+        ClienteFrecuente nuevoFrecuente = new ClienteFrecuente(
+                0,
+                0.0,
+                0,
+                null,
+                "Brian Kaleb",
+                "Sandoval",
+                "Rodríguez",
+                "6441234567",
+                "brian.sandoval@gmail.com"
+        );
 
-        Cliente clienteObtenido = dao.guardarCliente(cliente);
+        Cliente clienteObtenido = dao.guardarCliente(nuevoFrecuente);
 
         assertNotNull(clienteObtenido.getId());
-        assertEquals("Brian", clienteObtenido.getNombres());
-        assertEquals("brian30@gmail.com", clienteObtenido.getCorreo());
+        assertEquals("Brian Kaleb", clienteObtenido.getNombres());
+        assertEquals("brian.sandoval@gmail.com", clienteObtenido.getCorreo());
 
         // Caso que debe fallar (teléfono duplicado)
-        Cliente cliente2 = new Cliente("Alejandra", "Leal", "Armenta", "6444576879", "aleale2@gmail.com");
+        Cliente cliente2 = new Cliente("Alejandra", "Leal", "Armenta", "6441234567", "aleale2@gmail.com");
 
         assertThrows(PersistenciaException.class,
                 () -> dao.guardarCliente(cliente2)
@@ -68,29 +80,26 @@ public class ClienteDAOTest {
      * Prueba del método actualizarCliente.
      *
      * Verifica que: - Se actualicen correctamente los datos de un cliente
-     * existente - Se lance excepción al intentar actualizar un cliente
-     * inexistente
+     *
      */
     @Test
     public void testActualizarCliente() throws Exception {
         ClienteDAO dao = new ClienteDAO();
 
-        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441568789", "kaleb2@gmail.com");
+        // 1. Caso de actualización normal
+        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441568789", "kaleb@gmail.com");
         Cliente clienteGuardado = dao.guardarCliente(cliente);
 
         clienteGuardado.setNombres("Kaleb");
-
         Cliente clienteActualizado = dao.actualizarCliente(clienteGuardado);
 
         assertEquals("Kaleb", clienteActualizado.getNombres());
 
-        // Caso que debe fallar (cliente inexistente)
+        // 2. Caso de cliente inexistente 
         Cliente clienteInvalido = new Cliente("Maria Jose", "Valdez", "Iglesias", "1234567890", "maria@gmail.com");
         clienteInvalido.setId(999L);
 
-        assertThrows(PersistenciaException.class,
-                () -> dao.actualizarCliente(clienteInvalido)
-        );
+        assertThrows(PersistenciaException.class, () -> dao.actualizarCliente(clienteInvalido));
     }
 
     /**

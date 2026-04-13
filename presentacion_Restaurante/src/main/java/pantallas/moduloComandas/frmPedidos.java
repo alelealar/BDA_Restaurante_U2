@@ -174,10 +174,7 @@ public class frmPedidos extends javax.swing.JFrame {
                 String comentarioExistente = panel.getDetalle().getComentario();
 
                 boolean mismosComentarios
-                        = (comentarioExistente == null || comentarioExistente.isBlank())
-                        && comentarioNuevo.isBlank()
-                        || (comentarioExistente != null
-                        && comentarioExistente.equalsIgnoreCase(comentarioNuevo));
+                        = sinComentario(panel) || (comentarioExistente != null && comentarioExistente.equalsIgnoreCase(comentarioNuevo));
 
                 if (actual.getId().equals(producto.getId()) && mismosComentarios) {
                     panel.agregarOtraUnidad();

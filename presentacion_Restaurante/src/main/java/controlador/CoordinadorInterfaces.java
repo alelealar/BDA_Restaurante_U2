@@ -7,6 +7,7 @@ import java.util.List;
 import pantallas.frmAgregarCliente;
 import pantallas.frmClientes;
 import pantallas.frmInicio;
+import pantallas.moduloComandas.frmComandas;
 
 /**
  *
@@ -27,6 +28,7 @@ public class CoordinadorInterfaces {
         this.coordinadorNegocio = new Coordinador();
         this.coordinadorProducto = new Coordinador_ModuloProductos();
         this.coordinadorComandas = new CoordinadorModuloComandas();
+        this.coordinadorComandas.setCoordinador(this);
     }
 
     public void iniciarSistema() {
@@ -61,10 +63,23 @@ public class CoordinadorInterfaces {
     }
 
     public void regresarInicio() {
+
+        coordinadorComandas.cerrarPantallas();
+
+        if (formClientes != null) {
+            formClientes.dispose();
+            formClientes = null;
+        }
+
+        if (formAgregarClientes != null) {
+            formAgregarClientes.dispose();
+            formAgregarClientes = null;
+        }
+
         if (formInicio == null) {
             formInicio = new frmInicio(this);
         }
-        formClientes.setVisible(false);
+
         formInicio.setVisible(true);
     }
 
@@ -73,6 +88,13 @@ public class CoordinadorInterfaces {
             formInicio.dispose();
         }
         coordinadorComandas.mostrarPantallaISMesero();
+    }
+
+    public void mostrarPantallaComandas() {
+        if (formClientes != null) {
+            formClientes.dispose();
+        }
+        coordinadorComandas.mostrarPantallaMesas();
     }
 
     /**
@@ -130,5 +152,22 @@ public class CoordinadorInterfaces {
     public void abrirProductos() {
         coordinadorProducto.abrirFrmProductos();
     }
-    
+
+    public void mostrarClientesParaComanda() {
+        if (formClientes == null) {
+            formClientes = new frmClientes(this);
+        }
+
+        formClientes.registrarClienteComanda();
+        formClientes.setVisible(true);
+    }
+
+    public void enviarClienteComandas(ClienteDTO cliente) {
+        coordinadorComandas.recibirClienteComanda(cliente);
+
+        if (formClientes != null) {
+            formClientes.dispose();
+            formClientes = null;
+        }
+    }
 }

@@ -8,8 +8,10 @@ import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
 import dtos.MesaDTO;
 import entidades.Cliente;
+import entidades.ClienteFrecuente;
 import entidades.Comanda;
 import entidades.Mesa;
+import enumerators.EstadoComanda;
 import enumerators.EstadoComandaDTO;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
@@ -147,12 +149,8 @@ public class ComandaBO implements IComandaBO {
                 throw new NegocioException("Solo se pueden modificar comandas abiertas.");
             }
 
-            Cliente cliente = obtenerClienteComanda(comandaDTO);
-
-            Comanda entidad = ComandaAdapter.dtoAEntidad(comandaDTO);
-            entidad.setCliente(cliente);
-
-            Comanda actualizada = comandaDAO.actualizarComanda(entidad);
+            Comanda comandaAdaptada = ComandaAdapter.dtoAEntidad(comandaDTO);
+            Comanda actualizada = comandaDAO.actualizarComanda(comandaAdaptada);
 
             if (comandaDTO.getEstadoComanda() != EstadoComandaDTO.ABIERTA) {
                 cambiarMesaDisponible(comandaDTO.getMesa().getId());
@@ -243,11 +241,18 @@ public class ComandaBO implements IComandaBO {
      * @throws PersistenciaException si ocurre un error
      */
     private Cliente obtenerClienteComanda(ComandaDTO dto) throws PersistenciaException {
-        if (dto.getCliente() == null) {
+        if (dto.getCliente() == null
+                || "GENERAL".equalsIgnoreCase(dto.getCliente().getApellidoPaterno())) {
             return clienteDAO.obtenerOcrearClienteGeneral();
         }
 
-        return clienteDAO.buscarClientePorId(dto.getCliente().getId());
+        ClienteFrecuente cliente = clienteDAO.obtenerClienteFrecuentePorId(dto.getCliente().getId());
+
+        if (cliente == null) {
+            throw new PersistenciaException("Cliente frecuente no encontrado.");
+        }
+
+        return cliente;
     }
 
     /**
@@ -270,6 +275,47 @@ public class ComandaBO implements IComandaBO {
     private void cambiarMesaDisponible(Long idMesa) throws NegocioException {
         IMesaBO mesaBO = MesaBO.getInstance();
         mesaBO.cambiarEstadoMesa(idMesa, "DISPONIBLE");
+    }
+
+    @Override
+    public void actualizarClienteFrecuente(ComandaDTO comanda) throws NegocioException {
+
+        try {
+
+            Comanda comandaAdaptada = ComandaAdapter.dtoAEntidad(comanda);
+            Comanda comandaRecuperada = comandaDAO.buscarComandaPorId(comandaAdaptada.getId());
+
+            if (!(comandaRecuperada.getEstadoComanda() == EstadoComanda.ENTREGADA)) {
+                return;
+            }
+
+            if (comanda.getCliente() == null) {
+                return;
+            }
+
+            if (!(comandaRecuperada.getCliente() instanceof ClienteFrecuente)) {
+                return;
+            }
+
+            ClienteFrecuente cliente = (ClienteFrecuente) comandaRecuperada.getCliente();
+
+            cliente.setNumVisitas(cliente.getNumVisitas() + 1);
+
+            double nuevoTotal = cliente.getTotalGastado() + comanda.getTotal();
+            cliente.setTotalGastado(nuevoTotal);
+
+            cliente.setPuntos((int) (nuevoTotal / 20));
+
+            try {
+                clienteDAO.actualizarCliente(cliente);
+            } catch (PersistenciaException ex) {
+                throw new NegocioException(ex.getMessage());
+            }
+
+            LOG.info(() -> "Cliente " + cliente.getPuntos() + "" + cliente.getNumVisitas() + "" + cliente.getTotalGastado());
+        } catch (PersistenciaException ex) {
+            System.getLogger(ComandaBO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     /**

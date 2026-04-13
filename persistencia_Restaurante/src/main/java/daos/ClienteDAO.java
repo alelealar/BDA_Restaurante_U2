@@ -2,6 +2,7 @@ package daos;
 
 import conexion.ConexionBD;
 import entidades.Cliente;
+import entidades.ClienteFrecuente;
 import entidades.ClienteGeneral;
 import excepciones.PersistenciaException;
 import interfaces.IClienteDAO;
@@ -54,6 +55,7 @@ public class ClienteDAO implements IClienteDAO {
 
             em.getTransaction().begin();
             em.persist(cliente);
+
             em.getTransaction().commit();
             return cliente;
         } catch (Exception e) {
@@ -83,6 +85,7 @@ public class ClienteDAO implements IClienteDAO {
 
         try {
             em.getTransaction().begin();
+
             Cliente clienteBD = em.find(Cliente.class, cliente.getId());
 
             if (clienteBD == null) {
@@ -95,6 +98,15 @@ public class ClienteDAO implements IClienteDAO {
             clienteBD.setTelefono(cliente.getTelefono());
             clienteBD.setCorreo(cliente.getCorreo());
 
+            if (clienteBD instanceof ClienteFrecuente && cliente instanceof ClienteFrecuente) {
+                ClienteFrecuente cfBD = (ClienteFrecuente) clienteBD;
+                ClienteFrecuente cfNuevo = (ClienteFrecuente) cliente;
+
+                cfBD.setNumVisitas(cfNuevo.getNumVisitas());
+                cfBD.setTotalGastado(cfNuevo.getTotalGastado());
+                cfBD.setPuntos(cfNuevo.getPuntos());
+            }
+
             em.getTransaction().commit();
             return clienteBD;
 
@@ -102,7 +114,11 @@ public class ClienteDAO implements IClienteDAO {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("No fue posible actualizar al cliente " + cliente.getNombres(), e);
+
+            throw new PersistenciaException(
+                    "No fue posible actualizar al cliente " + cliente.getNombres(), e
+            );
+
         } finally {
             em.close();
         }
@@ -211,6 +227,66 @@ public class ClienteDAO implements IClienteDAO {
             }
             e.printStackTrace();
             throw new PersistenciaException("Error al obtener/crear cliente general", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Obtiene todos los clientes frecuentes registrados en el sistema.
+     *
+     * Se consideran clientes frecuentes aquellos que pertenecen a la subclase
+     * ClienteFrecuente, excluyendo al ClienteGeneral.
+     *
+     * Este método no evalúa la cantidad de comandas, ya que el criterio de
+     * cliente frecuente está definido por el tipo de entidad.
+     *
+     * @return lista de clientes frecuentes registrados
+     * @throws PersistenciaException si ocurre un error durante la consulta
+     */
+    @Override
+    public List<ClienteFrecuente> obtenerClientesFrecuentes() throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+
+        try {
+            String jpql = "SELECT c FROM ClienteFrecuente c";
+            TypedQuery<ClienteFrecuente> query = em.createQuery(jpql, ClienteFrecuente.class);
+
+            return query.getResultList();
+
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al obtener los clientes frecuentes", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Obtiene un cliente frecuente a partir de su identificador.
+     *
+     * Se valida que el cliente exista y que no sea una instancia de
+     * ClienteGeneral.
+     *
+     * @param id identificador del cliente
+     * @return cliente frecuente encontrado o null si no existe o es
+     * ClienteGeneral
+     * @throws PersistenciaException si ocurre un error durante la consulta
+     */
+    @Override
+    public ClienteFrecuente obtenerClienteFrecuentePorId(Long id) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+
+        try {
+            Cliente cliente = em.find(Cliente.class, id);
+
+            if (cliente == null || cliente instanceof ClienteGeneral) {
+                return null;
+            }
+
+            return (ClienteFrecuente) cliente;
+
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al obtener cliente frecuente por id", e);
         } finally {
             em.close();
         }
