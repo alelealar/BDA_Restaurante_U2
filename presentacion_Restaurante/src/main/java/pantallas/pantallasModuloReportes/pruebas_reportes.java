@@ -3,24 +3,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 
-package pantallas.moduloIngredientes;
-
-import controlador.Coordinador_ModuloIngredientes;
+package pantallas.pantallasModuloReportes;
 
 /**
  *
  * @author Alejandra Leal Armenta, 262719
  */
-public class pruebas_moduloIngredientes {
+public class pruebas_reportes {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        FrmIngredientes frm = new FrmIngredientes();
-        frm.setCoordinadorIngredientes(new Coordinador_ModuloIngredientes());
-        frm.desactivarModoProducto();
+        FrmReporteClientes frm = new FrmReporteClientes();
         frm.setVisible(true);
+        
     }
 
 }

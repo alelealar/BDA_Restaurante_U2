@@ -130,7 +130,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
 
         lblClientes.setFont(new java.awt.Font("Trebuchet MS", 1, 42)); // NOI18N
         lblClientes.setForeground(new java.awt.Color(255, 255, 255));
-        lblClientes.setText("Clientes");
+        lblClientes.setText("Ingredientes");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -140,7 +140,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(32, 32, 32)
-                .addComponent(lblClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -190,9 +190,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         btnReportesClientes.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnReportesClientes.setText("• Clientes");
         btnReportesClientes.setBorder(null);
-        btnReportesClientes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesClientesActionPerformed(evt);
+        btnReportesClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesClientesMouseClicked(evt);
             }
         });
 
@@ -200,9 +200,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         btnReportes.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnReportes.setText("Reportes");
         btnReportes.setBorder(null);
-        btnReportes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesActionPerformed(evt);
+        btnReportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesMouseClicked(evt);
             }
         });
 
@@ -210,9 +210,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         btnReportesComandas.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnReportesComandas.setText("• Comandas");
         btnReportesComandas.setBorder(null);
-        btnReportesComandas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesComandasActionPerformed(evt);
+        btnReportesComandas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnReportesComandasMouseExited(evt);
             }
         });
 
@@ -547,21 +547,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "No disponible aún...");
     }//GEN-LAST:event_btnInventarioActionPerformed
 
-    private void btnReportesClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesClientesActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesClientesActionPerformed
-
-    private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesActionPerformed
-
-    private void btnReportesComandasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesComandasActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesComandasActionPerformed
-
     private void txtBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBusquedaActionPerformed
 
     }//GEN-LAST:event_txtBusquedaActionPerformed
@@ -764,6 +749,21 @@ public class FrmIngredientes extends javax.swing.JFrame {
         interfaces.abrirProductos();
         this.dispose();
     }//GEN-LAST:event_btnProductosMouseClicked
+
+    private void btnReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesMouseClicked
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesMouseClicked
+
+    private void btnReportesComandasMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesComandasMouseExited
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesComandasMouseExited
+
+    private void btnReportesClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesClientesMouseClicked
+        interfaces.mostrarPantallaReporteClientes();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesClientesMouseClicked
     
     /**
      * Actualiza la tabla donde se ven los ingredientes

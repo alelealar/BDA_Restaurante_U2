@@ -6,7 +6,14 @@ package pantallas.pantallasModuloReportes;
 
 import controlador.Coordinador;
 import controlador.CoordinadorInterfaces;
+import controlador.Coordinador_ModuloReportes;
+import dtos.ReporteClientesDTO;
+import excepciones.NegocioException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -15,12 +22,15 @@ import javax.swing.JOptionPane;
 public class FrmReporteClientes extends javax.swing.JFrame {
     
     CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
+    Coordinador_ModuloReportes coor = new Coordinador_ModuloReportes();
+    
 
     /**
      * Creates new form FrmReporteComandas
      */
     public FrmReporteClientes() {
         initComponents();
+        cargarTabla();
     }
 
     /**
@@ -51,7 +61,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         btnReportes = new javax.swing.JButton();
         btnReportesComandas = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblReportes = new javax.swing.JTable();
+        tblClientes = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         btnGenerarReporte = new javax.swing.JButton();
         checkVisitas = new javax.swing.JCheckBox();
@@ -85,7 +95,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
 
         lblClientes.setFont(new java.awt.Font("Trebuchet MS", 1, 42)); // NOI18N
         lblClientes.setForeground(new java.awt.Color(255, 255, 255));
-        lblClientes.setText("Clientes");
+        lblClientes.setText("Reporte Clientes");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -95,7 +105,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(32, 32, 32)
-                .addComponent(lblClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -145,6 +155,11 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         btnReportesClientes.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnReportesClientes.setText("• Clientes");
         btnReportesClientes.setBorder(null);
+        btnReportesClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesClientesMouseClicked(evt);
+            }
+        });
         btnReportesClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReportesClientesActionPerformed(evt);
@@ -155,9 +170,9 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         btnReportes.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnReportes.setText("Reportes");
         btnReportes.setBorder(null);
-        btnReportes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesActionPerformed(evt);
+        btnReportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesMouseClicked(evt);
             }
         });
 
@@ -165,9 +180,9 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         btnReportesComandas.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnReportesComandas.setText("• Comandas");
         btnReportesComandas.setBorder(null);
-        btnReportesComandas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesComandasActionPerformed(evt);
+        btnReportesComandas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesComandasMouseClicked(evt);
             }
         });
 
@@ -219,7 +234,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        tblReportes.setModel(new javax.swing.table.DefaultTableModel(
+        tblClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -242,8 +257,8 @@ public class FrmReporteClientes extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblReportes.setGridColor(new java.awt.Color(255, 255, 255));
-        jScrollPane1.setViewportView(tblReportes);
+        tblClientes.setGridColor(new java.awt.Color(255, 255, 255));
+        jScrollPane1.setViewportView(tblClientes);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Buscar Por:");
@@ -318,20 +333,19 @@ public class FrmReporteClientes extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblTitulo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE))
+                                .addGap(0, 41, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(checkVisitas)
                                     .addComponent(checkNombre)
-                                    .addComponent(txtBusqueda))
-                                .addGap(18, 18, 18)))
+                                    .addComponent(txtBusqueda))))
+                        .addGap(18, 18, 18)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -364,8 +378,8 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     }//GEN-LAST:event_btnClientesMouseClicked
 
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
+        interfaces.mostrarPantallaIngredientes();
+        this.dispose();
     }//GEN-LAST:event_btnInventarioActionPerformed
 
     private void btnProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProductosMouseClicked
@@ -377,16 +391,6 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "No disponible aún...");
     }//GEN-LAST:event_btnReportesClientesActionPerformed
-
-    private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesActionPerformed
-
-    private void btnReportesComandasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesComandasActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesComandasActionPerformed
 
     private void checkVisitasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkVisitasActionPerformed
         // TODO add your handling code here:
@@ -404,40 +408,39 @@ public class FrmReporteClientes extends javax.swing.JFrame {
 
     }//GEN-LAST:event_txtBusquedaKeyReleased
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmReporteClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmReporteClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmReporteClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmReporteClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
+    private void btnReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesMouseClicked
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesMouseClicked
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmReporteClientes().setVisible(true);
+    private void btnReportesComandasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesComandasMouseClicked
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesComandasMouseClicked
+
+    private void btnReportesClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesClientesMouseClicked
+        interfaces.mostrarPantallaReporteClientes();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesClientesMouseClicked
+
+    public void cargarTabla(){
+        DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
+        modelo.setRowCount(0);
+        try {
+            List<ReporteClientesDTO> lista = coor.obtenerClientes();
+            
+            for(ReporteClientesDTO rc: lista){
+                modelo.addRow( new Object[] {
+                        rc.getNombre(),
+                        rc.getVisitas(),
+                        rc.getTotalGastado(),
+                        rc.getFechaUltimaComanda(),
+                        rc.getPuntosAcumulados()     
+                }); 
             }
-        });
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }  
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -464,7 +467,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblTitulo;
-    private javax.swing.JTable tblReportes;
+    private javax.swing.JTable tblClientes;
     private javax.swing.JTextField txtBusqueda;
     // End of variables declaration//GEN-END:variables
 }

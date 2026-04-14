@@ -8,6 +8,10 @@ import pantallas.frmAgregarCliente;
 import pantallas.frmClientes;
 import pantallas.frmInicio;
 import pantallas.moduloComandas.frmComandas;
+import pantallas.moduloIngredientes.FrmIngredientes;
+import pantallas.pantallasModuloReportes.FrmReporteClientes;
+import pantallas.pantallasModuloReportes.FrmReporteComandas;
+import pantallasProducto.frmProductos;
 
 /**
  *
@@ -20,9 +24,14 @@ public class CoordinadorInterfaces {
     private frmInicio formInicio;
     private frmClientes formClientes;
     private frmAgregarCliente formAgregarClientes;
+    private FrmReporteClientes frmReporteClientes;
+    private FrmReporteComandas frmReporteComandas;
+    private FrmIngredientes frmIngredientes;
+    private frmProductos frmProductos;
     private Coordinador coordinadorNegocio;
     private Coordinador_ModuloProductos coordinadorProducto;
     private CoordinadorModuloComandas coordinadorComandas;
+    
 
     public CoordinadorInterfaces() {
         this.coordinadorNegocio = new Coordinador();
@@ -49,6 +58,23 @@ public class CoordinadorInterfaces {
             formAgregarClientes = new frmAgregarCliente(this);
         }
         formClientes.setVisible(true);
+    }
+    
+    public void mostrarPantallaIngredientes(){
+        if(frmIngredientes == null){
+            frmIngredientes = new FrmIngredientes();
+            
+        }
+        frmIngredientes.desactivarModoProducto();
+        frmIngredientes.setVisible(true);
+    }
+    
+    public void mostrarPantallaProductos(){
+        if(frmProductos == null){
+            frmProductos = new frmProductos(coordinadorProducto);
+            
+        }
+        frmProductos.setVisible(true);
     }
 
     /**
@@ -95,6 +121,20 @@ public class CoordinadorInterfaces {
             formClientes.dispose();
         }
         coordinadorComandas.mostrarPantallaMesas();
+    }
+    
+    public void mostrarPantallaReporteClientes(){
+        if(frmReporteClientes == null){
+            frmReporteClientes = new FrmReporteClientes();
+        }
+        frmReporteClientes.setVisible(true);  
+    }
+    
+    public void mostrarPantallaReporteComandas(){
+        if(frmReporteComandas == null){
+            frmReporteComandas = new FrmReporteComandas();
+        }
+        frmReporteComandas.setVisible(true);  
     }
 
     /**

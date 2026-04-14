@@ -18,12 +18,12 @@ import java.time.LocalDateTime;
 public class ReporteClientesDTO {
     
     private String nombre;
-    private Integer visitas;
+    private Long visitas;
     private Double totalGastado;
     private LocalDateTime fechaUltimaComanda;
     private Integer puntosAcumulados;
 
-    public ReporteClientesDTO(String nombre, Integer visitas, Double totalGastado, LocalDateTime fechaUltimaComanda, Integer puntosAcumulados) {
+    public ReporteClientesDTO(String nombre, Long visitas, Double totalGastado, LocalDateTime fechaUltimaComanda, Integer puntosAcumulados) {
         this.nombre = nombre;
         this.visitas = visitas;
         this.totalGastado = totalGastado;
@@ -42,11 +42,11 @@ public class ReporteClientesDTO {
         this.nombre = nombre;
     }
 
-    public Integer getVisitas() {
+    public Long getVisitas() {
         return visitas;
     }
 
-    public void setVisitas(Integer visitas) {
+    public void setVisitas(Long visitas) {
         this.visitas = visitas;
     }
 

@@ -23,7 +23,7 @@ import javax.swing.table.TableRowSorter;
  */
 public class frmClientes extends javax.swing.JFrame {
 
-    private final CoordinadorInterfaces coordinador;
+    private final CoordinadorInterfaces interfaces;
 
     private boolean registrarCliente = false;
 
@@ -31,7 +31,7 @@ public class frmClientes extends javax.swing.JFrame {
      * Creates new form frmClientes
      */
     public frmClientes(CoordinadorInterfaces coordinador) {
-        this.coordinador = coordinador;
+        this.interfaces = coordinador;
         initComponents();
         modoNormal();
 
@@ -191,9 +191,9 @@ public class frmClientes extends javax.swing.JFrame {
         btnReportesClientes.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnReportesClientes.setText("• Clientes");
         btnReportesClientes.setBorder(null);
-        btnReportesClientes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesClientesActionPerformed(evt);
+        btnReportesClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesClientesMouseClicked(evt);
             }
         });
 
@@ -201,9 +201,9 @@ public class frmClientes extends javax.swing.JFrame {
         btnReportes.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnReportes.setText("Reportes");
         btnReportes.setBorder(null);
-        btnReportes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesActionPerformed(evt);
+        btnReportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesMouseClicked(evt);
             }
         });
 
@@ -211,9 +211,9 @@ public class frmClientes extends javax.swing.JFrame {
         btnReportesComandas.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnReportesComandas.setText("• Comandas");
         btnReportesComandas.setBorder(null);
-        btnReportesComandas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesComandasActionPerformed(evt);
+        btnReportesComandas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesComandasMouseClicked(evt);
             }
         });
 
@@ -442,28 +442,14 @@ public class frmClientes extends javax.swing.JFrame {
 
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
+        interfaces.mostrarPantallaIngredientes();
+        this.dispose();
     }//GEN-LAST:event_btnInventarioActionPerformed
 
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
-        coordinador.abrirProductos();
+        interfaces.abrirProductos();
     }//GEN-LAST:event_btnProductosActionPerformed
-
-    private void btnReportesClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesClientesActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesClientesActionPerformed
-
-    private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesActionPerformed
-
-    private void btnReportesComandasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesComandasActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesComandasActionPerformed
 
     private void txtBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBusquedaActionPerformed
 
@@ -474,14 +460,14 @@ public class frmClientes extends javax.swing.JFrame {
         if (registrarCliente) {
             int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de regresar?", "Cerrar seleccion cliente", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (opcion == JOptionPane.OK_OPTION) {
-                coordinador.mostrarPantallaComandas();
+                interfaces.mostrarPantallaComandas();
             }
         } else {
             int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de regresar? Acabará con su acceso a las operaciones.", "Cerrar Operaciones", JOptionPane.YES_NO_OPTION);
             if (opcion == JOptionPane.NO_OPTION) {
                 return;
             }
-            coordinador.regresarInicio();
+            interfaces.regresarInicio();
         }
     }//GEN-LAST:event_btnAtrasActionPerformed
 
@@ -528,24 +514,24 @@ public class frmClientes extends javax.swing.JFrame {
         }
 
         ClienteDTO cliente = (ClienteDTO) tblClientes.getValueAt(fila, 0);
-        coordinador.mostrarFormularioEditarCliente(cliente);
+        interfaces.mostrarFormularioEditarCliente(cliente);
     }//GEN-LAST:event_btnActualizarMouseClicked
 
     private void btnAgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarMouseClicked
-        coordinador.mostrarFormularioAgregarClientes();
+        interfaces.mostrarFormularioAgregarClientes();
     }//GEN-LAST:event_btnAgregarMouseClicked
 
     private void btnEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEliminarMouseClicked
         int fila = tblClientes.getSelectedRow();
         ClienteDTO cliente = (ClienteDTO) tblClientes.getValueAt(fila, 0);
         if (registrarCliente) {
-            coordinador.enviarClienteComandas(cliente);
+            interfaces.enviarClienteComandas(cliente);
         } else {
             int opcion = JOptionPane.showConfirmDialog(this, "Eliminar al cliente " + cliente.getNombres() + "?", "Confirmar", JOptionPane.YES_NO_OPTION);
 
             if (opcion == JOptionPane.YES_OPTION) {
                 try {
-                    coordinador.eliminarCliente(cliente);
+                    interfaces.eliminarCliente(cliente);
                 } catch (NegocioException ex) {
                     JOptionPane.showMessageDialog(this, ex.getMessage());
                 }
@@ -554,12 +540,27 @@ public class frmClientes extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnEliminarMouseClicked
 
+    private void btnReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesMouseClicked
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesMouseClicked
+
+    private void btnReportesComandasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesComandasMouseClicked
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesComandasMouseClicked
+
+    private void btnReportesClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesClientesMouseClicked
+        interfaces.mostrarPantallaReporteClientes();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesClientesMouseClicked
+
     /**
      * Actualiza la tabla de los clientes
      */
     public void cargarTable() {
         try {
-            List<ClienteDTO> lista = coordinador.obtenerClientes();
+            List<ClienteDTO> lista = interfaces.obtenerClientes();
 
             DefaultTableModel model = (DefaultTableModel) tblClientes.getModel();
             model.setRowCount(0);
