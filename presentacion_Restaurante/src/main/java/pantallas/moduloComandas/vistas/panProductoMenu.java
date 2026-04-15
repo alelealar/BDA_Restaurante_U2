@@ -26,6 +26,18 @@ public class panProductoMenu extends javax.swing.JPanel {
         this.producto = producto;
         this.coordinador = coordinador;
 
+        setPreferredSize(new java.awt.Dimension(140, 140));
+        setMinimumSize(new java.awt.Dimension(140, 140));
+        setMaximumSize(new java.awt.Dimension(140, 140));
+
+        setLayout(new java.awt.BorderLayout());
+
+        lblNombre.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblImagen.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        add(lblImagen, java.awt.BorderLayout.CENTER);
+        add(lblNombre, java.awt.BorderLayout.SOUTH);
+
         lblNombre.setText(producto.getNombre());
 
         if (producto.getUrlImagen() != null && !producto.getUrlImagen().isEmpty()) {

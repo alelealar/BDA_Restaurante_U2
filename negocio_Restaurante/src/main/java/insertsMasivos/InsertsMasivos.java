@@ -104,7 +104,7 @@ public class InsertsMasivos {
             // productos
             List<ProductoNuevoDTO> productos = new ArrayList<>();
 
-            ProductoNuevoDTO hamburguesa = new ProductoNuevoDTO("Hamburguesa Especial", TipoProductoDTO.PLATILLO, "Hamburguesa completa", 120.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO hamburguesa = new ProductoNuevoDTO("Hamburguesa Especial", TipoProductoDTO.PLATILLO, "Hamburguesa completa", 120.0, EstadoProductoDTO.ACTIVO, "/img/hamburguesa.jpg");
             hamburguesa.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(pan, 2),
                     new ProductoIngredienteDTO(carne, 1),
@@ -113,54 +113,54 @@ public class InsertsMasivos {
                     new ProductoIngredienteDTO(tomate, 1)
             ));
 
-            ProductoNuevoDTO tacos = new ProductoNuevoDTO("Tacos de Carne Asada", TipoProductoDTO.PLATILLO, "Tacos", 90.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO tacos = new ProductoNuevoDTO("Tacos de Carne Asada", TipoProductoDTO.PLATILLO, "Tacos", 90.0, EstadoProductoDTO.ACTIVO, "/img/taco.png");
             tacos.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(tortilla, 3),
                     new ProductoIngredienteDTO(carneAsada, 1)
             ));
 
-            ProductoNuevoDTO pizza = new ProductoNuevoDTO("Pizza Pepperoni", TipoProductoDTO.PLATILLO, "Pizza", 150.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO pizza = new ProductoNuevoDTO("Pizza Pepperoni", TipoProductoDTO.PLATILLO, "Pizza", 150.0, EstadoProductoDTO.ACTIVO, "/img/pizza.png");
             pizza.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(masa, 1),
                     new ProductoIngredienteDTO(queso, 2),
                     new ProductoIngredienteDTO(pepperoni, 1)
             ));
 
-            ProductoNuevoDTO ensalada = new ProductoNuevoDTO("Ensalada César", TipoProductoDTO.PLATILLO, "Ensalada", 80.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO ensalada = new ProductoNuevoDTO("Ensalada César", TipoProductoDTO.PLATILLO, "Ensalada", 80.0, EstadoProductoDTO.ACTIVO, "/img/ensalada.jpg");
             ensalada.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(lechuga, 2),
                     new ProductoIngredienteDTO(aderezo, 50),
                     new ProductoIngredienteDTO(crutones, 30)
             ));
 
-            ProductoNuevoDTO papas = new ProductoNuevoDTO("Papas Fritas", TipoProductoDTO.PLATILLO, "Papas", 60.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO papas = new ProductoNuevoDTO("Papas Fritas", TipoProductoDTO.PLATILLO, "Papas", 60.0, EstadoProductoDTO.ACTIVO, "/img/papas.png");
             papas.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(papa, 3)
             ));
 
-            ProductoNuevoDTO refrescoC = new ProductoNuevoDTO("Refresco Cola", TipoProductoDTO.BEBIDA, "Refresco", 35.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO refrescoC = new ProductoNuevoDTO("Refresco Cola", TipoProductoDTO.BEBIDA, "Refresco", 35.0, EstadoProductoDTO.ACTIVO, "/img/coca.png");
             refrescoC.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(refresco, 1)
             ));
 
-            ProductoNuevoDTO aguaNatural = new ProductoNuevoDTO("Agua Natural", TipoProductoDTO.BEBIDA, "Agua", 20.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO aguaNatural = new ProductoNuevoDTO("Agua Natural", TipoProductoDTO.BEBIDA, "Agua", 20.0, EstadoProductoDTO.ACTIVO, "/img/agua.png");
             aguaNatural.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(agua, 500)
             ));
 
-            ProductoNuevoDTO cafeCaliente = new ProductoNuevoDTO("Café Americano", TipoProductoDTO.BEBIDA, "Cafe", 40.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO cafeCaliente = new ProductoNuevoDTO("Café Americano", TipoProductoDTO.BEBIDA, "Cafe", 40.0, EstadoProductoDTO.ACTIVO, "");
             cafeCaliente.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(cafe, 10),
                     new ProductoIngredienteDTO(agua, 200)
             ));
 
-            ProductoNuevoDTO chocolateCaliente = new ProductoNuevoDTO("Chocolate Caliente", TipoProductoDTO.BEBIDA, "Chocolate", 45.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO chocolateCaliente = new ProductoNuevoDTO("Chocolate Caliente", TipoProductoDTO.BEBIDA, "Chocolate", 45.0, EstadoProductoDTO.ACTIVO, "");
             chocolateCaliente.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(chocolate, 20),
                     new ProductoIngredienteDTO(agua, 200)
             ));
 
-            ProductoNuevoDTO heladoV = new ProductoNuevoDTO("Helado Vainilla", TipoProductoDTO.POSTRE, "Helado", 55.0, EstadoProductoDTO.ACTIVO, null);
+            ProductoNuevoDTO heladoV = new ProductoNuevoDTO("Helado Vainilla", TipoProductoDTO.POSTRE, "Helado", 55.0, EstadoProductoDTO.ACTIVO, "");
             heladoV.setIngredientes(Arrays.asList(
                     new ProductoIngredienteDTO(helado, 1)
             ));

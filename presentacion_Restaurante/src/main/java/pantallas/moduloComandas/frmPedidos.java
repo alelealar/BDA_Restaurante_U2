@@ -3,19 +3,15 @@ package pantallas.moduloComandas;
 import controlador.CoordinadorModuloComandas;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
-import dtos.IngredienteDTO;
 import dtos.MesaDTO;
 import dtos.ProductoDTO;
 import dtos.ProductoIngredienteDTO;
 import enumerators.TipoMovimiento;
 import excepciones.NegocioException;
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -58,10 +54,9 @@ public class frmPedidos extends javax.swing.JFrame {
      * Configura layouts y enfoque inicial.
      */
     private void configurarPantalla() {
-        jScrollPane1.getViewport().setLayout(new BorderLayout());
         SwingUtilities.invokeLater(() -> jPanel1.requestFocusInWindow());
 
-        panContenedorProductos.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        panContenedorProductos.setLayout(new java.awt.GridLayout(0, 3, 15, 15));
         panProductosPedidos.setLayout(new BoxLayout(panProductosPedidos, BoxLayout.Y_AXIS));
     }
 
@@ -103,11 +98,9 @@ public class frmPedidos extends javax.swing.JFrame {
         String comentario = pedirComentario();
 
         for (DetalleComandaDTO d : detallesTemporales) {
-            boolean mismoProducto = d.getIdProducto().equals(producto.getId());
-            boolean mismoComentario = (d.getComentario() == null && comentario.isBlank())
-                    || (d.getComentario() != null && d.getComentario().equalsIgnoreCase(comentario));
+            if (d.getIdProducto().equals(producto.getId())
+                    && normalizar(d.getComentario()).equals(normalizar(comentario))) {
 
-            if (mismoProducto && mismoComentario) {
                 d.setCantidad(d.getCantidad() + 1);
                 actualizarTotal(producto.getPrecio());
                 refrescarPanelPedidos();
@@ -123,8 +116,12 @@ public class frmPedidos extends javax.swing.JFrame {
 
         detallesTemporales.add(detalle);
 
-        agregarPanelProducto(detalle);
         actualizarTotal(detalle.getPrecioUnitario());
+        refrescarPanelPedidos();
+    }
+
+    private String normalizar(String c) {
+        return (c == null) ? "" : c.trim().toLowerCase();
     }
 
     /**
@@ -134,30 +131,15 @@ public class frmPedidos extends javax.swing.JFrame {
         panProductosPedidos.removeAll();
 
         for (DetalleComandaDTO d : detallesTemporales) {
-            agregarPanelProducto(d);
+            panProducto panel = new panProducto(d, coordinador, comanda);
+
+            panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+            panel.setAlignmentX(LEFT_ALIGNMENT);
+
+            panProductosPedidos.add(panel);
         }
 
         actualizarPanel(panProductosPedidos);
-    }
-
-    /**
-     * Actualiza la comanda en persistencia.
-     *
-     * @param detalle Detalle a agregar
-     */
-    private void actualizarComanda(DetalleComandaDTO detalle) {
-        try {
-            ComandaDTO actual = coordinador.obtenerComanda(comanda.getId());
-
-            actual.getDetalles().add(detalle);
-            actual.setTotal(calcularTotal(actual.getDetalles()));
-
-            coordinador.actualizarComanda(actual);
-            this.comanda = actual;
-
-        } catch (NegocioException ex) {
-            mostrarError(ex.getMessage());
-        }
     }
 
     /**
@@ -174,66 +156,6 @@ public class frmPedidos extends javax.swing.JFrame {
         }
 
         return totalCalculado;
-    }
-
-    /**
-     * Agrega el panel visual de un producto.
-     *
-     * @param detalle Detalle a mostrar
-     */
-    private void agregarPanelProducto(DetalleComandaDTO detalle) {
-        panProducto panel = new panProducto(detalle, coordinador, comanda);
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
-
-        panProductosPedidos.add(panel);
-        panProductosPedidos.add(Box.createVerticalStrut(10));
-
-        actualizarPanel(panProductosPedidos);
-    }
-
-    /**
-     * Verifica si el producto ya existe sin comentario y suma cantidad.
-     *
-     * @param producto Producto a buscar
-     * @return true si se sumó, false si no
-     */
-    private boolean sumarSiYaExiste(ProductoDTO producto, String comentarioNuevo) {
-
-        for (Component comp : panProductosPedidos.getComponents()) {
-
-            if (!(comp instanceof panProducto panel)) {
-                continue;
-            }
-
-            try {
-                ProductoDTO actual = coordinador.obtenerProducto(panel.getDetalle().getIdProducto());
-
-                String comentarioExistente = panel.getDetalle().getComentario();
-
-                boolean mismosComentarios
-                        = sinComentario(panel) || (comentarioExistente != null && comentarioExistente.equalsIgnoreCase(comentarioNuevo));
-
-                if (actual.getId().equals(producto.getId()) && mismosComentarios) {
-                    panel.agregarOtraUnidad();
-                    return true;
-                }
-
-            } catch (NegocioException ex) {
-                mostrarError(ex.getMessage());
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Verifica si un detalle no tiene comentario.
-     *
-     * @param panel Panel del producto
-     * @return true si no tiene comentario
-     */
-    private boolean sinComentario(panProducto panel) {
-        String comentario = panel.getDetalle().getComentario();
-        return comentario == null || comentario.isBlank();
     }
 
     /**
@@ -267,25 +189,6 @@ public class frmPedidos extends javax.swing.JFrame {
     }
 
     /**
-     * Compara comentarios ignorando mayúsculas/minúsculas.
-     *
-     * @param comentarioExistente Comentario del detalle actual
-     * @return true si coincide con el nuevo comentario
-     */
-    private boolean mismoComentario(String comentarioExistente) {
-
-        String nuevoComentario = pedirComentario();
-
-        if ((comentarioExistente == null || comentarioExistente.isBlank())
-                && nuevoComentario.isBlank()) {
-            return true;
-        }
-
-        return comentarioExistente != null
-                && comentarioExistente.equalsIgnoreCase(nuevoComentario);
-    }
-
-    /**
      * Muestra un mensaje de error.
      *
      * @param mensaje Mensaje a mostrar
@@ -305,8 +208,6 @@ public class frmPedidos extends javax.swing.JFrame {
         panMenu = new javax.swing.JPanel();
         btnComandas = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        panContenedorProductos = new javax.swing.JPanel();
         panBuscador = new javax.swing.JPanel();
         txtBuscador = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -315,6 +216,8 @@ public class frmPedidos extends javax.swing.JFrame {
         btnAtras = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         lblTotal = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        panContenedorProductos = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -393,12 +296,6 @@ public class frmPedidos extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        jScrollPane1.setBorder(null);
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        panContenedorProductos.setBackground(new java.awt.Color(255, 255, 255));
-        jScrollPane1.setViewportView(panContenedorProductos);
-
         panBuscador.setBackground(new java.awt.Color(255, 255, 255));
 
         txtBuscador.setBackground(new java.awt.Color(230, 230, 230));
@@ -427,7 +324,7 @@ public class frmPedidos extends javax.swing.JFrame {
             .addGroup(panBuscadorLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(425, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panBuscadorLayout.setVerticalGroup(
             panBuscadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -499,6 +396,23 @@ public class frmPedidos extends javax.swing.JFrame {
                 .addContainerGap(13, Short.MAX_VALUE))
         );
 
+        jScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        panContenedorProductos.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout panContenedorProductosLayout = new javax.swing.GroupLayout(panContenedorProductos);
+        panContenedorProductos.setLayout(panContenedorProductosLayout);
+        panContenedorProductosLayout.setHorizontalGroup(
+            panContenedorProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 612, Short.MAX_VALUE)
+        );
+        panContenedorProductosLayout.setVerticalGroup(
+            panContenedorProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 505, Short.MAX_VALUE)
+        );
+
+        jScrollPane3.setViewportView(panContenedorProductos);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -509,9 +423,9 @@ public class frmPedidos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(panBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 594, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(panBuscador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane3))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -530,14 +444,14 @@ public class frmPedidos extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 9, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGap(3, 3, 3)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(panBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 499, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane3))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -653,8 +567,8 @@ public class frmPedidos extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblTotal;
     private javax.swing.JPanel panBuscador;
     private javax.swing.JPanel panContenedorProductos;
