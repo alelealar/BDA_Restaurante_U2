@@ -67,7 +67,7 @@ public class ClienteAdapter {
     /**
      * Convierte un objeto ClienteNuevoDTO a un objeto Cliente (entidad).
      *
-     * @param clienteDto objeto ClienteNuevoDTO a convertir
+     * @param dto dto a convertir
      * @return objeto Cliente con los datos del DTO, o null si el parámetro es
      * null
      */
@@ -107,23 +107,42 @@ public class ClienteAdapter {
      *
      * @param dto cliente DTO
      * @return entidad ClienteFrecuente
+     * @throws excepciones.NegocioException
      */
-    public static ClienteFrecuente dtoAFrecuente(ClienteDTO dto) {
+    public static ClienteFrecuente dtoAFrecuente(Object dto) throws NegocioException {
         if (dto == null) {
             return null;
         }
 
-        return new ClienteFrecuente(
-                dto.getNumVisitas(),
-                dto.getTotalGastado(),
-                dto.getPuntos(),
-                dto.getId(),
-                dto.getNombres(),
-                dto.getApellidoPaterno(),
-                dto.getApellidoMaterno(),
-                dto.getTelefono(),
-                dto.getCorreo()
-        );
+        if (dto instanceof ClienteNuevoDTO c) {
+            return new ClienteFrecuente(
+                    c.getNumVisitas(),
+                    c.getTotalGastado(),
+                    c.getPuntos(),
+                    null,
+                    c.getNombres(),
+                    c.getApellidoPaterno(),
+                    c.getApellidoMaterno(),
+                    c.getTelefono(),
+                    c.getCorreo()
+            );
+        }
+
+        if (dto instanceof ClienteDTO c) {
+            return new ClienteFrecuente(
+                    c.getNumVisitas(),
+                    c.getTotalGastado(),
+                    c.getPuntos(),
+                    c.getId(),
+                    c.getNombres(),
+                    c.getApellidoPaterno(),
+                    c.getApellidoMaterno(),
+                    c.getTelefono(),
+                    c.getCorreo()
+            );
+        }
+
+        throw new NegocioException("DTO no aceptado: " + dto.getClass().getSimpleName());
     }
 
     /**

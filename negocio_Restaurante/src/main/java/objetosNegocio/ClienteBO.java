@@ -91,6 +91,56 @@ public class ClienteBO implements IClienteBO {
     }
 
     /**
+     * Registra un nuevo cliente frecuente en el sistema.Valida los datos del
+     * cliente, convierte el DTO a entidad y delega la operación al DAO.
+     *
+     * Maneja errores de persistencia y los transforma en excepciones de
+     * negocio.
+     *
+     * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente
+     * @throws NegocioException si ocurre un error en la validación o
+     * persistencia
+     */
+    @Override
+    public void registrarClienteFrecuente(ClienteNuevoDTO clienteDTO) throws NegocioException {
+        try {
+            validarDatosNuevoDTO(clienteDTO);
+            if (clienteDTO.getCorreo() == null || clienteDTO.getCorreo().trim().isEmpty()) {
+                clienteDTO.setCorreo("sin correo");
+            }
+            ClienteFrecuente clienteEntidad = ClienteAdapter.dtoAFrecuente(clienteDTO);
+            clienteEntidad.setFechaRegistro(LocalDate.now());
+            if (clienteDAO.existeCorreo(clienteEntidad.getCorreo(), clienteEntidad.getId())) {
+                throw new NegocioException("El correo ya está registrado");
+            }
+
+            if (clienteDAO.existeTelefono(clienteEntidad.getTelefono(), clienteEntidad.getId())) {
+                throw new NegocioException("El teléfono ya está registrado");
+            }
+
+            if (clienteDTO.getPuntos() == null) {
+                clienteDTO.setPuntos(0);
+            }
+
+            if (clienteDTO.getNumVisitas() == null) {
+                clienteDTO.setNumVisitas(0);
+            }
+
+            if (clienteDTO.getTotalGastado() == null) {
+                clienteDTO.setTotalGastado(0.0);
+            }
+
+            clienteDAO.guardarCliente(clienteEntidad);
+
+            LOG.info(() -> "El cliente fue agregado correctamente: " + clienteDTO.toString());
+
+        } catch (PersistenciaException ex) {
+            LOG.warning(() -> "No fue posible agregar al cliente: " + clienteDTO.toString());
+            throw new NegocioException("No fue posible agregar al cliente", ex);
+        }
+    }
+
+    /**
      * Actualiza la información de un cliente existente.
      *
      * @param clienteDTO objeto ClienteNuevoDTO con la información actualizada
@@ -122,7 +172,7 @@ public class ClienteBO implements IClienteBO {
             throw new NegocioException("ERROR: " + ex.getMessage());
         }
     }
-    
+
     /**
      * Busca un cliente por su identificador.
      *
@@ -213,7 +263,7 @@ public class ClienteBO implements IClienteBO {
             List<Cliente> clientes = clienteDAO.obtenerClientes();
 
             LOG.info("Los clientes se obtuvieron correctamente");
-            
+
             return ClienteAdapter.listaEntidadADTO(clientes);
 
         } catch (PersistenciaException ex) {

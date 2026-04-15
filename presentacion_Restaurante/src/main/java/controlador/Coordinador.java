@@ -65,6 +65,16 @@ public class Coordinador {
     }
 
     /**
+     * Registra un nuevo cliente frecuente en el sistema.
+     *
+     * @param cliente datos del cliente a registrar
+     * @throws NegocioException si ocurre un error en la capa de negocio
+     */
+    public void agregarClienteFrecuente(ClienteNuevoDTO cliente) throws NegocioException {
+        clienteBO.registrarClienteFrecuente(cliente);
+    }
+
+    /**
      * Obtiene o registra el cliente general del sistema.
      *
      * @throws NegocioException si ocurre un error en la capa de negocio

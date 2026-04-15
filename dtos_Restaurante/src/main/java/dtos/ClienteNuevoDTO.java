@@ -15,6 +15,7 @@ package dtos;
  * @author Maria Jose Valdez Iglesias - 00000262775
  */
 public class ClienteNuevoDTO {
+
     /**
      * Nombres del cliente.
      */
@@ -39,6 +40,21 @@ public class ClienteNuevoDTO {
      * Correo electrónico del cliente.
      */
     private String correo;
+
+    /**
+     * Número de visitas realizadas por el cliente frecuente.
+     */
+    private Integer numVisitas;
+
+    /**
+     * Total acumulado gastado por el cliente frecuente.
+     */
+    private Double totalGastado;
+
+    /**
+     * Puntos acumulados por el cliente frecuente.
+     */
+    private Integer puntos;
 
     /**
      * Constructor vacío requerido para frameworks y serialización.
@@ -151,6 +167,60 @@ public class ClienteNuevoDTO {
      */
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    /**
+     * Obtiene el número de visitas del cliente frecuente.
+     *
+     * @return número de visitas
+     */
+    public Integer getNumVisitas() {
+        return numVisitas;
+    }
+
+    /**
+     * Establece el número de visitas del cliente frecuente.
+     *
+     * @param numVisitas nuevo número de visitas
+     */
+    public void setNumVisitas(Integer numVisitas) {
+        this.numVisitas = numVisitas;
+    }
+
+    /**
+     * Obtiene el total gastado por el cliente frecuente.
+     *
+     * @return total gastado
+     */
+    public Double getTotalGastado() {
+        return totalGastado;
+    }
+
+    /**
+     * Establece el total gastado por el cliente frecuente.
+     *
+     * @param totalGastado nuevo total gastado
+     */
+    public void setTotalGastado(Double totalGastado) {
+        this.totalGastado = totalGastado;
+    }
+
+    /**
+     * Obtiene los puntos acumulados del cliente frecuente.
+     *
+     * @return puntos acumulados
+     */
+    public Integer getPuntos() {
+        return puntos;
+    }
+
+    /**
+     * Establece los puntos acumulados del cliente frecuente.
+     *
+     * @param puntos nuevos puntos
+     */
+    public void setPuntos(Integer puntos) {
+        this.puntos = puntos;
     }
 
     /**

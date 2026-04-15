@@ -34,6 +34,16 @@ public interface IClienteBO {
     public void registrarCliente(ClienteNuevoDTO clienteDTO) throws NegocioException;
 
     /**
+     * Registra un nuevo cliente frecuente en el sistema.Este método valida la
+     * información del cliente antes de enviarla a la capa de persistencia.
+     *
+     * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente a
+     * registrar
+     * @throws NegocioException si ocurre un error en las reglas de negocio
+     */
+    public void registrarClienteFrecuente(ClienteNuevoDTO clienteDTO) throws NegocioException;
+
+    /**
      * Actualiza la información de un cliente existente.Este método valida los
      * datos antes de realizar la actualización.
      *

@@ -222,7 +222,7 @@ public class CoordinadorInterfaces {
      * @throws NegocioException si ocurre un error en negocio
      */
     public void agregarCliente(ClienteNuevoDTO cliente) throws NegocioException {
-        coordinadorNegocio.agregarCliente(cliente);
+        coordinadorNegocio.agregarClienteFrecuente(cliente);
     }
 
     /**
