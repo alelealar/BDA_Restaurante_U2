@@ -335,4 +335,16 @@ public class ProductoDAOTest {
         assertNotNull(resultados);
         assertTrue(resultados.isEmpty());
     }
+    
+    /**
+     * 
+     */
+    @Test
+    public void buscarProductosActivosExiste(){}
+    
+    /**
+     * 
+     */
+    @Test
+    public void buscarProductosActivosNoExiste(){}
 }

@@ -6,7 +6,21 @@ package pantallas.pantallasModuloReportes;
 
 import controlador.Coordinador;
 import controlador.CoordinadorInterfaces;
+import controlador.Coordinador_ModuloReportes;
+import dtos.ReporteComandasDTO;
+import excepciones.NegocioException;
+import interfaces.IReportesBO;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
+import notificaciones.DlgNotificacion;
+import notificaciones.TipoNotificacion;
+import objetosNegocio.ReportesBO;
+import reportes.GenerarReportes;
 
 /**
  *
@@ -14,7 +28,9 @@ import javax.swing.JOptionPane;
  */
 public class FrmReporteComandas extends javax.swing.JFrame {
     
+    Coordinador_ModuloReportes coordinador = new Coordinador_ModuloReportes();
     CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
+    IReportesBO reportesBO = ReportesBO.getInstance();
 
     /**
      * Creates new form FrmReporteComandas
@@ -53,7 +69,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblReportes = new javax.swing.JTable();
         spinFechaInicio = new javax.swing.JSpinner();
-        jSpinner1 = new javax.swing.JSpinner();
+        spinFechaFin = new javax.swing.JSpinner();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         btnGenerarReporte = new javax.swing.JButton();
@@ -258,8 +274,8 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         spinFechaInicio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         spinFechaInicio.setModel(new javax.swing.SpinnerDateModel());
 
-        jSpinner1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jSpinner1.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1776149940000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        spinFechaFin.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        spinFechaFin.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1776149940000L), null, null, java.util.Calendar.DAY_OF_MONTH));
 
         jLabel2.setText("Fecha Inicio");
 
@@ -270,6 +286,11 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         btnGenerarReporte.setForeground(new java.awt.Color(255, 255, 255));
         btnGenerarReporte.setText("Generar Reporte");
         btnGenerarReporte.setBorder(null);
+        btnGenerarReporte.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnGenerarReporteMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -297,7 +318,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
                                         .addComponent(jLabel3)
                                         .addGap(93, 93, 93)
                                         .addComponent(lblTitulo))
-                                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(spinFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
@@ -319,7 +340,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
                                         .addGap(18, 18, 18)
                                         .addComponent(lblTitulo)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)))
-                                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(spinFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel2)
@@ -391,6 +412,62 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnReportesClientesMouseClicked
 
+    /**
+     * 
+     * @param evt 
+     */
+    private void btnGenerarReporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGenerarReporteMouseClicked
+        // TODO add your handling code here:
+        if (!validarFechas()) {
+            return;
+        }
+
+        LocalDateTime inicio = convertirFecha((Date) spinFechaInicio.getValue());
+        LocalDateTime fin = convertirFecha((Date) spinFechaFin.getValue());
+        
+        List<ReporteComandasDTO> comandas = coordinador.obtenerReporteComandasFiltro(inicio, fin);
+        if(comandas == null || comandas.isEmpty()){
+            DlgNotificacion.mostrarNotificacion(this, "No se encontraron comandas en este rango de fecha.", TipoNotificacion.MENSAJE);
+            return;
+        }
+        
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("FECHA_INICIO", inicio.toString());
+        parametros.put("FECHA_FIN", fin.toString());
+
+        GenerarReportes.generarReporte(
+                "src/reportes/ReporteComandas.jasper",
+                parametros,
+                comandas,
+                btnGenerarReporte,
+                this
+        );
+    }//GEN-LAST:event_btnGenerarReporteMouseClicked
+
+    /**
+     * 
+     * @return 
+     */
+    private boolean validarFechas(){
+        Date fechaInicio = (Date) spinFechaInicio.getValue();
+        Date fechaFin = (Date) spinFechaFin.getValue();    
+        if(fechaInicio.after(fechaFin)){
+            DlgNotificacion.mostrarNotificacion(this, "La fecha de inicio no puede estar después de la fecha final.", TipoNotificacion.ERROR);
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * 
+     * @param fecha
+     * @return 
+     */
+    private LocalDateTime convertirFecha(Date fecha) {
+        return fecha.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtras;
@@ -413,9 +490,9 @@ public class FrmReporteComandas extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblTitulo;
+    private javax.swing.JSpinner spinFechaFin;
     private javax.swing.JSpinner spinFechaInicio;
     private javax.swing.JTable tblReportes;
     // End of variables declaration//GEN-END:variables

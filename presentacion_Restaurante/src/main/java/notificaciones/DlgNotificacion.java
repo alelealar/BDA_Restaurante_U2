@@ -41,8 +41,14 @@ public class DlgNotificacion extends JDialog {
      */
     public static final int RET_ACEPTAR = 1;
     
+    /**
+     * 
+     */
     private static TipoProductoDTO tipoSeleccionado;
     
+    /**
+     * 
+     */
     private static String busqueda;
 
     /**
@@ -265,10 +271,18 @@ public class DlgNotificacion extends JDialog {
         this.dispose();
     }//GEN-LAST:event_btnAceptarActionPerformed
    
+    /**
+     * 
+     * @return 
+     */
     public static String getBusqueda(){
         return busqueda;
     }
     
+    /**
+     * 
+     * @return 
+     */
     public static TipoProductoDTO getTipoSeleccionado(){
         return tipoSeleccionado;
     }
