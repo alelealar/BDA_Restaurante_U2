@@ -27,7 +27,7 @@ import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import notificaciones.TipoNotificacion;
-import notificaciones.DlgNotificacion;
+import notificaciones.DlgNotificacion2;
 
 /**
  * Pantalla donde se muestran los ingredientes.
@@ -715,15 +715,15 @@ public class FrmIngredientes extends javax.swing.JFrame {
          * Valida que si hayan agregado ingredientes y no quieran mandarlos vacíos.
          */
         if(listaIngredientes.isEmpty()){
-            DlgNotificacion.mostrarNotificacion(this, "Por favor de seleccionar ingredientes para agregar al producto.", TipoNotificacion.MENSAJE);
+            DlgNotificacion2.mostrarNotificacion(this, "Por favor de seleccionar ingredientes para agregar al producto.", TipoNotificacion.MENSAJE);
             return;
         }
         
         /**
          * Pide confirmación.
          */
-        int opcion = DlgNotificacion.mostrarNotificacion(this, "¿Seguro de agregar dichos ingredientes al producto?", TipoNotificacion.CONFIRMACIÓN);
-        if(opcion == DlgNotificacion.RET_CANCELAR){
+        int opcion = DlgNotificacion2.mostrarNotificacion(this, "¿Seguro de agregar dichos ingredientes al producto?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion2.RET_CANCELAR){
             return;
         }
         

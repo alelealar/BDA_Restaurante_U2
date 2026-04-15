@@ -22,7 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import notificaciones.TipoNotificacion;
-import notificaciones.DlgNotificacion;
+import notificaciones.DlgNotificacion2;
 
 /**
  * Clase del frame AgregarProductos.
@@ -32,7 +32,7 @@ import notificaciones.DlgNotificacion;
  * 
  * @author María José Valdez Iglesias - 262775
  */
-public class FrmAgregarProducto extends javax.swing.JFrame {
+public class FrmAgregarProducto2 extends javax.swing.JFrame {
     
     /**
      * Cuando la pantalla está en modo 'modificar', este es el producto con el
@@ -85,13 +85,13 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
     /**
      * Logger para informar sobre cómo van resultando las operaciones realizadas.
      */
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmAgregarProducto.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmAgregarProducto2.class.getName());
 
     /**
      * Constructor del frame, recibe el coordinador para que se maneje el mismo
      * en operaciones donde accede a otros módulos.
      */
-    public FrmAgregarProducto(Coordinador_ModuloProductos coordinador) {
+    public FrmAgregarProducto2(Coordinador_ModuloProductos coordinador) {
         this.coordinador = coordinador;
         initComponents();
         cbTipo.setModel(new DefaultComboBoxModel<>(TipoProductoDTO.values()));
@@ -120,7 +120,7 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
      */
     public void setDetallesProducto(List<ProductoIngredienteDTO> ingredientes){
         if(ingredientes == null || ingredientes.isEmpty()){
-            DlgNotificacion.mostrarNotificacion(this, "Tiene que haber ingredientes para el producto.", TipoNotificacion.MENSAJE);
+            DlgNotificacion2.mostrarNotificacion(this, "Tiene que haber ingredientes para el producto.", TipoNotificacion.MENSAJE);
         }
         modelo.clear();
         this.detallesProducto = ingredientes;
@@ -633,8 +633,8 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
         // TODO add your handling code here:
         if(!txtNombre.getText().isEmpty() || !txtDescripcion.getText().isEmpty() || !txtPrecio.getText().isEmpty() || !modelo.isEmpty() || archivo != null){
-            int opcion = DlgNotificacion.mostrarNotificacion(this, "¿Seguro de que desea regresar? Esto cancelará el proceso y la información se perderá.", TipoNotificacion.CONFIRMACIÓN);
-            if(opcion == DlgNotificacion.RET_CANCELAR){
+            int opcion = DlgNotificacion2.mostrarNotificacion(this, "¿Seguro de que desea regresar? Esto cancelará el proceso y la información se perderá.", TipoNotificacion.CONFIRMACIÓN);
+            if(opcion == DlgNotificacion2.RET_CANCELAR){
                 return;
             }
         }
@@ -661,10 +661,10 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
         nombre = txtNombre.getText().trim();
 
         if (nombre == null || nombre.isEmpty() || nombre.isBlank()){
-            DlgNotificacion.mostrarNotificacion(this, "El campo 'Nombre' no puede estar vacío.", TipoNotificacion.MENSAJE);
+            DlgNotificacion2.mostrarNotificacion(this, "El campo 'Nombre' no puede estar vacío.", TipoNotificacion.MENSAJE);
             return;
         } else if (!nombre.matches("^[\\p{L}\\d., ]+$")) {
-            DlgNotificacion.mostrarNotificacion(this, "El campo 'Nombre' solo acepta letras, acentos, espacios y puntos, comas y números.", TipoNotificacion.MENSAJE);
+            DlgNotificacion2.mostrarNotificacion(this, "El campo 'Nombre' solo acepta letras, acentos, espacios y puntos, comas y números.", TipoNotificacion.MENSAJE);
             return;
         }
 
@@ -672,10 +672,10 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
         descripcion = txtDescripcion.getText().trim();
 
         if (descripcion == null || descripcion.isEmpty() || descripcion.isBlank()) {
-            DlgNotificacion.mostrarNotificacion(this, "El campo 'Descripción' no puede estar vacío.", TipoNotificacion.MENSAJE);
+            DlgNotificacion2.mostrarNotificacion(this, "El campo 'Descripción' no puede estar vacío.", TipoNotificacion.MENSAJE);
             return;
         } else if (!descripcion.matches("^[\\p{L}\\d., ]+$")) {
-            DlgNotificacion.mostrarNotificacion(this, "El campo 'Descripción' solo acepta letras, acentos, espacios y puntos, comas y números.", TipoNotificacion.MENSAJE);
+            DlgNotificacion2.mostrarNotificacion(this, "El campo 'Descripción' solo acepta letras, acentos, espacios y puntos, comas y números.", TipoNotificacion.MENSAJE);
             return;
         }
 
@@ -685,10 +685,10 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
         // precio
         precioTemp = txtPrecio.getText().trim();
         if(precioTemp == null || precioTemp.isEmpty() || precioTemp.isBlank()){
-            DlgNotificacion.mostrarNotificacion(this, "El campo 'Precio' no puede estar vacío.", TipoNotificacion.MENSAJE);
+            DlgNotificacion2.mostrarNotificacion(this, "El campo 'Precio' no puede estar vacío.", TipoNotificacion.MENSAJE);
             return;
         } else if(!precioTemp.matches("^\\d+(\\.\\d+)?$")){
-            DlgNotificacion.mostrarNotificacion(this, "El campo 'Precio' solo acepta números y decimas.", TipoNotificacion.MENSAJE);
+            DlgNotificacion2.mostrarNotificacion(this, "El campo 'Precio' solo acepta números y decimas.", TipoNotificacion.MENSAJE);
             return;
         }
         precio = Double.valueOf(precioTemp);
@@ -714,8 +714,8 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
             mensaje = "¿Seguro de actualizar el producto: " + nombre + " - " + tipo + "?";
         }
         
-        int opcion = DlgNotificacion.mostrarNotificacion(this, mensaje, TipoNotificacion.CONFIRMACIÓN);
-        if(opcion == DlgNotificacion.RET_CANCELAR){
+        int opcion = DlgNotificacion2.mostrarNotificacion(this, mensaje, TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion2.RET_CANCELAR){
             return;
         }
         
@@ -729,7 +729,7 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
             producto.setUrlImagen(urlImagen);
             resultado = coordinador.actualizarProducto(producto);   
             if (resultado) {
-                DlgNotificacion.mostrarNotificacion(this, "Producto modificado correctamente", TipoNotificacion.ÉXITO);
+                DlgNotificacion2.mostrarNotificacion(this, "Producto modificado correctamente", TipoNotificacion.ÉXITO);
                 limpiar();
                 coordinador.abrirFrmProductos();
                 this.dispose();
@@ -739,7 +739,7 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
             dto.setIngredientes(detallesProducto);
             resultado = coordinador.agregarProducto(dto);
             if (resultado) {
-                DlgNotificacion.mostrarNotificacion(this, "Producto agregado correctamente", TipoNotificacion.ÉXITO);
+                DlgNotificacion2.mostrarNotificacion(this, "Producto agregado correctamente", TipoNotificacion.ÉXITO);
                 limpiar();
                 coordinador.abrirFrmProductos();
                 this.dispose();
@@ -780,8 +780,8 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
      */
     private void btnEliminarImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarImagenActionPerformed
         // TODO add your handling code here:
-        int opcion = DlgNotificacion.mostrarNotificacion(this, "¿Seguro de eliminar la imagen cargada?", TipoNotificacion.CONFIRMACIÓN);
-        if(opcion == DlgNotificacion.RET_CANCELAR){
+        int opcion = DlgNotificacion2.mostrarNotificacion(this, "¿Seguro de eliminar la imagen cargada?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion2.RET_CANCELAR){
             return;
         }
         archivo = null;

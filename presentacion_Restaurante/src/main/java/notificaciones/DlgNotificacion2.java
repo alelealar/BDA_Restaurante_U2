@@ -17,12 +17,12 @@ import javax.swing.JDialog;
  * 
  * @author María José Valdez Iglesias - 262775
  */
-public class DlgNotificacion extends JDialog {
+public class DlgNotificacion2 extends JDialog {
    
     /**
      * Logger de la clase para notificar resultados de las operaciones. 
      */
-    private static final Logger logger = Logger.getLogger(DlgNotificacion.class.getName());
+    private static final Logger logger = Logger.getLogger(DlgNotificacion2.class.getName());
 
     /**
      * Opción que el usuario selecciona del JDialog.
@@ -54,7 +54,7 @@ public class DlgNotificacion extends JDialog {
      * Es privado para que no se pueda instanciar la clase, solo usar el método
      * estático para mostrar diálogos. 
      */
-    private DlgNotificacion(Frame parent, String mensaje, TipoNotificacion tipo) {
+    private DlgNotificacion2(Frame parent, String mensaje, TipoNotificacion tipo) {
         super(parent, true);
         initComponents();
         /*
@@ -97,7 +97,7 @@ public class DlgNotificacion extends JDialog {
     public static int mostrarNotificacion(Frame parent, String mensaje, TipoNotificacion tipo){
         busqueda = "";
         tipoSeleccionado = null;
-        DlgNotificacion noti = new DlgNotificacion(parent, mensaje, tipo);
+        DlgNotificacion2 noti = new DlgNotificacion2(parent, mensaje, tipo);
         noti.setVisible(true);
         if(tipo == TipoNotificacion.BUSCADOR && noti.opcion == RET_ACEPTAR){
             if(noti.cbTipo.getSelectedItem() != null){
