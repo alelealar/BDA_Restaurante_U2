@@ -6,7 +6,7 @@ package notificaciones;
 
 /**
  * Clase enumeradora del tipo de notificaciones que puede mostrar la clase de
- * tipo JDialogo -> dlgNotificación.
+ * tipo JDialogo -> DlgNotificación.
  * 
  * @author María José Valdez Iglesias - 262775
  */
@@ -15,5 +15,6 @@ public enum TipoNotificacion {
     ERROR,
     MENSAJE,
     CONFIRMACIÓN,
-    ÉXITO
+    ÉXITO, 
+    BUSCADOR
 }

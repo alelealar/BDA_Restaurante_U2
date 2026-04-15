@@ -133,4 +133,13 @@ public interface IProductoDAO {
      */
     public List<Producto> buscarProductos(String nombre, TipoProducto tipo) throws PersistenciaException;
     
+    /**
+     * 
+     * @param nombre
+     * @param tipo
+     * @return
+     * @throws PersistenciaException 
+     */
+    public List<Producto> buscarProductosActivos(String nombre, TipoProducto tipo) throws PersistenciaException;
+    
 }

@@ -102,4 +102,13 @@ public interface IProductoBO {
      */
     List<ProductoDTO> buscarProductos(String nombre, TipoProductoDTO tipo) throws NegocioException;
     
+    /**
+     * 
+     * @param nombre
+     * @param tipo
+     * @return
+     * @throws NegocioException 
+     */
+    List<ProductoDTO> buscarProductosActivos(String nombre, TipoProductoDTO tipo) throws NegocioException;
+    
 }

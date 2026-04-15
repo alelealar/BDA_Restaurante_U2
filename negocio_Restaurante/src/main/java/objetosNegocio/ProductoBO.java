@@ -342,12 +342,34 @@ public class ProductoBO implements IProductoBO {
                 tipoEntidad = TipoProducto.valueOf(tipo.name());
             }
             List<Producto> filtrados = productoDAO.buscarProductos(nombre, tipoEntidad);
-            LOG.info(() -> "Se consultaron los productos: " + nombre + ", " + tipo);
+            LOG.info(() -> "Se encontraron los productos: " + nombre + ", " + tipo);
             return ProductoAdapter.listaEntidadADTO(filtrados);
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al consultar los productos: " + nombre + ", " + tipo);
-            throw new NegocioException("No fue posible consultar los productos: " + nombre + ", " + tipo, ex);
+            LOG.warning(() -> "Ocurrió un error al buscar los productos: " + nombre + ", " + tipo);
+            throw new NegocioException("No fue posible buscar los productos: " + nombre + ", " + tipo, ex);
         }
     }
     
+    /**
+     * 
+     * @param nombre
+     * @param tipo
+     * @return
+     * @throws NegocioException 
+     */
+    @Override 
+    public List<ProductoDTO> buscarProductosActivos(String nombre, TipoProductoDTO tipo) throws NegocioException {
+        try{
+            TipoProducto tipoEntidad = null;
+            if(tipo != null){
+                tipoEntidad = TipoProducto.valueOf(tipo.name());
+            }
+            List<Producto> filtrados = productoDAO.buscarProductos(nombre, tipoEntidad);
+            LOG.info(() -> "Se encontraron los productos: " + nombre + ", " + tipo);
+            return ProductoAdapter.listaEntidadADTO(filtrados);
+        } catch(PersistenciaException ex){
+            LOG.warning(() -> "Ocurrió un error al buscar los productos activos: " + nombre + ", " + tipo);
+            throw new NegocioException("No fue posible buscar los productos: " + nombre + ", " + tipo);
+        }
+    }
 }

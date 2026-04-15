@@ -322,4 +322,37 @@ public class ProductoDAO implements IProductoDAO {
         
         return em.createQuery(query).getResultList();
     }
+    
+    /**
+     * 
+     * @param nombre
+     * @param tipo
+     * @return
+     * @throws PersistenciaException 
+     */
+    @Override
+    public List<Producto> buscarProductosActivos(String nombre, TipoProducto tipo) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery query = cb.createQuery(Producto.class);
+        Root<Producto> producto = query.from(Producto.class);
+        
+        List<Predicate> filtros = new ArrayList<>();
+        
+        if(nombre != null && !nombre.isEmpty() && !nombre.isBlank()){
+            filtros.add(cb.like(cb.lower(producto.get("nombre")), "%" + nombre.toLowerCase() + "%"));
+        }
+        
+        if(tipo != null){
+            filtros.add(cb.equal(producto.get("tipo"), tipo));
+        }
+        
+        filtros.add(cb.equal(producto.get("estado"), EstadoProducto.ACTIVO));
+        
+        query.where(cb.and(filtros.toArray(Predicate[]::new)));
+        
+        query.select(producto);
+        
+        return em.createQuery(query).getResultList();
+    }
 }

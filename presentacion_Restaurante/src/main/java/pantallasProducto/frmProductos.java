@@ -15,7 +15,7 @@ import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import notificaciones.TipoNotificacion;
-import notificaciones.dlgNotificacion;
+import notificaciones.DlgNotificacion;
 
 /**
  * Clase del frame Productos.
@@ -25,7 +25,7 @@ import notificaciones.dlgNotificacion;
  * 
  * @author María José Valdez Iglesias - 262775
  */
-public class frmProductos extends javax.swing.JFrame {
+public class FrmProductos extends javax.swing.JFrame {
     
     /**
      * Atributo que representa el coordinador de las interfaces que representan
@@ -42,13 +42,13 @@ public class frmProductos extends javax.swing.JFrame {
     /**
      * Logger para mandar mensajes de las operaciones.
      */
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmProductos.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmProductos.class.getName());
 
     /**
      * Constructor del frame, donde establece el coordinador del frame y prepara
      * su vista.
      */
-    public frmProductos(Coordinador_ModuloProductos coordinador) {
+    public FrmProductos(Coordinador_ModuloProductos coordinador) {
         this.coordinador = coordinador;
         initComponents();
         tipoBusqueda.setModel(new DefaultComboBoxModel<>(TipoProductoDTO.values()));
@@ -306,6 +306,7 @@ public class frmProductos extends javax.swing.JFrame {
         btnAgregar.setOpaque(true);
         btnAgregar.addActionListener(this::btnAgregarActionPerformed);
 
+        tipoBusqueda.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
         tipoBusqueda.addItemListener(this::tipoBusquedaItemStateChanged);
 
         lblBuscarPor.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -457,21 +458,21 @@ public class frmProductos extends javax.swing.JFrame {
         // TODO add your handling code here:
         int fila = tblProductos.getSelectedRow();        
         if(fila == -1){
-            dlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para activar.", TipoNotificacion.MENSAJE);
+            DlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para activar.", TipoNotificacion.MENSAJE);
             return;
         }        
         ProductoDTO producto = (ProductoDTO) tblProductos.getValueAt(fila, 0);
         if(producto == null){
-            dlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
+            DlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
             return;
         }
         if(producto.getEstado() == EstadoProductoDTO.ACTIVO){
-            dlgNotificacion.mostrarNotificacion(this, "Este producto ya se encuentra activo.", TipoNotificacion.MENSAJE);
+            DlgNotificacion.mostrarNotificacion(this, "Este producto ya se encuentra activo.", TipoNotificacion.MENSAJE);
             return;
         }
         resultado = coordinador.activarProducto(producto.getId());
         if(resultado){
-            dlgNotificacion.mostrarNotificacion(this, "Producto activado correctamente.", TipoNotificacion.ÉXITO);
+            DlgNotificacion.mostrarNotificacion(this, "Producto activado correctamente.", TipoNotificacion.ÉXITO);
             cargarTabla();
             return;
         }
@@ -509,12 +510,12 @@ public class frmProductos extends javax.swing.JFrame {
         int fila = tblProductos.getSelectedRow();
         
         if(fila == -1){
-            dlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para modificar.", TipoNotificacion.MENSAJE);
+            DlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para modificar.", TipoNotificacion.MENSAJE);
             return;
         }
         ProductoDTO producto = (ProductoDTO) tblProductos.getValueAt(fila, 0);
         if(producto == null){
-            dlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
+            DlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
             return;
         }
         coordinador.abrirFrmModificarProducto(producto);
@@ -532,22 +533,22 @@ public class frmProductos extends javax.swing.JFrame {
         int fila = tblProductos.getSelectedRow();
         
         if(fila == -1){
-            dlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para desactivar.", TipoNotificacion.MENSAJE);
+            DlgNotificacion.mostrarNotificacion(this, "Por favor seleccione un producto para desactivar.", TipoNotificacion.MENSAJE);
             return;
         }
         
         ProductoDTO producto = (ProductoDTO) tblProductos.getValueAt(fila, 0);
         if(producto == null){
-            dlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
+            DlgNotificacion.mostrarNotificacion(this, "Producto inválido para seleccionar.", TipoNotificacion.MENSAJE);
             return;
         }
         if(producto.getEstado() == EstadoProductoDTO.INACTIVO){
-            dlgNotificacion.mostrarNotificacion(this, "Este producto ya se encuentra inactivo.", TipoNotificacion.MENSAJE);
+            DlgNotificacion.mostrarNotificacion(this, "Este producto ya se encuentra inactivo.", TipoNotificacion.MENSAJE);
             return;
         } 
         resultado = coordinador.desactivarProducto(producto.getId());
         if(resultado){
-            dlgNotificacion.mostrarNotificacion(this, "Producto desactivado correctamente.", TipoNotificacion.ÉXITO);
+            DlgNotificacion.mostrarNotificacion(this, "Producto desactivado correctamente.", TipoNotificacion.ÉXITO);
             cargarTabla();
             return;
         }

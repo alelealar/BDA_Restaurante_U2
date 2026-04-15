@@ -4,7 +4,10 @@
  */
 package notificaciones;
 
+import dtos.ProductoDTO;
+import enumerators.TipoProductoDTO;
 import java.awt.Frame;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.JDialog;
 
@@ -14,17 +17,19 @@ import javax.swing.JDialog;
  * 
  * @author María José Valdez Iglesias - 262775
  */
-public class dlgNotificacion extends JDialog {
+public class DlgNotificacion extends JDialog {
    
     /**
      * Logger de la clase para notificar resultados de las operaciones. 
      */
-    private static final Logger logger = Logger.getLogger(dlgNotificacion.class.getName());
+    private static final Logger logger = Logger.getLogger(DlgNotificacion.class.getName());
 
     /**
      * Opción que el usuario selecciona del JDialog.
      */
     private int opcion;
+    
+    private boolean buscador = false;
     
     /**
      * Variable estática que representa que el usuario canceló la operación.
@@ -35,6 +40,10 @@ public class dlgNotificacion extends JDialog {
      * Variable estática que representa que el usuario aceptó la operación.
      */
     public static final int RET_ACEPTAR = 1;
+    
+    private static TipoProductoDTO tipoSeleccionado;
+    
+    private static String busqueda;
 
     /**
      * Constructor de la clase.
@@ -45,7 +54,7 @@ public class dlgNotificacion extends JDialog {
      * Es privado para que no se pueda instanciar la clase, solo usar el método
      * estático para mostrar diálogos. 
      */
-    private dlgNotificacion(Frame parent, String mensaje, TipoNotificacion tipo) {
+    private DlgNotificacion(Frame parent, String mensaje, TipoNotificacion tipo) {
         super(parent, true);
         initComponents();
         /*
@@ -53,6 +62,7 @@ public class dlgNotificacion extends JDialog {
         */
         this.mensaje.setText("<html><div style='width: 250px; text-align: center;'>" + mensaje + "</div></html>");
         this.tipoNotificacion.setText(tipo.toString());
+        this.cbTipo.addItem(null);
         /*
         Según el tipo de notificación, define cuáles botones serán visibles.
         */
@@ -60,10 +70,19 @@ public class dlgNotificacion extends JDialog {
             case TipoNotificacion.CONFIRMACIÓN:
                 btnAceptar.setVisible(true);
                 btnCancelar.setVisible(true);
+                cbTipo.setVisible(false);
+                txtBuscar.setVisible(false);
                 break;
+            case TipoNotificacion.BUSCADOR:
+                btnAceptar.setVisible(true);
+                btnCancelar.setVisible(true);
+                cbTipo.setVisible(true);
+                txtBuscar.setVisible(true);
             default:
                 btnAceptar.setVisible(true);
                 btnCancelar.setVisible(false);
+                cbTipo.setVisible(false);
+                txtBuscar.setVisible(false);
         }
         this.setLocationRelativeTo(parent);
     }
@@ -76,8 +95,16 @@ public class dlgNotificacion extends JDialog {
      * @param tipo Ya sea un mensaje, un error o una confirmación de usuario.
      */
     public static int mostrarNotificacion(Frame parent, String mensaje, TipoNotificacion tipo){
-        dlgNotificacion noti = new dlgNotificacion(parent, mensaje, tipo);
+        busqueda = "";
+        tipoSeleccionado = null;
+        DlgNotificacion noti = new DlgNotificacion(parent, mensaje, tipo);
         noti.setVisible(true);
+        if(tipo == TipoNotificacion.BUSCADOR && noti.opcion == RET_ACEPTAR){
+            if(noti.cbTipo.getSelectedItem() != null){
+                tipoSeleccionado = (TipoProductoDTO) noti.cbTipo.getSelectedItem();
+            }
+            busqueda = noti.txtBuscar.getText().trim();
+        }
         return noti.opcion;
     }
 
@@ -96,8 +123,11 @@ public class dlgNotificacion extends JDialog {
         btnAceptar = new javax.swing.JButton();
         tipoNotificacion = new javax.swing.JLabel();
         mensaje = new javax.swing.JLabel();
+        cbTipo = new javax.swing.JComboBox<>();
+        txtBuscar = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(255, 187, 0));
+        setUndecorated(true);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -129,16 +159,12 @@ public class dlgNotificacion extends JDialog {
         mensaje.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         mensaje.setText("Mensaje");
 
+        txtBuscar.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(48, 48, 48)
-                .addComponent(btnCancelar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
-                .addComponent(btnAceptar)
-                .addGap(59, 59, 59))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -148,6 +174,18 @@ public class dlgNotificacion extends JDialog {
                         .addGap(24, 24, 24)
                         .addComponent(mensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(48, 48, 48)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(txtBuscar))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(btnCancelar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+                        .addComponent(btnAceptar)))
+                .addGap(59, 59, 59))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,7 +194,11 @@ public class dlgNotificacion extends JDialog {
                 .addComponent(tipoNotificacion)
                 .addGap(34, 34, 34)
                 .addComponent(mensaje)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancelar)
                     .addComponent(btnAceptar))
@@ -223,14 +265,23 @@ public class dlgNotificacion extends JDialog {
         this.dispose();
     }//GEN-LAST:event_btnAceptarActionPerformed
    
+    public static String getBusqueda(){
+        return busqueda;
+    }
+    
+    public static TipoProductoDTO getTipoSeleccionado(){
+        return tipoSeleccionado;
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JComboBox<enumerators.TipoProductoDTO> cbTipo;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel mensaje;
     private javax.swing.JLabel tipoNotificacion;
+    private javax.swing.JTextField txtBuscar;
     // End of variables declaration//GEN-END:variables
 
 }
