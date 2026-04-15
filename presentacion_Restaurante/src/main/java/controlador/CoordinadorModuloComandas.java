@@ -5,6 +5,7 @@ import dtos.ComandaDTO;
 import dtos.MesaDTO;
 import dtos.ProductoDTO;
 import enumerators.EstadoMesaDTO;
+import enumerators.TipoMovimiento;
 import excepciones.NegocioException;
 import interfaces.IClienteBO;
 import interfaces.IComandaBO;
@@ -80,11 +81,6 @@ public class CoordinadorModuloComandas {
     private final IProductoBO productoBO;
 
     /**
-     * Objeto de negocio para clientes
-     */
-    private final IClienteBO clienteBO;
-
-    /**
      * Coordinador principal del sistema
      */
     private CoordinadorInterfaces coordinador;
@@ -98,7 +94,6 @@ public class CoordinadorModuloComandas {
         meseroBO = MeseroBO.getInstance();
         mesaBO = MesaBO.getInstance();
         productoBO = ProductoBO.getInstance();
-        clienteBO = ClienteBO.getInstance();
     }
 
     /**
@@ -161,6 +156,10 @@ public class CoordinadorModuloComandas {
             pedidos.dispose();
             pedidos = null;
         }
+        if (comandas != null) {
+            comandas.setVisible(false);
+        }
+
         pedidos = new frmPedidos(this, mesa, comanda);
         pedidos.setVisible(true);
     }
@@ -376,5 +375,13 @@ public class CoordinadorModuloComandas {
      */
     public void actualizarTotal(Double monto) {
         this.pedidos.actualizarTotal(monto);
+    }
+
+    public List<ProductoDTO> consultarProductosFiltrados(String nombre) throws NegocioException {
+        return coordinador.productosFiltrados(nombre);
+    }
+
+    public void actualizarIngredientes(Long ingrediente, Integer cantidad, TipoMovimiento tipo) throws NegocioException {
+        coordinador.actualizarIngredientes(ingrediente, cantidad, tipo);
     }
 }

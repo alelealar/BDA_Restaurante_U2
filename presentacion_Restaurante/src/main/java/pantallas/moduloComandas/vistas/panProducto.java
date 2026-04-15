@@ -1,17 +1,26 @@
 package pantallas.moduloComandas.vistas;
+
 import controlador.CoordinadorModuloComandas;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
 import dtos.ProductoDTO;
 import excepciones.NegocioException;
+import java.awt.Container;
 import java.awt.Image;
 import java.net.URL;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
+ * Panel visual que representa un producto dentro de una comanda.
  *
- * @author Brian Kaleb Sandoval Rodríguez - 00000262741
+ * Permite: - Visualizar información del producto - Aumentar/disminuir cantidad
+ * - Eliminar el producto de la comanda
+ *
+ * Sincroniza los cambios con la base de datos mediante el coordinador.
+ *
+ * @author Brian Kaleb
  */
 public class panProducto extends javax.swing.JPanel {
 
@@ -19,9 +28,15 @@ public class panProducto extends javax.swing.JPanel {
     private final CoordinadorModuloComandas coordinador;
     private ComandaDTO comanda;
 
+    /**
+     * Constructor del panel producto.
+     *
+     * @param detalle detalle asociado
+     * @param coordinador coordinador del módulo
+     * @param comanda comanda actual
+     */
     public panProducto(DetalleComandaDTO detalle, CoordinadorModuloComandas coordinador, ComandaDTO comanda) {
         initComponents();
-
         this.detalle = detalle;
         this.coordinador = coordinador;
         this.comanda = comanda;
@@ -31,27 +46,37 @@ public class panProducto extends javax.swing.JPanel {
         actualizarBotonDisminuir();
     }
 
+    /**
+     * Obtiene el detalle asociado al panel.
+     */
     public DetalleComandaDTO getDetalle() {
         return detalle;
     }
 
+    /**
+     * Agrega una unidad al producto.
+     */
     public void agregarOtraUnidad() {
         aumentarCantidad();
-
     }
 
+    /**
+     * Configura dimensiones del panel.
+     */
     private void configurarPanel() {
         setPreferredSize(new java.awt.Dimension(334, 163));
         setMinimumSize(new java.awt.Dimension(334, 163));
         setMaximumSize(new java.awt.Dimension(334, 163));
     }
 
+    /**
+     * Carga los datos del producto en la interfaz.
+     */
     private void cargarDatos() {
         try {
             ProductoDTO producto = coordinador.obtenerProducto(detalle.getIdProducto());
 
             cargarImagen(producto.getUrlImagen());
-
             lblNombre.setText(producto.getNombre());
             lblTipo.setText(producto.getTipo().name());
             lblPrecio.setText("$" + detalle.getPrecioUnitario());
@@ -62,6 +87,9 @@ public class panProducto extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Carga la imagen del producto.
+     */
     private void cargarImagen(String ruta) {
         URL url = getClass().getResource(ruta);
 
@@ -70,35 +98,41 @@ public class panProducto extends javax.swing.JPanel {
         }
 
         ImageIcon icono = new ImageIcon(url);
-        Image imagen = icono.getImage()
-                .getScaledInstance(112, 110, Image.SCALE_SMOOTH);
+        Image imagen = icono.getImage().getScaledInstance(112, 110, Image.SCALE_SMOOTH);
 
         lblImagen.setIcon(new ImageIcon(imagen));
         lblImagen.setText("");
     }
 
+    /**
+     * Aumenta la cantidad del producto.
+     */
     private void aumentarCantidad() {
         detalle.setCantidad(detalle.getCantidad() + 1);
-
         lblCantidad.setText(String.valueOf(detalle.getCantidad()));
-        coordinador.actualizarTotal(detalle.getPrecioUnitario());
 
+        coordinador.actualizarTotal(detalle.getPrecioUnitario());
         actualizarBotonDisminuir();
     }
 
+    /**
+     * Disminuye la cantidad del producto.
+     */
     private void disminuirCantidad() {
         if (detalle.getCantidad() <= 1) {
             return;
         }
 
         detalle.setCantidad(detalle.getCantidad() - 1);
-
         lblCantidad.setText(String.valueOf(detalle.getCantidad()));
-        coordinador.actualizarTotal(-detalle.getPrecioUnitario());
 
+        coordinador.actualizarTotal(-detalle.getPrecioUnitario());
         actualizarBotonDisminuir();
     }
 
+    /**
+     * Activa o desactiva el botón de disminuir.
+     */
     private void actualizarBotonDisminuir() {
         boolean activo = detalle.getCantidad() > 1;
 
@@ -108,13 +142,24 @@ public class panProducto extends javax.swing.JPanel {
         btnDisminuir.setBorderPainted(false);
     }
 
+    /**
+     * Calcula el total de la comanda.
+     */
+    private double calcularTotal(List<DetalleComandaDTO> detalles) {
+        double total = 0.0;
+
+        for (DetalleComandaDTO d : detalles) {
+            total += d.getCantidad() * d.getPrecioUnitario();
+        }
+
+        return total;
+    }
+
+    /**
+     * Muestra mensaje de error.
+     */
     private void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(
-                this,
-                mensaje,
-                "Advertencia",
-                JOptionPane.WARNING_MESSAGE
-        );
+        JOptionPane.showMessageDialog(this, mensaje, "Advertencia", JOptionPane.WARNING_MESSAGE);
     }
 
     /**
@@ -130,7 +175,7 @@ public class panProducto extends javax.swing.JPanel {
         lblNombre = new javax.swing.JLabel();
         lblTipo = new javax.swing.JLabel();
         lblPrecio = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
         btnIncrementar = new javax.swing.JButton();
         btnDisminuir = new javax.swing.JButton();
         lblCantidad = new javax.swing.JLabel();
@@ -151,10 +196,15 @@ public class panProducto extends javax.swing.JPanel {
         lblPrecio.setForeground(new java.awt.Color(0, 0, 0));
         lblPrecio.setText("jLabel2");
 
-        jButton1.setBackground(new java.awt.Color(255, 0, 0));
-        jButton1.setForeground(new java.awt.Color(0, 0, 0));
-        jButton1.setText("Cancelar");
-        jButton1.setBorderPainted(false);
+        btnCancelar.setBackground(new java.awt.Color(255, 0, 0));
+        btnCancelar.setForeground(new java.awt.Color(0, 0, 0));
+        btnCancelar.setText("Cancelar");
+        btnCancelar.setBorderPainted(false);
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         btnIncrementar.setText("+");
         btnIncrementar.setOpaque(true);
@@ -191,7 +241,7 @@ public class panProducto extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(119, 119, 119)
-                .addComponent(jButton1)
+                .addComponent(btnCancelar)
                 .addGap(28, 28, 28)
                 .addComponent(btnDisminuir)
                 .addGap(18, 18, 18)
@@ -214,7 +264,7 @@ public class panProducto extends javax.swing.JPanel {
                     .addComponent(lblImagen, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(btnCancelar)
                     .addComponent(btnIncrementar)
                     .addComponent(btnDisminuir)
                     .addComponent(lblCantidad))
@@ -224,24 +274,18 @@ public class panProducto extends javax.swing.JPanel {
 
     private void btnIncrementarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncrementarActionPerformed
         aumentarCantidad();
+
         try {
             ComandaDTO comandaActual = coordinador.obtenerComanda(comanda.getId());
 
             for (DetalleComandaDTO d : comandaActual.getDetalles()) {
-                ProductoDTO productoRecuperado = coordinador.obtenerProducto(d.getIdProducto());
-                if (d.getIdProducto().equals(productoRecuperado.getId())
-                        && (d.getComentario() == null || d.getComentario().trim().isEmpty())) {
-
+                if (d.getId() != null && d.getId().equals(detalle.getId())) {
                     d.setCantidad(d.getCantidad() + 1);
                     break;
                 }
             }
 
-            double totalCalculado = 0.0;
-            for (DetalleComandaDTO d : comandaActual.getDetalles()) {
-                totalCalculado += d.getCantidad() * d.getPrecioUnitario();
-            }
-            comandaActual.setTotal(totalCalculado);
+            comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
 
             coordinador.actualizarComanda(comandaActual);
             this.comanda = comandaActual;
@@ -253,15 +297,74 @@ public class panProducto extends javax.swing.JPanel {
     }//GEN-LAST:event_btnIncrementarActionPerformed
 
     private void btnDisminuirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisminuirActionPerformed
+        if (detalle.getCantidad() <= 1) {
+            return;
+        }
+
         disminuirCantidad();
 
+        try {
+            ComandaDTO comandaActual = coordinador.obtenerComanda(comanda.getId());
+
+            for (DetalleComandaDTO d : comandaActual.getDetalles()) {
+                if (d.getId() != null && d.getId().equals(detalle.getId())) {
+                    d.setCantidad(d.getCantidad() - 1);
+                    break;
+                }
+            }
+
+            comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
+
+            coordinador.actualizarComanda(comandaActual);
+            this.comanda = comandaActual;
+
+        } catch (NegocioException ex) {
+            mostrarError(ex.getMessage());
+        }
     }//GEN-LAST:event_btnDisminuirActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        try {
+            ComandaDTO comandaActual = coordinador.obtenerComanda(comanda.getId());
+
+            List<DetalleComandaDTO> detalles = comandaActual.getDetalles();
+
+            for (int i = 0; i < detalles.size(); i++) {
+                DetalleComandaDTO d = detalles.get(i);
+
+                if (d.getId() != null && d.getId().equals(detalle.getId())) {
+                    detalles.remove(i);
+                    break;
+                }
+            }
+
+            comandaActual.setTotal(calcularTotal(detalles));
+
+            coordinador.actualizarComanda(comandaActual);
+            this.comanda = comandaActual;
+
+            Container parent = this.getParent();
+
+            if (parent != null) {
+                parent.remove(this);
+                parent.revalidate();
+                parent.repaint();
+            } else {
+                System.out.println("El panel no tiene padre");
+            }
+
+            coordinador.refrescarComandas();
+
+        } catch (NegocioException ex) {
+            mostrarError(ex.getMessage());
+        }
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnDisminuir;
     private javax.swing.JButton btnIncrementar;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel lblCantidad;
     private javax.swing.JLabel lblImagen;
     private javax.swing.JLabel lblNombre;

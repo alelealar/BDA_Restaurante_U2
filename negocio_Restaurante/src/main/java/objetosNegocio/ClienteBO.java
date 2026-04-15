@@ -213,7 +213,7 @@ public class ClienteBO implements IClienteBO {
             List<Cliente> clientes = clienteDAO.obtenerClientes();
 
             LOG.info("Los clientes se obtuvieron correctamente");
-
+            
             return ClienteAdapter.listaEntidadADTO(clientes);
 
         } catch (PersistenciaException ex) {

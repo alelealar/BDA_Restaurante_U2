@@ -39,7 +39,7 @@ public class panPedidos extends javax.swing.JPanel {
         List<DetalleComandaDTO> detalles = comanda.getDetalles();
 
         for (DetalleComandaDTO detalle : detalles) {
-            panProductoPedido producto = new panProductoPedido(detalle, coordinador);
+            panProductoPedido producto = new panProductoPedido(detalle, coordinador, this.comanda);
 
             producto.setPreferredSize(new java.awt.Dimension(650, 50));
             producto.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 50));

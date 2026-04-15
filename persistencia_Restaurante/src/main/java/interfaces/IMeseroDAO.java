@@ -25,5 +25,5 @@ public interface IMeseroDAO {
      * @param mesero Mesero a registrar.
      * @throws PersistenciaException Si ocurre un error.
      */
-    void registrarMesero(Mesero mesero) throws PersistenciaException;
+    Mesero registrarMesero(Mesero mesero) throws PersistenciaException;
 }

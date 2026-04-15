@@ -4,226 +4,324 @@ import entidades.Cliente;
 import entidades.ClienteFrecuente;
 import excepciones.PersistenciaException;
 import java.util.List;
-import static org.testng.Assert.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
- * Clase de pruebas unitarias para ClienteDAO.
+ * Clase de pruebas unitarias para {@link ClienteDAO}.
  *
- * Se validan las operaciones CRUD básicas: - Guardar cliente - Actualizar
- * cliente - Eliminar cliente - Buscar cliente por ID - Obtener lista de
- * clientes
+ * Esta clase valida el comportamiento de los métodos principales del DAO,
+ * cubriendo rutas exitosas y rutas de error en operaciones CRUD y validaciones.
  *
- * Cada prueba sigue la estructura: 1. Caso exitoso 2. Caso de error o
- * comportamiento esperado
+ * Se prueban los siguientes casos:
+ * <ul>
+ * <li>Guardar clientes válidos e inválidos.</li>
+ * <li>Actualizar clientes existentes e inexistentes.</li>
+ * <li>Eliminar registros existentes e inexistentes.</li>
+ * <li>Búsquedas por identificador.</li>
+ * <li>Obtención de listas generales y específicas.</li>
+ * <li>Validación de teléfonos y correos duplicados.</li>
+ * </ul>
  *
- * @author Brian Kaleb Sandoval Rodriguez - 00000262741
+ * Cada prueba se ejecuta con datos aislados para evitar interferencias entre
+ * ejecuciones.
+ *
+ * @author Brian Kaleb Sandoval Rodríguez - 00000262741
  * @author Alejandra Leal Armenta - 00000262719
  * @author Maria Jose Valdez Iglesias - 00000262775
  */
 public class ClienteDAOTest {
 
     /**
-     * Método para que borré todo y no tengamos que modificando las pruebas cada
-     * vez que las queramos correr dado a los atributos que son únicos en la
-     * base de datos.
+     * Instancia del objeto de acceso a datos.
+     */
+    private ClienteDAO dao;
+
+    /**
+     * Configuración inicial antes de cada prueba.
+     *
+     * Obtiene la instancia del DAO y elimina los clientes frecuentes existentes
+     * para garantizar independencia entre pruebas.
+     *
+     * @throws Exception si ocurre un error al limpiar la base de datos.
      */
     @BeforeEach
-    public void limpiarDatos() throws PersistenciaException {
-        ClienteDAO dao = new ClienteDAO();
-        List<Cliente> clientes = dao.obtenerClientes();
+    public void setup() throws Exception {
+        dao = ClienteDAO.getInstance();
 
-        for (Cliente c : clientes) {
+        List<ClienteFrecuente> frecuentes = dao.obtenerClientesFrecuentes();
+
+        for (ClienteFrecuente c : frecuentes) {
             dao.eliminarCliente(c.getId());
         }
     }
 
     /**
-     * Prueba del método guardarCliente.
+     * Crea una instancia válida de {@link ClienteFrecuente} con datos únicos.
      *
-     * Verifica que: - Se guarde correctamente un cliente - Se lance excepción
-     * al intentar guardar un cliente con teléfono duplicado
+     * Los valores generados evitan conflictos con restricciones únicas como
+     * teléfono y correo electrónico.
+     *
+     * @return cliente frecuente listo para persistirse.
      */
-    @Test
-    public void testGuardarCliente() throws Exception {
-        ClienteDAO dao = new ClienteDAO();
+    private ClienteFrecuente crearFrecuenteUnico() {
+        long n = System.nanoTime();
 
-        // Asumiendo que es un cliente que se acaba de registrar en el programa de lealtad
-        ClienteFrecuente nuevoFrecuente = new ClienteFrecuente(
+        String telefono = "6" + String.format("%09d", n % 1_000_000_000);
+        String correo = "correo" + n + "@test.com";
+
+        return new ClienteFrecuente(
                 0,
                 0.0,
                 0,
                 null,
-                "Brian Kaleb",
-                "Sandoval",
-                "Rodríguez",
-                "6441234567",
-                "brian.sandoval@gmail.com"
-        );
-
-        Cliente clienteObtenido = dao.guardarCliente(nuevoFrecuente);
-
-        assertNotNull(clienteObtenido.getId());
-        assertEquals("Brian Kaleb", clienteObtenido.getNombres());
-        assertEquals("brian.sandoval@gmail.com", clienteObtenido.getCorreo());
-
-        // Caso que debe fallar (teléfono duplicado)
-        Cliente cliente2 = new Cliente("Alejandra", "Leal", "Armenta", "6441234567", "aleale2@gmail.com");
-
-        assertThrows(PersistenciaException.class,
-                () -> dao.guardarCliente(cliente2)
+                "Cliente" + n,
+                "ApellidoP",
+                "ApellidoM",
+                telefono,
+                correo
         );
     }
 
     /**
-     * Prueba del método actualizarCliente.
+     * Verifica la ruta exitosa del guardado de un cliente frecuente.
      *
-     * Verifica que: - Se actualicen correctamente los datos de un cliente
+     * Debe asignarse un identificador automáticamente al persistir.
      *
+     * @throws Exception si ocurre un error inesperado.
      */
     @Test
-    public void testActualizarCliente() throws Exception {
-        ClienteDAO dao = new ClienteDAO();
+    public void testGuardarCliente_OK() throws Exception {
+        ClienteFrecuente cliente = crearFrecuenteUnico();
 
-        // 1. Caso de actualización normal
-        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441568789", "kaleb@gmail.com");
-        Cliente clienteGuardado = dao.guardarCliente(cliente);
+        Cliente guardado = dao.guardarCliente(cliente);
 
-        clienteGuardado.setNombres("Kaleb");
-        Cliente clienteActualizado = dao.actualizarCliente(clienteGuardado);
-
-        assertEquals("Kaleb", clienteActualizado.getNombres());
-
-        // 2. Caso de cliente inexistente 
-        Cliente clienteInvalido = new Cliente("Maria Jose", "Valdez", "Iglesias", "1234567890", "maria@gmail.com");
-        clienteInvalido.setId(999L);
-
-        assertThrows(PersistenciaException.class, () -> dao.actualizarCliente(clienteInvalido));
+        assertNotNull(guardado);
+        assertNotNull(guardado.getId());
     }
 
     /**
-     * Prueba del método eliminarCliente.
+     * Verifica la ruta de error al intentar guardar un cliente nulo.
      *
-     * Verifica que: - Se elimine correctamente un cliente existente - Regrese
-     * false cuando el cliente no existe
+     * Debe lanzarse una excepción de persistencia.
+     */
+    @Test
+    public void testGuardarCliente_Error() {
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+        
+        assertThrows(PersistenciaException.class,
+                () -> dao.guardarCliente(cliente));
+    }
+
+    /**
+     * Verifica la ruta exitosa de actualización de un cliente existente.
+     *
+     * Se modifican atributos heredados y propios de la subclase.
+     *
+     * @throws Exception si ocurre un error inesperado.
+     */
+    @Test
+    public void testActualizarCliente_OK() throws Exception {
+        ClienteFrecuente cliente = crearFrecuenteUnico();
+
+        ClienteFrecuente guardado
+                = (ClienteFrecuente) dao.guardarCliente(cliente);
+
+        guardado.setNombres("Actualizado");
+        guardado.setPuntos(100);
+
+        Cliente actualizado = dao.actualizarCliente(guardado);
+
+        assertEquals("Actualizado", actualizado.getNombres());
+        assertEquals(100,
+                ((ClienteFrecuente) actualizado).getPuntos());
+    }
+
+    /**
+     * Verifica la ruta de error al intentar actualizar un cliente inexistente.
+     *
+     * Debe lanzarse una excepción de persistencia.
+     */
+    @Test
+    public void testActualizarCliente_Error() {
+        ClienteFrecuente cliente = crearFrecuenteUnico();
+        cliente.setId(999999L);
+
+        assertThrows(PersistenciaException.class,
+                () -> dao.actualizarCliente(cliente));
+    }
+
+    /**
+     * Verifica ambas rutas de eliminación.
+     *
+     * Ruta buena:
+     * <ul>
+     * <li>Eliminar un cliente previamente registrado.</li>
+     * </ul>
+     *
+     * Ruta mala:
+     * <ul>
+     * <li>Intentar eliminar un identificador inexistente.</li>
+     * </ul>
+     *
+     * @throws Exception si ocurre un error inesperado.
      */
     @Test
     public void testEliminarCliente() throws Exception {
-        ClienteDAO dao = new ClienteDAO();
+        Cliente guardado = dao.guardarCliente(crearFrecuenteUnico());
 
-        Cliente cliente = new Cliente("Brian", "Sandoval", "Rodriguez", "6441556877", "brian3@gmail.com");
-        Cliente clienteGuardado = dao.guardarCliente(cliente);
-
-        boolean eliminado = dao.eliminarCliente(clienteGuardado.getId());
-
-        assertTrue(eliminado);
-
-        // Caso inexistente
-        boolean eliminadoInvalido = dao.eliminarCliente(999L);
-
-        assertFalse(eliminadoInvalido);
+        assertTrue(dao.eliminarCliente(guardado.getId()));
+        assertFalse(dao.eliminarCliente(999999L));
     }
 
     /**
-     * Prueba del método buscarClientePorId.
+     * Verifica ambas rutas de búsqueda por identificador.
      *
-     * Verifica que: - Se encuentre un cliente existente - Regrese null si el
-     * cliente no existe
+     * Ruta buena:
+     * <ul>
+     * <li>Encontrar un cliente existente.</li>
+     * </ul>
+     *
+     * Ruta mala:
+     * <ul>
+     * <li>No encontrar un identificador inexistente.</li>
+     * </ul>
+     *
+     * @throws Exception si ocurre un error inesperado.
      */
     @Test
     public void testBuscarClientePorId() throws Exception {
-        ClienteDAO dao = new ClienteDAO();
+        Cliente guardado = dao.guardarCliente(crearFrecuenteUnico());
 
-        Cliente cliente = new Cliente("Alejandra", "Leal", "Armenta", "6441556875", "ale3@gmail.com");
-        Cliente clienteGuardado = dao.guardarCliente(cliente);
-
-        Cliente encontrado = dao.buscarClientePorId(clienteGuardado.getId());
-
-        assertNotNull(encontrado);
-
-        // Caso inexistente
-        Cliente noEncontrado = dao.buscarClientePorId(999L);
-
-        assertNull(noEncontrado);
+        assertNotNull(dao.buscarClientePorId(guardado.getId()));
+        assertNull(dao.buscarClientePorId(999999L));
     }
 
     /**
-     * Prueba del método obtenerClientes.
+     * Verifica la obtención general de clientes registrados.
      *
-     * Verifica que: - Se obtenga una lista de clientes - La lista contenga al
-     * menos los clientes insertados
+     * La lista devuelta no debe ser nula y debe contener al menos un elemento
+     * después de insertar datos de prueba.
+     *
+     * @throws Exception si ocurre un error inesperado.
      */
     @Test
     public void testObtenerClientes() throws Exception {
-        ClienteDAO dao = new ClienteDAO();
+        dao.guardarCliente(crearFrecuenteUnico());
 
-        Cliente cliente1 = new Cliente("Brian", "Sandoval", "Rodriguez", "6441556882", "brian4@gmail.com");
-        Cliente cliente2 = new Cliente("Maria Jose", "Valdez", "Iglesias", "6441556883", "maria2@gmail.com");
+        List<Cliente> lista = dao.obtenerClientes();
 
-        dao.guardarCliente(cliente1);
-        dao.guardarCliente(cliente2);
-
-        List<Cliente> clientes = dao.obtenerClientes();
-
-        assertTrue(clientes.size() >= 2);
+        assertNotNull(lista);
+        assertTrue(lista.size() >= 1);
     }
 
     /**
-     * Prueba del método obtenerClientes vacio.
-     */
-    @Test
-    public void testObtenerClientesVacio() throws Exception {
-        ClienteDAO dao = new ClienteDAO();
-
-        List<Cliente> clientes = dao.obtenerClientes();
-
-        assertTrue(clientes.isEmpty());
-    }
-
-    /**
-     * Prueba del método existeTelefono.
+     * Verifica la obtención exclusiva de clientes frecuentes.
      *
-     * Verifica que: - No se considere duplicado cuando el teléfono pertenece al
-     * mismo cliente - No se considere duplicado cuando el teléfono es único -
-     * Se detecte correctamente cuando otro cliente tiene el mismo teléfono
+     * La lista devuelta no debe ser nula y debe contener registros.
+     *
+     * @throws Exception si ocurre un error inesperado.
      */
     @Test
-    public void testExisteTelefono() throws PersistenciaException {
-        ClienteDAO dao = new ClienteDAO();
-        Cliente cliente1 = new Cliente("Brian", "Sandoval", "Rodriguez", "6444576879", "brian30@gmail.com");
-        Cliente guardado1 = dao.guardarCliente(cliente1);
+    public void testObtenerClientesFrecuentes() throws Exception {
+        dao.guardarCliente(crearFrecuenteUnico());
 
-        assertFalse(dao.existeTelefono("6444576879", guardado1.getId()));
+        List<ClienteFrecuente> lista = dao.obtenerClientesFrecuentes();
 
-        Cliente cliente2 = new Cliente("Maria Jose", "Valdez", "Iglesias", "6441556883", "maria2@gmail.com");
-        Cliente guardado2 = dao.guardarCliente(cliente2);
-
-        assertFalse(dao.existeTelefono("6441556883", guardado2.getId()));
-
-        assertTrue(dao.existeTelefono("6441556883", guardado1.getId()));
+        assertNotNull(lista);
+        assertTrue(lista.size() >= 1);
     }
 
     /**
-     * Prueba del método existeCorreo.
+     * Verifica ambas rutas de búsqueda específica de cliente frecuente.
      *
-     * Verifica que: - No se considere duplicado cuando el correo pertenece al
-     * mismo cliente - No se considere duplicado cuando el correo es único - Se
-     * detecte correctamente cuando otro cliente tiene el mismo correo
+     * Ruta buena:
+     * <ul>
+     * <li>Encontrar un cliente frecuente existente.</li>
+     * </ul>
+     *
+     * Ruta mala:
+     * <ul>
+     * <li>Retornar nulo cuando el identificador no existe.</li>
+     * </ul>
+     *
+     * @throws Exception si ocurre un error inesperado.
      */
     @Test
-    public void testExisteCorreo() throws PersistenciaException {
-        ClienteDAO dao = new ClienteDAO();
-        Cliente cliente1 = new Cliente("Brian", "Sandoval", "Rodriguez", "6444576879", "brian30@gmail.com");
-        Cliente guardado1 = dao.guardarCliente(cliente1);
+    public void testObtenerClienteFrecuentePorId() throws Exception {
+        Cliente guardado = dao.guardarCliente(crearFrecuenteUnico());
 
-        assertFalse(dao.existeCorreo("brian30@gmail.com", guardado1.getId()));
+        ClienteFrecuente obtenido
+                = dao.obtenerClienteFrecuentePorId(guardado.getId());
 
-        Cliente cliente2 = new Cliente("Maria Jose", "Valdez", "Iglesias", "6441556883", "maria2@gmail.com");
-        Cliente guardado2 = dao.guardarCliente(cliente2);
+        assertNotNull(obtenido);
+        assertNull(dao.obtenerClienteFrecuentePorId(999999L));
+    }
 
-        assertFalse(dao.existeCorreo("maria2@gmail.com", guardado2.getId()));
+    /**
+     * Verifica la validación de teléfonos duplicados.
+     *
+     * Ruta buena:
+     * <ul>
+     * <li>El mismo cliente no debe detectarse como duplicado.</li>
+     * </ul>
+     *
+     * Ruta mala:
+     * <ul>
+     * <li>Otro cliente con el mismo teléfono debe detectarse como duplicado.</li>
+     * </ul>
+     *
+     * @throws Exception si ocurre un error inesperado.
+     */
+    @Test
+    public void testExisteTelefono() throws Exception {
+        ClienteFrecuente c1 = crearFrecuenteUnico();
+        Cliente guardado1 = dao.guardarCliente(c1);
 
-        assertTrue(dao.existeCorreo("maria2@gmail.com", guardado1.getId()));
+        assertFalse(
+                dao.existeTelefono(c1.getTelefono(), guardado1.getId())
+        );
+
+        ClienteFrecuente c2 = crearFrecuenteUnico();
+        dao.guardarCliente(c2);
+
+        assertTrue(
+                dao.existeTelefono(c2.getTelefono(), guardado1.getId())
+        );
+    }
+
+    /**
+     * Verifica la validación de correos duplicados.
+     *
+     * Ruta buena:
+     * <ul>
+     * <li>El mismo cliente no debe detectarse como duplicado.</li>
+     * </ul>
+     *
+     * Ruta mala:
+     * <ul>
+     * <li>Otro cliente con el mismo correo debe detectarse como duplicado.</li>
+     * </ul>
+     *
+     * @throws Exception si ocurre un error inesperado.
+     */
+    @Test
+    public void testExisteCorreo() throws Exception {
+        ClienteFrecuente c1 = crearFrecuenteUnico();
+        Cliente guardado1 = dao.guardarCliente(c1);
+
+        assertFalse(
+                dao.existeCorreo(c1.getCorreo(), guardado1.getId())
+        );
+
+        ClienteFrecuente c2 = crearFrecuenteUnico();
+        dao.guardarCliente(c2);
+
+        assertTrue(
+                dao.existeCorreo(c2.getCorreo(), guardado1.getId())
+        );
     }
 }

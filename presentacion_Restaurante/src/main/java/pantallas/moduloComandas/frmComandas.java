@@ -39,7 +39,8 @@ public class frmComandas extends javax.swing.JFrame {
         this.coordinador = coordinador;
         this.mesa = mesa;
         cargarEstado();
-
+        btnCancelarComanda.setVisible(false);
+        btnCancelarComanda.setVisible(creada);
         if (creada) {
             agregarPedidos();
         }
@@ -69,6 +70,7 @@ public class frmComandas extends javax.swing.JFrame {
         }
 
         btnCrear.setText(creada ? "+Crear Pedido" : "+Crear Comanda");
+        btnCancelarComanda.setVisible(creada);
         jblAviso.setVisible(!creada);
     }
 
@@ -178,6 +180,7 @@ public class frmComandas extends javax.swing.JFrame {
         panContenedorPedidos = new javax.swing.JPanel();
         jblAviso = new javax.swing.JLabel();
         btnCrear = new javax.swing.JButton();
+        btnCancelarComanda = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -352,6 +355,16 @@ public class frmComandas extends javax.swing.JFrame {
             }
         });
 
+        btnCancelarComanda.setBackground(new java.awt.Color(255, 191, 71));
+        btnCancelarComanda.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        btnCancelarComanda.setForeground(new java.awt.Color(0, 0, 0));
+        btnCancelarComanda.setText("Cancelar Comanda");
+        btnCancelarComanda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarComandaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -359,12 +372,13 @@ public class frmComandas extends javax.swing.JFrame {
             .addComponent(panEncabezado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(panMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 901, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 728, Short.MAX_VALUE)
-                        .addComponent(btnCrear))
-                    .addComponent(jScrollPane1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnCancelarComanda, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnCrear)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -375,7 +389,9 @@ public class frmComandas extends javax.swing.JFrame {
                     .addComponent(panMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-                        .addComponent(btnCrear)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnCrear)
+                            .addComponent(btnCancelarComanda))
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
@@ -500,8 +516,36 @@ public class frmComandas extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCerrarComandaMouseClicked
 
+    private void btnCancelarComandaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarComandaActionPerformed
+        try {
+            int confirmacion = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Desea cancelar la comanda?",
+                    "Confirmar cancelación",
+                    JOptionPane.OK_CANCEL_OPTION
+            );
+
+            if (confirmacion != JOptionPane.OK_OPTION) {
+                return;
+            }
+
+            comanda.setEstadoComanda(EstadoComandaDTO.CANCELADA);
+            coordinador.actualizarComanda(comanda);
+            ComandaDTO comandaActualizada = coordinador.obtenerComanda(comanda.getId());
+
+            if (comandaActualizada.getEstadoComanda().equals(EstadoComandaDTO.CANCELADA)) {
+                JOptionPane.showMessageDialog(null, "Comanda cerrada correctamente", "Comanda cerrada", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            coordinador.mostrarPantallaMesas();
+        } catch (NegocioException ex) {
+            mostrarMensajeError(ex.getMessage());
+        }
+    }//GEN-LAST:event_btnCancelarComandaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancelarComanda;
     private javax.swing.JPanel btnCerrarComanda;
     private javax.swing.JPanel btnComandas;
     private javax.swing.JButton btnCrear;

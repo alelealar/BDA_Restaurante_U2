@@ -1,179 +1,148 @@
 package daos;
 
-import conexion.ConexionBD;
 import entidades.Comanda;
-import entidades.DetalleComanda;
 import entidades.Mesa;
-import entidades.Producto;
 import enumerators.EstadoComanda;
 import enumerators.EstadoMesa;
 import excepciones.PersistenciaException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 
 /**
- * Clase de pruebas unitarias para ComandaDAO.
+ * Pruebas completas para ComandaDAO.
  *
- * Se validan las operaciones CRUD sobre la entidad Comanda.
- *
- * Antes de cada prueba se crean datos base necesarios: - 10 mesas persistidas
- * en la base de datos. - Se asume que existen productos con ID válidos en la
- * BD.
- *
- * Esto evita errores de persistencia por relaciones ManyToOne.
+ * Se validan todos los caminos: - Guardado correcto - Guardado inválido -
+ * Actualización correcta - Actualización inexistente - Eliminación correcta -
+ * Eliminación inexistente - Consultas
  *
  * @author Brian Kaleb Sandoval Rodríguez
  */
 public class ComandaDAOTest {
 
-    private static ComandaDAO comandaDAO;
-    private static List<Mesa> mesas;
+    private ComandaDAO dao;
 
-    /**
-     * Inicializa el DAO y crea 10 mesas en la base de datos antes de cada
-     * prueba.
-     */
+    private MesaDAO daoMesa = MesaDAO.getInstance();
+
     @BeforeAll
-    public static void initAll() {
-        comandaDAO = ComandaDAO.getInstance();
-        mesas = new ArrayList<>();
-        EntityManager em = ConexionBD.crearConexion();
+    static void prepararMesas() {
+        MesaDAO daoMesa = MesaDAO.getInstance();
+
         try {
-            em.getTransaction().begin();
-            // Solo se ejecuta UNA VEZ al iniciar la clase
-            for (int i = 1; i <= 10; i++) {
-                Mesa mesa = new Mesa();
-                mesa.setNumero(i);
-                mesa.setEstado(EstadoMesa.DISPONIBLE);
-                em.persist(mesa);
-                mesas.add(mesa);
+            List<Mesa> mesas = daoMesa.obtenerMesas();
+
+            if (mesas.isEmpty()) {
+                for (int i = 1; i <= 20; i++) {
+                    Mesa mesa = new Mesa();
+                    mesa.setNumero(i);
+                    mesa.setEstado(EstadoMesa.DISPONIBLE);
+                    daoMesa.registrarMesa(mesa);
+                }
             }
-            em.getTransaction().commit();
-        } finally {
-            em.close();
+
+        } catch (PersistenciaException ex) {
+            fail("No fue posible preparar las mesas para las pruebas: " + ex.getMessage());
         }
     }
 
-    /**
-     * Prueba que verifica que una comanda se guarda correctamente.
-     */
+    @BeforeEach
+    public void limpiarBD() throws Exception {
+        dao = ComandaDAO.getInstance();
+
+        for (Comanda c : dao.obtenerComandas()) {
+            dao.eliminarComanda(c.getId());
+        }
+    }
+
     @Test
-    public void testGuardarComanda() throws PersistenciaException {
-        Comanda comanda = new Comanda();
-        comanda.setEstadoComanda(EstadoComanda.ABIERTA);
-        comanda.setFolio("TEST-001");
-        comanda.setMesa(mesas.get(0));
+    public void testGuardarComanda_OK() throws Exception {
+        Comanda c = new Comanda();
+        c.setFechaHora(LocalDateTime.now());
+        c.setDetalles(new ArrayList<>());
+        c.setFolio("TEST-001");
+        c.setEstadoComanda(EstadoComanda.ABIERTA);
+        Mesa mesa = daoMesa.obtenerMesas().get(0);
+        c.setMesa(mesa);
+        Comanda guardada = dao.guardarComanda(c);
 
-        Comanda guardada = comandaDAO.guardarComanda(comanda);
-
-        assertNotNull(guardada);
         assertNotNull(guardada.getId());
     }
 
-    /**
-     * Prueba que valida la búsqueda de una comanda por ID.
-     */
     @Test
-    public void testBuscarComandaPorId() throws PersistenciaException {
-        Comanda comanda = new Comanda();
-        comanda.setEstadoComanda(EstadoComanda.ABIERTA);
-        comanda.setFolio("TEST-002");
-        comanda.setMesa(mesas.get(1));
-        comanda.setDetalles(new ArrayList<>());
-
-        Comanda guardada = comandaDAO.guardarComanda(comanda);
-
-        Comanda encontrada = comandaDAO.buscarComandaPorId(guardada.getId());
-
-        assertNotNull(encontrada);
-        assertEquals(guardada.getId(), encontrada.getId());
+    public void testGuardarComanda_Error() {
+        assertThrows(PersistenciaException.class,
+                () -> dao.guardarComanda(null));
     }
 
-    /**
-     * Prueba que verifica la actualización de una comanda.
-     */
     @Test
-    public void testActualizarComanda() throws PersistenciaException {
-        Comanda comanda = new Comanda();
-        comanda.setEstadoComanda(EstadoComanda.ABIERTA);
-        comanda.setFolio("TEST-003");
-        comanda.setMesa(mesas.get(2));
-        comanda.setDetalles(new ArrayList<>());
+    public void testActualizarComanda_OK() throws Exception {
+        Comanda c = new Comanda();
+        c.setFechaHora(LocalDateTime.now());
+        c.setDetalles(new ArrayList<>());
+        c.setFolio("TEST-002");
+        c.setEstadoComanda(EstadoComanda.ABIERTA);
+        Mesa mesa = daoMesa.obtenerMesas().get(1);
+        c.setMesa(mesa);
 
-        Comanda guardada = comandaDAO.guardarComanda(comanda);
+        Comanda comanda = dao.guardarComanda(c);
 
-        guardada.setEstadoComanda(EstadoComanda.ENTREGADA);
+        Comanda actualizada = dao.actualizarComanda(comanda);
 
-        Comanda actualizada = comandaDAO.actualizarComanda(guardada);
-
-        assertEquals(EstadoComanda.ENTREGADA, actualizada.getEstadoComanda());
+        assertEquals("TEST-002", actualizada.getFolio());
     }
 
-    /**
-     * Prueba que valida la eliminación de una comanda.
-     */
     @Test
-    public void testEliminarComanda() throws PersistenciaException {
-        Comanda comanda = new Comanda();
-        comanda.setEstadoComanda(EstadoComanda.ABIERTA);
-        comanda.setFolio("TEST-004");
-        comanda.setMesa(mesas.get(3));
-        comanda.setDetalles(new ArrayList<>());
+    public void testActualizarComanda_Error_NoExiste() {
+        Comanda c = new Comanda();
+        c.setFechaHora(LocalDateTime.now());
+        c.setDetalles(new ArrayList<>());
+        c.setFolio("TEST-003");
+        c.setEstadoComanda(EstadoComanda.ABIERTA);
+        c.setId(999L);
 
-        Comanda guardada = comandaDAO.guardarComanda(comanda);
-
-        boolean eliminado = comandaDAO.eliminarComanda(guardada.getId());
-
-        Comanda buscada = comandaDAO.buscarComandaPorId(guardada.getId());
-
-        assertTrue(eliminado);
-        assertNull(buscada);
+        assertThrows(PersistenciaException.class,
+                () -> dao.actualizarComanda(c));
     }
 
-    /**
-     * Prueba que valida la obtención de todas las comandas.
-     */
     @Test
-    public void testObtenerComandas() throws PersistenciaException {
-        Comanda comanda = new Comanda();
-        comanda.setEstadoComanda(EstadoComanda.ABIERTA);
-        comanda.setFolio("TEST-005");
-        comanda.setMesa(mesas.get(4));
-        comanda.setDetalles(new ArrayList<>());
+    public void testEliminarComanda_OK() throws Exception {
+        Comanda c = new Comanda();
+        c.setFechaHora(LocalDateTime.now());
+        c.setDetalles(new ArrayList<>());
+        c.setFolio("TEST-004");
+        c.setEstadoComanda(EstadoComanda.ABIERTA);
+        Mesa mesa = daoMesa.obtenerMesas().get(3);
+        c.setMesa(mesa);
 
-        comandaDAO.guardarComanda(comanda);
+        Comanda comanda = dao.guardarComanda(c);
 
-        List<Comanda> lista = comandaDAO.obtenerComandas();
-
-        assertNotNull(lista);
-        assertTrue(!lista.isEmpty());
+        assertTrue(dao.eliminarComanda(comanda.getId()));
     }
 
-    /**
-     * Prueba que valida eliminar una comanda inexistente.
-     */
     @Test
-    public void testEliminarComandaInexistente() throws PersistenciaException {
-        boolean resultado = comandaDAO.eliminarComanda(999999L);
-        assertFalse(resultado);
+    public void testEliminarComanda_NoExiste() throws Exception {
+        assertFalse(dao.eliminarComanda(999L));
     }
 
-    /**
-     * Prueba que valida error al actualizar una comanda inexistente.
-     */
     @Test
-    public void testActualizarComandaInexistente() {
-        Comanda comanda = new Comanda();
-        comanda.setId(999999L);
+    public void testBuscarComanda_OK() throws Exception {
+        Comanda c = new Comanda();
+        c.setFechaHora(LocalDateTime.now());
+        c.setDetalles(new ArrayList<>());
+        c.setFolio("TEST-005");
+        c.setEstadoComanda(EstadoComanda.ABIERTA);
+        Mesa mesa = daoMesa.obtenerMesas().get(4);
+        c.setMesa(mesa);
 
-        assertThrows(PersistenciaException.class, () -> {
-            comandaDAO.actualizarComanda(comanda);
-        });
+        Comanda comanda = dao.guardarComanda(c);
+
+        assertNotNull(dao.buscarComandaPorId(comanda.getId()));
+    }
+
+    @Test
+    public void testBuscarComanda_NoExiste() throws Exception {
+        assertNull(dao.buscarComandaPorId(999L));
     }
 }

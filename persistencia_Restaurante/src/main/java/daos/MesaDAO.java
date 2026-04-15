@@ -21,6 +21,19 @@ import javax.persistence.TypedQuery;
  */
 public class MesaDAO implements IMesaDAO {
 
+    private static MesaDAO instancia;
+
+    public MesaDAO() {
+
+    }
+
+    public static MesaDAO getInstance() {
+        if (instancia == null) {
+            instancia = new MesaDAO();
+        }
+        return instancia;
+    }
+
     /**
      * Crea una mesa en la base de datos.
      *
@@ -44,6 +57,42 @@ public class MesaDAO implements IMesaDAO {
             }
             throw new PersistenciaException("No fue posible registrar la mesa", e);
 
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Elimina una mesa en la base de datos.
+     *
+     * @param idMesa id de la mesa a eliminar.
+     * @return true si la mesa fue eliminada correctamente, false en caso
+     * contrario.
+     * @throws PersistenciaException Si ocurre un error durante la persistencia.
+     */
+    @Override
+    public boolean eliminarMesa(Long idMesa) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+
+        try {
+            em.getTransaction().begin();
+
+            Mesa m = em.find(Mesa.class, idMesa);
+
+            if (m == null) {
+                return false;
+            }
+
+            em.remove(m);
+
+            em.getTransaction().commit();
+            return true;
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException("Error al eliminar la mesa", e);
         } finally {
             em.close();
         }
@@ -130,4 +179,5 @@ public class MesaDAO implements IMesaDAO {
             em.close();
         }
     }
+
 }

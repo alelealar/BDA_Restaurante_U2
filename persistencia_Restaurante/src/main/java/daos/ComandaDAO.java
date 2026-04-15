@@ -4,6 +4,7 @@ import conexion.ConexionBD;
 import entidades.Comanda;
 import entidades.DetalleComanda;
 import entidades.Mesa;
+import enumerators.EstadoComanda;
 import excepciones.PersistenciaException;
 import interfaces.IComandaDAO;
 import java.util.List;
@@ -59,10 +60,6 @@ public class ComandaDAO implements IComandaDAO {
         try {
             em.getTransaction().begin();
 
-            for (DetalleComanda d : comanda.getDetalles()) {
-                comanda.agregarDetalle(d);
-            }
-
             comanda.calcularTotal();
 
             em.persist(comanda);
@@ -102,14 +99,19 @@ public class ComandaDAO implements IComandaDAO {
         try {
             em.getTransaction().begin();
 
+            if (comanda == null) {
+                throw new PersistenciaException("La comanda no puede ser null");
+            }
+
             Comanda comandaRecuperada = em.find(Comanda.class, comanda.getId());
 
             if (comandaRecuperada == null) {
                 throw new PersistenciaException("Comanda no encontrada");
             }
 
-            // Guardamos estado anterior
-            var estadoAnterior = comandaRecuperada.getEstadoComanda();
+            if (comanda.getDetalles() == null) {
+                throw new PersistenciaException("La comanda no puede tener detalles null");
+            }
 
             // Datos básicos
             comandaRecuperada.setCliente(comanda.getCliente());
@@ -119,18 +121,27 @@ public class ComandaDAO implements IComandaDAO {
 
             List<DetalleComanda> actuales = comandaRecuperada.getDetalles();
 
-            // Eliminar
-            for (DetalleComanda existente : actuales.toArray(new DetalleComanda[0])) {
-                boolean existe = comanda.getDetalles().stream()
-                        .anyMatch(d -> d.getId() != null && d.getId().equals(existente.getId()));
+            // Eliminar detalles
+            for (int i = 0; i < actuales.size(); i++) {
+                DetalleComanda existente = actuales.get(i);
 
-                if (!existe) {
+                boolean encontrado = false;
+
+                for (DetalleComanda d : comanda.getDetalles()) {
+                    if (d.getId() != null && existente.getId().equals(d.getId())) {
+                        encontrado = true;
+                        break;
+                    }
+                }
+
+                if (!encontrado) {
                     comandaRecuperada.removerDetalle(existente);
                     em.remove(existente);
+                    i--; // importante porque modificas la lista
                 }
             }
 
-            // Agregar / Actualizar
+            // Agregar/Actualizar
             for (DetalleComanda d : comanda.getDetalles()) {
 
                 if (d.getId() == null) {
@@ -148,12 +159,8 @@ public class ComandaDAO implements IComandaDAO {
                 }
             }
 
-            //Calcular
-            if (estadoAnterior != comandaRecuperada.getEstadoComanda()
-                    && comandaRecuperada.getEstadoComanda().name().equals("ENTREGADA")) {
-
-                comandaRecuperada.calcularTotal();
-            }
+            //Calcular Total
+            comandaRecuperada.calcularTotal();
 
             em.getTransaction().commit();
             return comandaRecuperada;

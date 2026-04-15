@@ -16,8 +16,8 @@ import javax.persistence.TypedQuery;
  * @author Brian Kaleb Sandoval Rodríguez - 00000262741
  */
 public class MeseroDAO implements IMeseroDAO {
-    
-     /**
+
+    /**
      * Instancia única de la clase.
      */
     private static MeseroDAO instancia;
@@ -34,8 +34,6 @@ public class MeseroDAO implements IMeseroDAO {
         return instancia;
     }
 
-    
-    
     /**
      * Busca un mesero por su usuario.
      *
@@ -72,14 +70,14 @@ public class MeseroDAO implements IMeseroDAO {
      * @throws PersistenciaException Si ocurre un error.
      */
     @Override
-    public void registrarMesero(Mesero mesero) throws PersistenciaException {
+    public Mesero registrarMesero(Mesero mesero) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
 
         try {
             em.getTransaction().begin();
             em.persist(mesero);
             em.getTransaction().commit();
-
+            return mesero;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

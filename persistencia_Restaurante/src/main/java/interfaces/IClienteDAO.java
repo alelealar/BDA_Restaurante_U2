@@ -109,6 +109,7 @@ public interface IClienteDAO {
      */
     public ClienteFrecuente obtenerClienteFrecuentePorId(Long id) throws PersistenciaException;
 
+
     /**
      * Obtiene la lista completa de clientes registrados en la base de datos.
      *

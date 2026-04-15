@@ -161,7 +161,6 @@ public class Comanda implements Serializable {
     public void removerDetalle(DetalleComanda d) {
         if (d != null && detalles.contains(d)) {
             detalles.remove(d);
-            d.setComanda(null);
         }
     }
 

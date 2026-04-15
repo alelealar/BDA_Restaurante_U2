@@ -3,11 +3,16 @@ package pantallas.moduloComandas.vistas;
 import controlador.CoordinadorModuloComandas;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
+import dtos.IngredienteDTO;
 import dtos.ProductoDTO;
+import dtos.ProductoIngredienteDTO;
+import enumerators.TipoMovimiento;
 import excepciones.NegocioException;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,129 +25,254 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 
 /**
- *
- * @author Kaleb
+ * Panel que representa un producto dentro de una comanda. Permite modificar o
+ * eliminar el producto.
  */
 public class panProductoPedido extends javax.swing.JPanel {
 
-    private DetalleComandaDTO detalle;
+    private final DetalleComandaDTO detalle;
     private final CoordinadorModuloComandas coordinador;
-    private ProductoDTO producto;
+    private final ProductoDTO producto;
+    private final ComandaDTO comanda;
 
     /**
-     * Creates new form panProductoPedido
+     * Constructor del panel.
      *
      * @param detalle
      * @param coordinador
+     * @param comanda
      * @throws excepciones.NegocioException
      */
-    public panProductoPedido(DetalleComandaDTO detalle, CoordinadorModuloComandas coordinador) throws NegocioException {
+    public panProductoPedido(DetalleComandaDTO detalle,
+            CoordinadorModuloComandas coordinador,
+            ComandaDTO comanda) throws NegocioException {
+
         initComponents();
+
         this.detalle = detalle;
         this.coordinador = coordinador;
-        ProductoDTO producto = coordinador.obtenerProducto(detalle.getIdProducto());
-        lblNombre.setText(producto.getNombre() + " X" + detalle.getCantidad() + " $" + detalle.getPrecioUnitario());
-        this.producto = producto;
+        this.comanda = comanda;
+
+        this.producto = coordinador.obtenerProducto(detalle.getIdProducto());
+
+        actualizarTexto();
     }
 
+    /**
+     * Actualiza el texto del label principal.
+     */
+    private void actualizarTexto() {
+        lblNombre.setText(
+                producto.getNombre()
+                + " X" + detalle.getCantidad()
+                + " $" + detalle.getPrecioUnitario()
+        );
+    }
+
+    /**
+     * Muestra el diálogo para editar el detalle.
+     */
     public void mostrarDialogEditarDetalle(DetalleComandaDTO detalle, String nombreProducto) {
 
-        java.awt.Window ventanaPadre = javax.swing.SwingUtilities.getWindowAncestor(this);
+        JDialog dialog = crearDialogo();
 
-        JDialog dialog = new JDialog(ventanaPadre);
+        JSpinner spCantidad = new JSpinner(
+                new SpinnerNumberModel(detalle.getCantidad(), 1, 999, 1)
+        );
+
+        JTextArea txtComentario = new JTextArea(4, 20);
+        txtComentario.setText(detalle.getComentario() == null ? "" : detalle.getComentario());
+        txtComentario.setLineWrap(true);
+        txtComentario.setWrapStyleWord(true);
+
+        JButton btnAceptar = new JButton("Aceptar");
+        JButton btnCancelar = new JButton("Cancelar");
+
+        btnCancelar.addActionListener(e -> dialog.dispose());
+
+        btnAceptar.addActionListener(e -> editarDetalle(dialog, spCantidad, txtComentario));
+
+        dialog.add(crearPanelContenido(nombreProducto, spCantidad, txtComentario), BorderLayout.CENTER);
+        dialog.add(crearPanelBotones(btnAceptar, btnCancelar), BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
+    }
+
+    /**
+     * Lógica para editar el detalle.
+     */
+    private void editarDetalle(JDialog dialog, JSpinner spCantidad, JTextArea txtComentario) {
+
+        int cantidadAnterior = detalle.getCantidad();
+        int cantidadNueva = (Integer) spCantidad.getValue();
+
+        detalle.setCantidad(cantidadNueva);
+        detalle.setComentario(txtComentario.getText().trim());
+
+        try {
+            ComandaDTO comandaActual = coordinador.obtenerComanda(detalle.getIdComanda());
+
+            actualizarDetalleEnLista(comandaActual);
+
+            comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
+
+            int diferencia = cantidadNueva - cantidadAnterior;
+
+            if (diferencia != 0) {
+                //Si la diferencia es mayor a 0 se resta, si es menor se suma.
+                TipoMovimiento movimiento = diferencia > 0 ? TipoMovimiento.SALIDA : TipoMovimiento.ENTRADA;
+
+                //obtenemos el valor absoluto de la diferencia para evitar negativos
+                int cantidadMovimiento = Math.abs(diferencia);
+
+                for (ProductoIngredienteDTO pi : producto.getIngredientes()) {
+
+                    int totalIngrediente = pi.getCantidad() * cantidadMovimiento;
+
+                    coordinador.actualizarIngredientes(pi.getIngrediente().getId(), totalIngrediente, movimiento);
+                }
+            }
+
+            coordinador.actualizarComanda(comandaActual);
+            coordinador.refrescarComandas();
+
+        } catch (NegocioException ex) {
+            mostrarError(ex.getMessage());
+            dialog.dispose();
+            return;
+        }
+
+        dialog.dispose();
+        JOptionPane.showMessageDialog(this, "Producto actualizado correctamente");
+        actualizarTexto();
+    }
+
+    /**
+     * Elimina el producto de la comanda.
+     */
+    private void eliminarProducto() {
+
+        try {
+            ComandaDTO comandaActual = coordinador.obtenerComanda(detalle.getIdComanda());
+
+            comandaActual.getDetalles().removeIf(
+                    d -> d.getId() != null && d.getId().equals(detalle.getId())
+            );
+
+            comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
+
+            actualizarIngredientesEntrada();
+
+            coordinador.actualizarComanda(comandaActual);
+            coordinador.refrescarComandas();
+
+        } catch (NegocioException ex) {
+            mostrarError(ex.getMessage());
+        }
+    }
+
+    /**
+     * Actualiza ingredientes al eliminar producto.
+     */
+    private void actualizarIngredientesEntrada() throws NegocioException {
+
+        for (ProductoIngredienteDTO pi : producto.getIngredientes()) {
+
+            int cantidadTotal = pi.getCantidad() * detalle.getCantidad();
+
+            coordinador.actualizarIngredientes(
+                    pi.getIngrediente().getId(),
+                    cantidadTotal,
+                    TipoMovimiento.ENTRADA
+            );
+        }
+    }
+
+    /**
+     * Actualiza el detalle dentro de la comanda.
+     */
+    private void actualizarDetalleEnLista(ComandaDTO comanda) {
+        for (DetalleComandaDTO d : comanda.getDetalles()) {
+            if (d.getId().equals(detalle.getId())) {
+                d.setCantidad(detalle.getCantidad());
+                d.setComentario(detalle.getComentario());
+                break;
+            }
+        }
+    }
+
+    /**
+     * Calcula el total de la comanda.
+     */
+    private double calcularTotal(List<DetalleComandaDTO> detalles) {
+        double total = 0.0;
+
+        for (DetalleComandaDTO d : detalles) {
+            total += d.getCantidad() * d.getPrecioUnitario();
+        }
+
+        return total;
+    }
+
+    /**
+     * Crea el diálogo base.
+     */
+    private JDialog crearDialogo() {
+
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this));
         dialog.setTitle("Editar producto");
         dialog.setModal(true);
         dialog.setSize(420, 320);
         dialog.setLocationRelativeTo(this);
         dialog.setResizable(false);
         dialog.setLayout(new BorderLayout(10, 10));
+        return dialog;
+    }
 
-        JPanel panelPrincipal = new JPanel();
-        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+    /**
+     * Panel de contenido del diálogo.
+     */
+    private JPanel crearPanelContenido(String nombreProducto, JSpinner spCantidad, JTextArea txtComentario) {
 
-        JLabel lblNombreProducto = new JLabel("Producto:");
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
         JLabel lblProducto = new JLabel(nombreProducto);
         lblProducto.setFont(new Font("Verdana", Font.BOLD, 16));
 
-        JLabel lblCantidad = new JLabel("Cantidad:");
+        panel.add(new JLabel("Producto:"));
+        panel.add(lblProducto);
+        panel.add(Box.createVerticalStrut(10));
 
-        JSpinner spCantidad = new JSpinner(
-                new SpinnerNumberModel(detalle.getCantidad(), 1, 999, 1)
-        );
+        panel.add(new JLabel("Cantidad:"));
+        panel.add(spCantidad);
+        panel.add(Box.createVerticalStrut(10));
 
-        JLabel lblComentario = new JLabel("Comentario:");
+        panel.add(new JLabel("Comentario:"));
+        panel.add(new JScrollPane(txtComentario));
 
-        JTextArea txtComentario = new JTextArea(4, 20);
-        txtComentario.setLineWrap(true);
-        txtComentario.setWrapStyleWord(true);
-        txtComentario.setText(
-                detalle.getComentario() == null ? "" : detalle.getComentario()
-        );
+        return panel;
+    }
 
-        JScrollPane scrollComentario = new JScrollPane(txtComentario);
+    /**
+     * Panel de botones.
+     */
+    private JPanel crearPanelBotones(JButton aceptar, JButton cancelar) {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panel.add(cancelar);
+        panel.add(aceptar);
+        return panel;
+    }
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-        JButton btnCancelar = new JButton("Cancelar");
-        JButton btnAceptar = new JButton("Aceptar");
-
-        panelBotones.add(btnCancelar);
-        panelBotones.add(btnAceptar);
-
-        panelPrincipal.add(lblNombre);
-        panelPrincipal.add(lblProducto);
-        panelPrincipal.add(Box.createVerticalStrut(10));
-
-        panelPrincipal.add(lblCantidad);
-        panelPrincipal.add(spCantidad);
-        panelPrincipal.add(Box.createVerticalStrut(10));
-
-        panelPrincipal.add(lblComentario);
-        panelPrincipal.add(scrollComentario);
-
-        dialog.add(panelPrincipal, BorderLayout.CENTER);
-        dialog.add(panelBotones, BorderLayout.SOUTH);
-
-        btnCancelar.addActionListener(e -> dialog.dispose());
-
-        btnAceptar.addActionListener(e -> {
-
-            detalle.setCantidad((Integer) spCantidad.getValue());
-            detalle.setComentario(txtComentario.getText().trim());
-            try {
-                ComandaDTO comanda = coordinador.obtenerComanda(detalle.getIdComanda());
-
-                for (DetalleComandaDTO d : comanda.getDetalles()) {
-                    if (d.getId().equals(detalle.getId())) {
-                        d.setCantidad(detalle.getCantidad());
-                        d.setComentario(detalle.getComentario());
-                        break;
-                    }
-                }
-
-                double totalCalculado = 0.0;
-                for (DetalleComandaDTO d : comanda.getDetalles()) {
-                    totalCalculado += d.getCantidad() * d.getPrecioUnitario();
-                }
-                comanda.setTotal(totalCalculado);
-                coordinador.actualizarComanda(comanda);
-                coordinador.refrescarComandas();
-
-            } catch (NegocioException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
-            }
-            dialog.dispose();
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Producto actualizado correctamente"
-            );
-        });
-
-        dialog.setVisible(true);
+    /**
+     * Muestra mensaje de error.
+     */
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.WARNING_MESSAGE);
     }
 
     /**
@@ -217,17 +347,9 @@ public class panProductoPedido extends javax.swing.JPanel {
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        try {
-            ComandaDTO comanda = coordinador.obtenerComanda(detalle.getIdComanda());
-            comanda.getDetalles().removeIf(d -> d.getId().equals(detalle.getId()));
-            double totalCalculado = 0.0;
-            for (DetalleComandaDTO d : comanda.getDetalles()) {
-                totalCalculado += d.getCantidad() * d.getPrecioUnitario();
-            }
-            comanda.setTotal(totalCalculado);
-            coordinador.refrescarComandas();
-        } catch (NegocioException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+        int respuesta = JOptionPane.showConfirmDialog(null, "¿Desea elimnar el pedido?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+        if (respuesta == JOptionPane.OK_OPTION) {
+            eliminarProducto();
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 

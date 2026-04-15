@@ -20,6 +20,16 @@ public interface IMesaDAO {
     public void registrarMesa(Mesa mesa) throws PersistenciaException;
 
     /**
+     * Elimina una mesa en la base de datos.
+     *
+     * @param idMesa id de la mesa a eliminar.
+     * @return true si la mesa fue eliminada correctamente, false en caso
+     * contrario.
+     * @throws PersistenciaException Si ocurre un error durante la persistencia.
+     */
+    public boolean eliminarMesa(Long idMesa) throws PersistenciaException;
+
+    /**
      * Obtiene todas las mesas registradas en la base de datos.
      *
      * @return Lista de mesas.

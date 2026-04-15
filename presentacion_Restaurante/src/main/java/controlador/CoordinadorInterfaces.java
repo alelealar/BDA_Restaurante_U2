@@ -2,12 +2,13 @@ package controlador;
 
 import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
+import dtos.ProductoDTO;
+import enumerators.TipoMovimiento;
 import excepciones.NegocioException;
 import java.util.List;
 import pantallas.frmAgregarCliente;
 import pantallas.frmClientes;
 import pantallas.frmInicio;
-import pantallas.moduloComandas.frmComandas;
 import pantallas.moduloIngredientes.FrmIngredientes;
 import pantallas.pantallasModuloReportes.FrmReporteClientes;
 import pantallas.pantallasModuloReportes.FrmReporteComandas;
@@ -31,7 +32,6 @@ public class CoordinadorInterfaces {
     private Coordinador coordinadorNegocio;
     private Coordinador_ModuloProductos coordinadorProducto;
     private CoordinadorModuloComandas coordinadorComandas;
-    
 
     public CoordinadorInterfaces() {
         this.coordinadorNegocio = new Coordinador();
@@ -59,20 +59,20 @@ public class CoordinadorInterfaces {
         }
         formClientes.setVisible(true);
     }
-    
-    public void mostrarPantallaIngredientes(){
-        if(frmIngredientes == null){
+
+    public void mostrarPantallaIngredientes() {
+        if (frmIngredientes == null) {
             frmIngredientes = new FrmIngredientes();
-            
+
         }
         frmIngredientes.desactivarModoProducto();
         frmIngredientes.setVisible(true);
     }
-    
-    public void mostrarPantallaProductos(){
-        if(frmProductos == null){
+
+    public void mostrarPantallaProductos() {
+        if (frmProductos == null) {
             frmProductos = new FrmProductos(coordinadorProducto);
-            
+
         }
         frmProductos.setVisible(true);
     }
@@ -122,19 +122,19 @@ public class CoordinadorInterfaces {
         }
         coordinadorComandas.mostrarPantallaMesas();
     }
-    
-    public void mostrarPantallaReporteClientes(){
-        if(frmReporteClientes == null){
+
+    public void mostrarPantallaReporteClientes() {
+        if (frmReporteClientes == null) {
             frmReporteClientes = new FrmReporteClientes();
         }
-        frmReporteClientes.setVisible(true);  
+        frmReporteClientes.setVisible(true);
     }
-    
-    public void mostrarPantallaReporteComandas(){
-        if(frmReporteComandas == null){
+
+    public void mostrarPantallaReporteComandas() {
+        if (frmReporteComandas == null) {
             frmReporteComandas = new FrmReporteComandas();
         }
-        frmReporteComandas.setVisible(true);  
+        frmReporteComandas.setVisible(true);
     }
 
     /**
@@ -209,5 +209,13 @@ public class CoordinadorInterfaces {
             formClientes.dispose();
             formClientes = null;
         }
+    }
+
+    public List<ProductoDTO> productosFiltrados(String nombre) throws NegocioException {
+        return coordinadorNegocio.obtenerProductosFiltrados(nombre);
+    }
+
+    public void actualizarIngredientes(Long ingrediente, Integer cantidad, TipoMovimiento tipo) throws NegocioException {
+        coordinadorNegocio.actualizarIngredientes(ingrediente, cantidad, tipo);
     }
 }

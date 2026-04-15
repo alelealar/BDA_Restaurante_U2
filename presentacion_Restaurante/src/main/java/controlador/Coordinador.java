@@ -6,10 +6,17 @@ package controlador;
 
 import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
+import dtos.ProductoDTO;
+import enumerators.TipoMovimiento;
+import enumerators.TipoProductoDTO;
 import excepciones.NegocioException;
 import interfaces.IClienteBO;
+import interfaces.IIngredienteBO;
+import interfaces.IProductoBO;
 import java.util.List;
 import objetosNegocio.ClienteBO;
+import objetosNegocio.IngredienteBO;
+import objetosNegocio.ProductoBO;
 import pantallas.frmAgregarCliente;
 
 /**
@@ -28,8 +35,14 @@ public class Coordinador {
     // Capa de Negocio BOs
     private final IClienteBO clienteBO;
 
+    private final IProductoBO productoBO;
+
+    private final IIngredienteBO ingredienteBO;
+
     public Coordinador() {
         this.clienteBO = ClienteBO.getInstance();
+        this.productoBO = ProductoBO.getInstance();
+        this.ingredienteBO = IngredienteBO.getInstance();
     }
 
     /**
@@ -69,4 +82,11 @@ public class Coordinador {
         clienteBO.eliminarCliente(c.getId());
     }
 
+    public List<ProductoDTO> obtenerProductosFiltrados(String nombre) throws NegocioException {
+        return productoBO.buscarProductosActivos(nombre, null);
+    }
+
+    public void actualizarIngredientes(Long ingrediente, Integer cantidad, TipoMovimiento tipo) throws NegocioException {
+        ingredienteBO.actualizarStock(ingrediente, cantidad, tipo);
+    }
 }

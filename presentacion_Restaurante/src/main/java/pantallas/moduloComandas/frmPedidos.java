@@ -3,13 +3,17 @@ package pantallas.moduloComandas;
 import controlador.CoordinadorModuloComandas;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
+import dtos.IngredienteDTO;
 import dtos.MesaDTO;
 import dtos.ProductoDTO;
+import dtos.ProductoIngredienteDTO;
+import enumerators.TipoMovimiento;
 import excepciones.NegocioException;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -27,6 +31,7 @@ import pantallas.moduloComandas.vistas.panProductoMenu;
  */
 public class frmPedidos extends javax.swing.JFrame {
 
+    private List<DetalleComandaDTO> detallesTemporales = new ArrayList<>();
     private final CoordinadorModuloComandas coordinador;
     private final MesaDTO mesa;
     private double total = 0.0;
@@ -78,6 +83,16 @@ public class frmPedidos extends javax.swing.JFrame {
         }
     }
 
+    private void cargarProductosFiltrados(List<ProductoDTO> productos) {
+        panContenedorProductos.removeAll();
+
+        for (ProductoDTO producto : productos) {
+            panContenedorProductos.add(new panProductoMenu(producto, coordinador));
+        }
+
+        actualizarPanel(panContenedorProductos);
+    }
+
     /**
      * Agrega un producto a la comanda.
      *
@@ -87,8 +102,17 @@ public class frmPedidos extends javax.swing.JFrame {
 
         String comentario = pedirComentario();
 
-        if (sumarSiYaExiste(producto, comentario)) {
-            return;
+        for (DetalleComandaDTO d : detallesTemporales) {
+            boolean mismoProducto = d.getIdProducto().equals(producto.getId());
+            boolean mismoComentario = (d.getComentario() == null && comentario.isBlank())
+                    || (d.getComentario() != null && d.getComentario().equalsIgnoreCase(comentario));
+
+            if (mismoProducto && mismoComentario) {
+                d.setCantidad(d.getCantidad() + 1);
+                actualizarTotal(producto.getPrecio());
+                refrescarPanelPedidos();
+                return;
+            }
         }
 
         DetalleComandaDTO detalle = new DetalleComandaDTO();
@@ -97,10 +121,23 @@ public class frmPedidos extends javax.swing.JFrame {
         detalle.setPrecioUnitario(producto.getPrecio());
         detalle.setComentario(comentario);
 
-        actualizarComanda(detalle);
+        detallesTemporales.add(detalle);
 
         agregarPanelProducto(detalle);
         actualizarTotal(detalle.getPrecioUnitario());
+    }
+
+    /**
+     * Método para refrescar UI
+     */
+    private void refrescarPanelPedidos() {
+        panProductosPedidos.removeAll();
+
+        for (DetalleComandaDTO d : detallesTemporales) {
+            agregarPanelProducto(d);
+        }
+
+        actualizarPanel(panProductosPedidos);
     }
 
     /**
@@ -407,6 +444,11 @@ public class frmPedidos extends javax.swing.JFrame {
                 txtBuscadorActionPerformed(evt);
             }
         });
+        txtBuscador.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBuscadorKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout panBuscadorLayout = new javax.swing.GroupLayout(panBuscador);
         panBuscador.setLayout(panBuscadorLayout);
@@ -550,22 +592,50 @@ public class frmPedidos extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscadorActionPerformed
-
-    }//GEN-LAST:event_txtBuscadorActionPerformed
-
-    private void txtBuscadorFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtBuscadorFocusGained
-        if (txtBuscador.getText().equals("Buscar Producto")) {
-            txtBuscador.setText("");
-        }
-    }//GEN-LAST:event_txtBuscadorFocusGained
-
     private void btnOrdenarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrdenarActionPerformed
 
-        int respuesta = JOptionPane.showConfirmDialog(null, "¿Desea confirmar los productos?", "Confirmación", JOptionPane.OK_CANCEL_OPTION);
+        int respuesta = JOptionPane.showConfirmDialog(
+                null,
+                "¿Desea confirmar los productos?",
+                "Confirmación",
+                JOptionPane.OK_CANCEL_OPTION
+        );
 
         if (respuesta == JOptionPane.OK_OPTION) {
-            coordinador.mostrarPantallaComandas(mesa);
+
+            try {
+                ComandaDTO actual = coordinador.obtenerComanda(comanda.getId());
+                actual.getDetalles().addAll(detallesTemporales);
+
+                actual.setTotal(calcularTotal(actual.getDetalles()));
+
+                coordinador.actualizarComanda(actual);
+
+                for (DetalleComandaDTO d : detallesTemporales) {
+
+                    ProductoDTO producto = coordinador.obtenerProducto(d.getIdProducto());
+
+                    List<ProductoIngredienteDTO> productosIngredientes = producto.getIngredientes();
+
+                    for (ProductoIngredienteDTO pi : productosIngredientes) {
+
+                        int cantidadTotal = pi.getCantidad() * d.getCantidad();
+
+                        coordinador.actualizarIngredientes(
+                                pi.getIngrediente().getId(),
+                                cantidadTotal,
+                                TipoMovimiento.SALIDA
+                        );
+                    }
+                }
+
+                this.comanda = actual;
+
+                coordinador.mostrarPantallaComandas(mesa);
+
+            } catch (NegocioException ex) {
+                mostrarError(ex.getMessage());
+            }
         }
     }//GEN-LAST:event_btnOrdenarActionPerformed
 
@@ -576,6 +646,32 @@ public class frmPedidos extends javax.swing.JFrame {
             coordinador.mostrarPantallaComandas(mesa);
         }
     }//GEN-LAST:event_btnAtrasActionPerformed
+
+    private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscadorActionPerformed
+
+    }//GEN-LAST:event_txtBuscadorActionPerformed
+
+    private void txtBuscadorFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtBuscadorFocusGained
+        if (txtBuscador.getText().equals("Buscar Producto")) {
+            txtBuscador.setText("");
+        }
+    }//GEN-LAST:event_txtBuscadorFocusGained
+
+    private void txtBuscadorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscadorKeyReleased
+        String nombre = txtBuscador.getText().trim();
+
+        try {
+            if (nombre.isEmpty()) {
+                panContenedorProductos.removeAll();
+                cargarProductos();
+            } else {
+                List<ProductoDTO> productosFiltrados = coordinador.consultarProductosFiltrados(nombre);
+                cargarProductosFiltrados(productosFiltrados);
+            }
+        } catch (NegocioException ex) {
+            System.getLogger(frmPedidos.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_txtBuscadorKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

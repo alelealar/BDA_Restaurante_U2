@@ -59,7 +59,6 @@ public class ClienteDAO implements IClienteDAO {
             em.getTransaction().commit();
             return cliente;
         } catch (Exception e) {
-            //valida que haya una transaccion activa para poder hacer el rollback, porque no tira la excepcion sin esto
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
@@ -318,6 +317,24 @@ public class ClienteDAO implements IClienteDAO {
         }
     }
 
+    /**
+     * Verifica si ya existe un cliente registrado con el mismo número de
+     * teléfono.
+     *
+     * Este método se utiliza principalmente para validar la unicidad del
+     * teléfono antes de guardar o actualizar un cliente.
+     *
+     * - Si el parámetro ID es null, se valida para un registro nuevo. - Si el
+     * parámetro ID tiene valor, se excluye ese cliente en la validación (útil
+     * para actualizaciones).
+     *
+     * @param telefono Número de teléfono a verificar.
+     * @param ID Identificador del cliente actual (puede ser null si es un nuevo
+     * registro).
+     * @return true si ya existe un cliente con ese teléfono, false en caso
+     * contrario.
+     * @throws PersistenciaException Si ocurre un error durante la consulta.
+     */
     @Override
     public boolean existeTelefono(String telefono, Long ID) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
@@ -348,6 +365,24 @@ public class ClienteDAO implements IClienteDAO {
         }
     }
 
+    /**
+     * Verifica si ya existe un cliente registrado con el mismo correo
+     * electrónico.
+     *
+     * Este método permite validar la unicidad del correo antes de realizar
+     * operaciones de inserción o actualización en la base de datos.
+     *
+     * - Si el parámetro ID es null, se valida para un nuevo cliente. - Si el
+     * parámetro ID tiene valor, se excluye ese cliente en la validación (útil
+     * cuando se actualiza un cliente existente).
+     *
+     * @param correo Correo electrónico a verificar.
+     * @param ID Identificador del cliente actual (puede ser null si es un nuevo
+     * registro).
+     * @return true si ya existe un cliente con ese correo, false en caso
+     * contrario.
+     * @throws PersistenciaException Si ocurre un error durante la consulta.
+     */
     @Override
     public boolean existeCorreo(String correo, Long ID) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
