@@ -1,14 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package inicio;
 
 import controlador.CoordinadorInterfaces;
 
 /**
- *
- * @author Kaleb
+ * @author Brian Kaleb Sandoval Rodriguez - 00000262741
+ * @author Alejandra Leal Armenta - 00000262719
+ * @author Maria Jose Valdez Iglesias - 00000262775
  */
 public class InicioAplicacion {
 

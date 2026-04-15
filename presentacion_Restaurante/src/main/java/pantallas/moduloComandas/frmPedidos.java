@@ -305,8 +305,6 @@ public class frmPedidos extends javax.swing.JFrame {
         panMenu = new javax.swing.JPanel();
         btnComandas = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        btnMesas = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         panContenedorProductos = new javax.swing.JPanel();
         panBuscador = new javax.swing.JPanel();
@@ -382,44 +380,16 @@ public class frmPedidos extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        btnMesas.setBackground(new java.awt.Color(255, 246, 222));
-
-        jLabel4.setBackground(new java.awt.Color(74, 68, 89));
-        jLabel4.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(74, 68, 89));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Mesas");
-
-        javax.swing.GroupLayout btnMesasLayout = new javax.swing.GroupLayout(btnMesas);
-        btnMesas.setLayout(btnMesasLayout);
-        btnMesasLayout.setHorizontalGroup(
-            btnMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(btnMesasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        btnMesasLayout.setVerticalGroup(
-            btnMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(btnMesasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout panMenuLayout = new javax.swing.GroupLayout(panMenu);
         panMenu.setLayout(panMenuLayout);
         panMenuLayout.setHorizontalGroup(
             panMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(btnComandas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnMesas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panMenuLayout.setVerticalGroup(
             panMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panMenuLayout.createSequentialGroup()
                 .addComponent(btnComandas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(btnMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -487,7 +457,7 @@ public class frmPedidos extends javax.swing.JFrame {
         btnOrdenar.setBackground(new java.awt.Color(44, 44, 44));
         btnOrdenar.setForeground(new java.awt.Color(255, 255, 255));
         btnOrdenar.setText("Ordenar");
-        btnOrdenar.setBorderPainted(false);
+        btnOrdenar.setContentAreaFilled(false);
         btnOrdenar.setOpaque(true);
         btnOrdenar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -498,7 +468,7 @@ public class frmPedidos extends javax.swing.JFrame {
         btnAtras.setBackground(new java.awt.Color(44, 44, 44));
         btnAtras.setForeground(new java.awt.Color(255, 255, 255));
         btnAtras.setText("Atras");
-        btnAtras.setBorderPainted(false);
+        btnAtras.setContentAreaFilled(false);
         btnAtras.setOpaque(true);
         btnAtras.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -677,12 +647,10 @@ public class frmPedidos extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtras;
     private javax.swing.JPanel btnComandas;
-    private javax.swing.JPanel btnMesas;
     private javax.swing.JButton btnOrdenar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

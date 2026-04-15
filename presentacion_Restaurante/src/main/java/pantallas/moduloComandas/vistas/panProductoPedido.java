@@ -298,6 +298,8 @@ public class panProductoPedido extends javax.swing.JPanel {
         btnModificar.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         btnModificar.setForeground(new java.awt.Color(0, 0, 0));
         btnModificar.setText("Modificar");
+        btnModificar.setContentAreaFilled(false);
+        btnModificar.setOpaque(true);
         btnModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnModificarActionPerformed(evt);
@@ -308,6 +310,8 @@ public class panProductoPedido extends javax.swing.JPanel {
         btnEliminar.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         btnEliminar.setForeground(new java.awt.Color(0, 0, 0));
         btnEliminar.setText("Eliminar");
+        btnEliminar.setContentAreaFilled(false);
+        btnEliminar.setOpaque(true);
         btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEliminarActionPerformed(evt);

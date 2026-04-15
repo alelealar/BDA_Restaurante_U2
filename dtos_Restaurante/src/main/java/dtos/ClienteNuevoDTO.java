@@ -49,7 +49,6 @@ public class ClienteNuevoDTO {
     /**
      * Constructor que inicializa todos los atributos del cliente.
      *
-     * @param id identificador único del cliente
      * @param nombres nombres del cliente
      * @param apellidoPaterno apellido paterno del cliente
      * @param apellidoMaterno apellido materno del cliente

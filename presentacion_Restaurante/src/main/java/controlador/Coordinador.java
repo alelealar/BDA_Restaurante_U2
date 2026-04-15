@@ -8,7 +8,6 @@ import dtos.ClienteDTO;
 import dtos.ClienteNuevoDTO;
 import dtos.ProductoDTO;
 import enumerators.TipoMovimiento;
-import enumerators.TipoProductoDTO;
 import excepciones.NegocioException;
 import interfaces.IClienteBO;
 import interfaces.IIngredienteBO;
@@ -17,14 +16,13 @@ import java.util.List;
 import objetosNegocio.ClienteBO;
 import objetosNegocio.IngredienteBO;
 import objetosNegocio.ProductoBO;
-import pantallas.frmAgregarCliente;
 
 /**
- * Implementación del Coordinador de operaciones de las clases Bussiones Object
- * (BOs).
+ * Implementación del coordinador de operaciones de la capa de negocio.
  *
- * Aquí se maneja la lógica del negocio y navega entre las operaciones y su
- * flujo.
+ * Esta clase centraliza la comunicación con los Business Objects (BO),
+ * permitiendo ejecutar operaciones relacionadas con clientes, productos e
+ * ingredientes.
  *
  * @author Brian Kaleb Sandoval Rodriguez - 00000262741
  * @author Alejandra Leal Armenta - 00000262719
@@ -32,13 +30,24 @@ import pantallas.frmAgregarCliente;
  */
 public class Coordinador {
 
-    // Capa de Negocio BOs
+    /**
+     * Objeto de negocio para clientes.
+     */
     private final IClienteBO clienteBO;
 
+    /**
+     * Objeto de negocio para productos.
+     */
     private final IProductoBO productoBO;
 
+    /**
+     * Objeto de negocio para ingredientes.
+     */
     private final IIngredienteBO ingredienteBO;
 
+    /**
+     * Constructor que inicializa los objetos de negocio.
+     */
     public Coordinador() {
         this.clienteBO = ClienteBO.getInstance();
         this.productoBO = ProductoBO.getInstance();
@@ -46,47 +55,88 @@ public class Coordinador {
     }
 
     /**
-     * Metodo que llama al BO (capa de negocio) para agregar un cliente.
+     * Registra un nuevo cliente en el sistema.
      *
-     * @param cliente DTO con la información del cliente a registrar
-     *   * @throws NegocioException si ocurre un error en la capa de negocio
+     * @param cliente datos del cliente a registrar
+     * @throws NegocioException si ocurre un error en la capa de negocio
      */
     public void agregarCliente(ClienteNuevoDTO cliente) throws NegocioException {
         clienteBO.registrarCliente(cliente);
     }
 
+    /**
+     * Obtiene o registra el cliente general del sistema.
+     *
+     * @throws NegocioException si ocurre un error en la capa de negocio
+     */
     public void agregarClienteGeneral() throws NegocioException {
         clienteBO.obtenerClienteGeneral();
     }
 
     /**
-     * Metodo que llama al BO (capa de negocio) para pedirle los datos de
-     * negocio y mostrarlos en la tabla.
+     * Obtiene la lista de clientes registrados.
      *
-     * @return
-     * @throws NegocioException
+     * @return lista de clientes
+     * @throws NegocioException si ocurre un error en la capa de negocio
      */
     public List<ClienteDTO> obtenerClientes() throws NegocioException {
         return clienteBO.obtenerClientes();
     }
 
-    public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException {
+    /**
+     * Actualiza la información de un cliente existente.
+     *
+     * @param clienteDTO cliente con datos actualizados
+     * @throws NegocioException si ocurre un error en la capa de negocio
+     */
+    public void actualizarCliente(ClienteDTO clienteDTO)
+            throws NegocioException {
         clienteBO.actualizarCliente(clienteDTO);
     }
 
+    /**
+     * Busca un cliente por su identificador.
+     *
+     * @param id identificador del cliente
+     * @return cliente encontrado
+     * @throws NegocioException si ocurre un error en la capa de negocio
+     */
     public ClienteDTO buscarClientePorId(Long id) throws NegocioException {
         return clienteBO.buscarClientePorId(id);
     }
 
+    /**
+     * Elimina un cliente del sistema.
+     *
+     * @param c cliente a eliminar
+     * @throws NegocioException si ocurre un error en la capa de negocio
+     */
     public void eliminarCliente(ClienteDTO c) throws NegocioException {
         clienteBO.eliminarCliente(c.getId());
     }
 
-    public List<ProductoDTO> obtenerProductosFiltrados(String nombre) throws NegocioException {
+    /**
+     * Obtiene productos activos filtrados por nombre.
+     *
+     * @param nombre nombre a buscar
+     * @return lista de productos encontrados
+     * @throws NegocioException si ocurre un error en la capa de negocio
+     */
+    public List<ProductoDTO> obtenerProductosFiltrados(String nombre)
+            throws NegocioException {
         return productoBO.buscarProductosActivos(nombre, null);
     }
 
-    public void actualizarIngredientes(Long ingrediente, Integer cantidad, TipoMovimiento tipo) throws NegocioException {
+    /**
+     * Actualiza el stock de ingredientes.
+     *
+     * @param ingrediente identificador del ingrediente
+     * @param cantidad cantidad a modificar
+     * @param tipo tipo de movimiento realizado
+     * @throws NegocioException si ocurre un error en la capa de negocio
+     */
+    public void actualizarIngredientes(Long ingrediente, Integer cantidad,
+            TipoMovimiento tipo) throws NegocioException {
         ingredienteBO.actualizarStock(ingrediente, cantidad, tipo);
     }
 }

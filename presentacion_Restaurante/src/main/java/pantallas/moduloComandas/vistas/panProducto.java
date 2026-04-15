@@ -200,6 +200,8 @@ public class panProducto extends javax.swing.JPanel {
         btnCancelar.setForeground(new java.awt.Color(0, 0, 0));
         btnCancelar.setText("Cancelar");
         btnCancelar.setBorderPainted(false);
+        btnCancelar.setContentAreaFilled(false);
+        btnCancelar.setOpaque(true);
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelarActionPerformed(evt);
@@ -207,6 +209,7 @@ public class panProducto extends javax.swing.JPanel {
         });
 
         btnIncrementar.setText("+");
+        btnIncrementar.setContentAreaFilled(false);
         btnIncrementar.setOpaque(true);
         btnIncrementar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -215,6 +218,7 @@ public class panProducto extends javax.swing.JPanel {
         });
 
         btnDisminuir.setText("-");
+        btnDisminuir.setContentAreaFilled(false);
         btnDisminuir.setOpaque(true);
         btnDisminuir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

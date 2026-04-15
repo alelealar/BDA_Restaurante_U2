@@ -120,6 +120,8 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Cancelar"/>
         <Property name="borderPainted" type="boolean" value="false"/>
+        <Property name="contentAreaFilled" type="boolean" value="false"/>
+        <Property name="opaque" type="boolean" value="true"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCancelarActionPerformed"/>
@@ -128,6 +130,7 @@
     <Component class="javax.swing.JButton" name="btnIncrementar">
       <Properties>
         <Property name="text" type="java.lang.String" value="+"/>
+        <Property name="contentAreaFilled" type="boolean" value="false"/>
         <Property name="opaque" type="boolean" value="true"/>
       </Properties>
       <Events>
@@ -137,6 +140,7 @@
     <Component class="javax.swing.JButton" name="btnDisminuir">
       <Properties>
         <Property name="text" type="java.lang.String" value="-"/>
+        <Property name="contentAreaFilled" type="boolean" value="false"/>
         <Property name="opaque" type="boolean" value="true"/>
       </Properties>
       <Events>

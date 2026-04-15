@@ -24,7 +24,7 @@ public class ComandaDTO {
     private Long id;
 
     /**
-     * Estado actual de la comanda (ABIERTA, ENTREGADA, CANCELADA).
+     * Estado actual de la comanda.
      */
     private EstadoComandaDTO estadoComanda;
 
@@ -54,7 +54,7 @@ public class ComandaDTO {
     private MesaDTO mesa;
 
     /**
-     * Cliente frecuente asociado a la comanda (opcional).
+     * Cliente asociado a la comanda.
      */
     private ClienteDTO cliente;
 
@@ -65,9 +65,9 @@ public class ComandaDTO {
     }
 
     /**
-     * Constructor con identificador.
+     * Constructor que inicializa únicamente el identificador.
      *
-     * @param id Identificador de la comanda.
+     * @param id identificador de la comanda
      */
     public ComandaDTO(Long id) {
         this.id = id;
@@ -76,16 +76,20 @@ public class ComandaDTO {
     /**
      * Constructor completo.
      *
-     * @param id Identificador de la comanda.
-     * @param estadoComanda Estado actual de la comanda.
-     * @param folio Folio único.
-     * @param total Total acumulado.
-     * @param fechaHora Fecha de creación.
-     * @param detalles Lista de detalles.
-     * @param mesa Mesa de la comanda.
-     * @param cliente Cliente asociado.
+     * @param id identificador de la comanda
+     * @param estadoComanda estado actual
+     * @param folio folio único
+     * @param total total acumulado
+     * @param fechaHora fecha y hora de creación
+     * @param detalles lista de detalles asociados
+     * @param mesa mesa relacionada
+     * @param cliente cliente asociado
      */
-    public ComandaDTO(Long id, EstadoComandaDTO estadoComanda, String folio, Double total, LocalDateTime fechaHora, List<DetalleComandaDTO> detalles, MesaDTO mesa, ClienteDTO cliente) {
+    public ComandaDTO(Long id, EstadoComandaDTO estadoComanda, String folio,
+            Double total, LocalDateTime fechaHora,
+            List<DetalleComandaDTO> detalles, MesaDTO mesa,
+            ClienteDTO cliente) {
+
         this.id = id;
         this.estadoComanda = estadoComanda;
         this.folio = folio;
@@ -99,7 +103,7 @@ public class ComandaDTO {
     /**
      * Obtiene el identificador de la comanda.
      *
-     * @return id de la comanda.
+     * @return identificador de la comanda
      */
     public Long getId() {
         return id;
@@ -108,25 +112,25 @@ public class ComandaDTO {
     /**
      * Establece el identificador de la comanda.
      *
-     * @param id Nuevo identificador.
+     * @param id nuevo identificador
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * Obtiene el estado de la comanda.
+     * Obtiene el estado actual de la comanda.
      *
-     * @return estado actual.
+     * @return estado de la comanda
      */
     public EstadoComandaDTO getEstadoComanda() {
         return estadoComanda;
     }
 
     /**
-     * Establece el estado de la comanda.
+     * Establece el estado actual de la comanda.
      *
-     * @param estadoComanda Nuevo estado.
+     * @param estadoComanda nuevo estado
      */
     public void setEstadoComanda(EstadoComandaDTO estadoComanda) {
         this.estadoComanda = estadoComanda;
@@ -135,7 +139,7 @@ public class ComandaDTO {
     /**
      * Obtiene el folio de la comanda.
      *
-     * @return folio.
+     * @return folio de la comanda
      */
     public String getFolio() {
         return folio;
@@ -144,43 +148,43 @@ public class ComandaDTO {
     /**
      * Establece el folio de la comanda.
      *
-     * @param folio Nuevo folio.
+     * @param folio nuevo folio
      */
     public void setFolio(String folio) {
         this.folio = folio;
     }
 
     /**
-     * Obtiene el total de la comanda.
+     * Obtiene el total acumulado de la comanda.
      *
-     * @return total.
+     * @return total de la comanda
      */
     public Double getTotal() {
         return total;
     }
 
     /**
-     * Establece el total de la comanda.
+     * Establece el total acumulado de la comanda.
      *
-     * @param total Nuevo total.
+     * @param total nuevo total
      */
     public void setTotal(Double total) {
         this.total = total;
     }
 
     /**
-     * Obtiene la fecha y hora de la comanda.
+     * Obtiene la fecha y hora de creación de la comanda.
      *
-     * @return fecha de creación.
+     * @return fecha y hora de creación
      */
     public LocalDateTime getFechaHora() {
         return fechaHora;
     }
 
     /**
-     * Establece la fecha y hora de la comanda.
+     * Establece la fecha y hora de creación de la comanda.
      *
-     * @param fechaHora Nueva fecha.
+     * @param fechaHora nueva fecha y hora
      */
     public void setFechaHora(LocalDateTime fechaHora) {
         this.fechaHora = fechaHora;
@@ -189,7 +193,7 @@ public class ComandaDTO {
     /**
      * Obtiene la lista de detalles de la comanda.
      *
-     * @return lista de detalles.
+     * @return lista de detalles
      */
     public List<DetalleComandaDTO> getDetalles() {
         return detalles;
@@ -198,25 +202,25 @@ public class ComandaDTO {
     /**
      * Establece la lista de detalles de la comanda.
      *
-     * @param detalles Nueva lista de detalles.
+     * @param detalles nueva lista de detalles
      */
     public void setDetalles(List<DetalleComandaDTO> detalles) {
         this.detalles = detalles;
     }
 
     /**
-     * Obtiene la mesa de la comanda.
+     * Obtiene la mesa asociada a la comanda.
      *
-     * @return mesa de la comanda.
+     * @return mesa asociada
      */
     public MesaDTO getMesa() {
         return mesa;
     }
 
     /**
-     * Establece una mesa para la comanda.
+     * Establece la mesa asociada a la comanda.
      *
-     * @param mesa Mesa de la comanda.
+     * @param mesa nueva mesa asociada
      */
     public void setMesa(MesaDTO mesa) {
         this.mesa = mesa;
@@ -225,16 +229,16 @@ public class ComandaDTO {
     /**
      * Obtiene el cliente asociado a la comanda.
      *
-     * @return cliente.
+     * @return cliente asociado
      */
     public ClienteDTO getCliente() {
         return cliente;
     }
 
     /**
-     * Establece el cliente de la comanda.
+     * Establece el cliente asociado a la comanda.
      *
-     * @param cliente Cliente a asociar.
+     * @param cliente nuevo cliente asociado
      */
     public void setCliente(ClienteDTO cliente) {
         this.cliente = cliente;
@@ -243,7 +247,10 @@ public class ComandaDTO {
     /**
      * Agrega un detalle a la comanda.
      *
-     * @param nuevo
+     * Si ya existe un detalle con el mismo producto, se actualizan sus datos.
+     * En caso contrario, se agrega como nuevo elemento a la lista.
+     *
+     * @param nuevo detalle a agregar
      */
     public void agregarDetalle(DetalleComandaDTO nuevo) {
         if (nuevo == null) {
@@ -258,6 +265,7 @@ public class ComandaDTO {
                 return;
             }
         }
+
         detalles.add(nuevo);
         nuevo.setIdComanda(null);
     }
@@ -265,7 +273,7 @@ public class ComandaDTO {
     /**
      * Elimina un detalle de la comanda.
      *
-     * @param d Detalle a eliminar.
+     * @param d detalle a eliminar
      */
     public void removerDetalle(DetalleComandaDTO d) {
         if (d != null && detalles.contains(d)) {
@@ -273,5 +281,4 @@ public class ComandaDTO {
             d.setIdComanda(null);
         }
     }
-
 }

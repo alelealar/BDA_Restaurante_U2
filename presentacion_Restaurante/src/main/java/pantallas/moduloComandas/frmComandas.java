@@ -103,50 +103,6 @@ public class frmComandas extends javax.swing.JFrame {
         }
     }
 
-    /**
-     * Construye el mensaje detallado de la comanda.
-     *
-     * @param comanda Comanda a mostrar
-     * @return Texto formateado
-     */
-    private String construirMensajeComanda(ComandaDTO comanda) {
-        StringBuilder mensaje = new StringBuilder();
-
-        if (comanda.getCliente() != null) {
-            mensaje.append("Cliente: ")
-                    .append(comanda.getCliente().getNombres())
-                    .append(" ")
-                    .append(comanda.getCliente().getApellidoPaterno())
-                    .append("\n\n");
-        }
-
-        mensaje.append("Detalles:\n");
-
-        for (DetalleComandaDTO d : comanda.getDetalles()) {
-            try {
-                ProductoDTO producto = coordinador.obtenerProducto(d.getIdProducto());
-
-                mensaje.append("- ")
-                        .append(producto.getNombre())
-                        .append(" x").append(d.getCantidad())
-                        .append(" $").append(d.getPrecioUnitario());
-
-                if (d.getComentario() != null && !d.getComentario().isBlank()) {
-                    mensaje.append(" (").append(d.getComentario()).append(")");
-                }
-
-                mensaje.append("\n");
-
-            } catch (NegocioException e) {
-                mensaje.append("- Producto desconocido\n");
-            }
-        }
-
-        mensaje.append("\nTotal: $").append(comanda.getTotal());
-
-        return mensaje.toString();
-    }
-
     public void recibirClienteFrecuente(ClienteDTO cliente) {
         try {
             ComandaDTO nueva = new ComandaDTO();
@@ -349,6 +305,8 @@ public class frmComandas extends javax.swing.JFrame {
         btnCrear.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         btnCrear.setForeground(new java.awt.Color(74, 68, 89));
         btnCrear.setText("+Crear Comanda");
+        btnCrear.setContentAreaFilled(false);
+        btnCrear.setOpaque(true);
         btnCrear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCrearActionPerformed(evt);
@@ -359,6 +317,8 @@ public class frmComandas extends javax.swing.JFrame {
         btnCancelarComanda.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         btnCancelarComanda.setForeground(new java.awt.Color(0, 0, 0));
         btnCancelarComanda.setText("Cancelar Comanda");
+        btnCancelarComanda.setContentAreaFilled(false);
+        btnCancelarComanda.setOpaque(true);
         btnCancelarComanda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelarComandaActionPerformed(evt);
@@ -508,8 +468,9 @@ public class frmComandas extends javax.swing.JFrame {
             ComandaDTO comandaActualizada = coordinador.obtenerComanda(comanda.getId());
             coordinador.actualizarRegistrosClienteFrecuente(comandaActualizada);
 
-            JOptionPane.showMessageDialog(this, construirMensajeComanda(comandaActualizada));
             coordinador.mostrarPantallaMesas();
+
+            coordinador.abrirResumen(comanda);
 
         } catch (NegocioException ex) {
             mostrarMensajeError(ex.getMessage());
