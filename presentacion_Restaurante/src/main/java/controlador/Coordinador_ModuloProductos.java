@@ -14,10 +14,10 @@ import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.List;
 import notificaciones.TipoNotificacion;
-import notificaciones.DlgNotificacion2;
+import notificaciones.DlgNotificacion;
 import objetosNegocio.ProductoBO;
-import pantallasProducto.FrmAgregarProducto2;
-import pantallasProducto.FrmProductos2;
+import pantallasProducto.FrmAgregarProducto;
+import pantallasProducto.FrmProductos;
 
 /**
  * Clase coordinadora de las operaciones y los frames en el módulo de productos.
@@ -32,12 +32,12 @@ public class Coordinador_ModuloProductos {
     /**
      * Frame Productos que controla y comunica el coordinador.
      */
-    private FrmProductos2 frmProductos;
+    private FrmProductos frmProductos;
     
     /**
      * Frame AgregarProducto que controla y comunica el coordinador.
      */
-    private FrmAgregarProducto2 frmAgregarProducto;
+    private FrmAgregarProducto frmAgregarProducto;
     
     /**
      * El coordinador ingredientes es el que ayuda a que podamos entrar a la 
@@ -68,10 +68,10 @@ public class Coordinador_ModuloProductos {
      */
     public void abrirFrmProductos(){
         if (frmProductos == null) {
-            frmProductos = new FrmProductos2(this);
+            frmProductos = new FrmProductos(this);
         }
         if (frmAgregarProducto == null) {
-            frmAgregarProducto = new FrmAgregarProducto2(this);
+            frmAgregarProducto = new FrmAgregarProducto(this);
         }
         frmProductos.setVisible(true);
         frmAgregarProducto.dispose();
@@ -87,20 +87,20 @@ public class Coordinador_ModuloProductos {
      */
     public void abrirFrmAgregarProducto(){
         if (frmAgregarProducto == null) {
-            frmAgregarProducto = new FrmAgregarProducto2(this);
+            frmAgregarProducto = new FrmAgregarProducto(this);
         }
         frmProductos.setVisible(false);
         frmAgregarProducto.setVisible(true);
     }
     
     /**
-     * Método que modifica el FrmAgregarProducto2 para darle la vista de modificar.
+     * Método que modifica el FrmAgregarProducto para darle la vista de modificar.
      * @param producto Recibe el producto que sea desea modificar para pasarle
      * la información al frame y que trabaje con este.
      */
     public void abrirFrmModificarProducto(ProductoDTO producto){
         if (this.frmAgregarProducto == null) {
-            this.frmAgregarProducto = new FrmAgregarProducto2(this);
+            this.frmAgregarProducto = new FrmAgregarProducto(this);
         }
         frmAgregarProducto.setProductoParaModificar(producto);
         frmAgregarProducto.setVisible(true);
@@ -109,7 +109,7 @@ public class Coordinador_ModuloProductos {
     
     /**
      * Método que vuelve a cargar la tabla de los registros de productos en el
-FrmProductos2.
+FrmProductos.
      */
     public void refrescarTablaProductos(){
         frmProductos.cargarTabla();
@@ -127,7 +127,7 @@ FrmProductos2.
     }
     
     /**
-     * Método para pasarle la lista desde ingredientes hasta el FrmAgregarProducto2.
+     * Método para pasarle la lista desde ingredientes hasta el FrmAgregarProducto.
      * @param ingredientes La lista con los ProductoIngredienteDTO.
      */
     public void setDetallesProducto(List<ProductoIngredienteDTO> ingredientes){
@@ -164,7 +164,7 @@ FrmProductos2.
             productoBO.agregarProducto(producto);
             return true;
         } catch(NegocioException ne){
-            DlgNotificacion2.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al agregar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
+            DlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al agregar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
             return false;
         }
     }
@@ -181,7 +181,7 @@ FrmProductos2.
             productoBO.actualizarProducto(producto);
             return true;
         } catch(NegocioException ne){
-            DlgNotificacion2.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al actualizar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
+            DlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al actualizar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
             return false;
         }
     }
@@ -198,7 +198,7 @@ FrmProductos2.
             productoBO.activarProducto(idProducto);
             return true;
         } catch(NegocioException ne){
-            DlgNotificacion2.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al activar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
+            DlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al activar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
             return false;
         }
     }
@@ -216,7 +216,7 @@ FrmProductos2.
             productoBO.desactivarProducto(idProducto);
             return true;
         } catch(NegocioException ne){
-            DlgNotificacion2.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al desactivar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
+            DlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al desactivar el producto: " + ne.getMessage(), TipoNotificacion.ERROR);
             return false;
         }
     }
@@ -232,7 +232,7 @@ FrmProductos2.
         try{
             return productoBO.consultarTodosProductos();
         } catch(NegocioException ne){
-            DlgNotificacion2.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al consultar todos los productos: " + ne.getMessage(), TipoNotificacion.ERROR);
+            DlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al consultar todos los productos: " + ne.getMessage(), TipoNotificacion.ERROR);
             return null;
         }
     }
@@ -266,7 +266,7 @@ FrmProductos2.
         try{
             return productoBO.consultarProductosActivos();
         } catch(NegocioException ne){
-            DlgNotificacion2.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al consultar todos los productos activos: " + ne.getMessage(), TipoNotificacion.ERROR);
+            DlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al consultar todos los productos activos: " + ne.getMessage(), TipoNotificacion.ERROR);
             return null;
         }
     }
@@ -285,7 +285,7 @@ FrmProductos2.
         try{
             return productoBO.buscarProductos(nombre, tipo);
         } catch(NegocioException ne){
-            DlgNotificacion2.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al buscar coincidencias con=" + nombre + ", " + tipo + ": " + ne.getMessage(), TipoNotificacion.ERROR);
+            DlgNotificacion.mostrarNotificacion(frmAgregarProducto, "Ocurrió un error al buscar coincidencias con=" + nombre + ", " + tipo + ": " + ne.getMessage(), TipoNotificacion.ERROR);
             return null;
         }
     }
@@ -298,13 +298,13 @@ FrmProductos2.
     public List<ProductoDTO> buscarProductosActivos(Frame frame){
         try{
             List<ProductoDTO> busqueda = new ArrayList<>();
-            int opcion = DlgNotificacion2.mostrarNotificacion(frame, "Ingrese nombre y tipo (opcional) de productos a buscar: ", TipoNotificacion.BUSCADOR);
-            if(opcion == DlgNotificacion2.RET_ACEPTAR){
-                busqueda = productoBO.buscarProductosActivos(DlgNotificacion2.getBusqueda(), DlgNotificacion2.getTipoSeleccionado());
+            int opcion = DlgNotificacion.mostrarNotificacion(frame, "Ingrese nombre y tipo (opcional) de productos a buscar: ", TipoNotificacion.BUSCADOR);
+            if(opcion == DlgNotificacion.RET_ACEPTAR){
+                busqueda = productoBO.buscarProductosActivos(DlgNotificacion.getBusqueda(), DlgNotificacion.getTipoSeleccionado());
             }
             return busqueda;
         } catch(NegocioException ne){
-            DlgNotificacion2.mostrarNotificacion(frame, "Ocurrió un error al buscar coincidencias con=" + DlgNotificacion2.getBusqueda() + ", " + DlgNotificacion2.getTipoSeleccionado() + ": " + ne.getMessage(), TipoNotificacion.ERROR);
+            DlgNotificacion.mostrarNotificacion(frame, "Ocurrió un error al buscar coincidencias con=" + DlgNotificacion.getBusqueda() + ", " + DlgNotificacion.getTipoSeleccionado() + ": " + ne.getMessage(), TipoNotificacion.ERROR);
             return null;
         }
     }

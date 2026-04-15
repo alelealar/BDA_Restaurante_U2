@@ -9,7 +9,7 @@ import enumerators.UnidadDTO;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import notificaciones.TipoNotificacion;
-import notificaciones.DlgNotificacion2;
+import notificaciones.DlgNotificacion;
 
 /**
  *
@@ -206,8 +206,8 @@ public class panIngredientesProducto extends javax.swing.JPanel {
         majojo:
         Pide confirmación para eliminar.
         */
-        int opcion = DlgNotificacion2.mostrarNotificacion(parent, "¿Seguro de eliminar el ingrediente " + lblNombre.getText() + "?", TipoNotificacion.CONFIRMACIÓN);
-        if(opcion == DlgNotificacion2.RET_CANCELAR){
+        int opcion = DlgNotificacion.mostrarNotificacion(parent, "¿Seguro de eliminar el ingrediente " + lblNombre.getText() + "?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion.RET_CANCELAR){
             return;
         }
         /*

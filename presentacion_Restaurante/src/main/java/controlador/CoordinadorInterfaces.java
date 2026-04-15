@@ -11,7 +11,7 @@ import pantallas.moduloComandas.frmComandas;
 import pantallas.moduloIngredientes.FrmIngredientes;
 import pantallas.pantallasModuloReportes.FrmReporteClientes;
 import pantallas.pantallasModuloReportes.FrmReporteComandas;
-import pantallasProducto.FrmProductos2;
+import pantallasProducto.FrmProductos;
 
 /**
  *
@@ -27,7 +27,7 @@ public class CoordinadorInterfaces {
     private FrmReporteClientes frmReporteClientes;
     private FrmReporteComandas frmReporteComandas;
     private FrmIngredientes frmIngredientes;
-    private FrmProductos2 frmProductos;
+    private FrmProductos frmProductos;
     private Coordinador coordinadorNegocio;
     private Coordinador_ModuloProductos coordinadorProducto;
     private CoordinadorModuloComandas coordinadorComandas;
@@ -71,7 +71,7 @@ public class CoordinadorInterfaces {
     
     public void mostrarPantallaProductos(){
         if(frmProductos == null){
-            frmProductos = new FrmProductos2(coordinadorProducto);
+            frmProductos = new FrmProductos(coordinadorProducto);
             
         }
         frmProductos.setVisible(true);
