@@ -78,6 +78,9 @@ public class ClienteNuevoDTO {
         this.telefono = telefono;
         this.correo = correo;
     }
+    
+    
+    
 
     /**
      * Obtiene los nombres del cliente.

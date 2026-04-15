@@ -25,6 +25,16 @@ public interface IMesaBO {
     void inicializarMesas(int cantidad) throws NegocioException;
 
     /**
+     * Eliimina una mesa por su id
+     *
+     * Este método elimina una mesa de la base de datos en base a su id.
+     *
+     * @param id Id de la mesa a eliminar
+     * @throws NegocioException Si la cantidad es inválida o ocurre un error.
+     */
+    void eliminarMesa(Long id) throws NegocioException;
+
+    /**
      * Obtiene todas las mesas registradas en el sistema.
      *
      * @return Lista de mesas en formato DTO.

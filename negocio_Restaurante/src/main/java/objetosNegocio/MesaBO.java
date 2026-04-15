@@ -179,4 +179,34 @@ public class MesaBO implements IMesaBO {
             throw new NegocioException("No fue posible buscar la mesa", e);
         }
     }
+
+    /**
+     * Eliimina una mesa por su id
+     *
+     * Este método elimina una mesa de la base de datos en base a su id.
+     *
+     * @param id Id de la mesa a eliminar
+     * @throws NegocioException Si la cantidad es inválida o ocurre un error.
+     */
+    @Override
+    public void eliminarMesa(Long id) throws NegocioException {
+        try {
+            if (id == null) {
+                throw new NegocioException("El id no puede ser nulo");
+            }
+
+            Mesa mesa = mesaDAO.buscarMesaPorId(id);
+
+            if (mesa == null) {
+                throw new NegocioException("La mesa no existe");
+            }
+
+            mesaDAO.eliminarMesa(id);
+
+        } catch (PersistenciaException e) {
+            LOG.warning(() -> "Error al eliminar mesa: " + e.getMessage());
+            throw new NegocioException("No fue posible eliminar la mesa", e);
+        }
+    }
+
 }

@@ -28,6 +28,24 @@ public class panMesa extends javax.swing.JPanel {
         this.coordinador = coordinador;
         this.mesa = mesa;
         lblNombre.setText("Mesa " + mesa.getNumero());
+        lblNombre.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        setLayout(new java.awt.BorderLayout());
+
+        javax.swing.JPanel centro = new javax.swing.JPanel();
+        centro.setOpaque(false);
+        centro.setLayout(new javax.swing.BoxLayout(centro, javax.swing.BoxLayout.Y_AXIS));
+
+        jLabel3.setAlignmentX(CENTER_ALIGNMENT);
+        lblNombre.setAlignmentX(CENTER_ALIGNMENT);
+
+        centro.add(javax.swing.Box.createVerticalStrut(10));
+        centro.add(jLabel3);
+        centro.add(javax.swing.Box.createVerticalStrut(5));
+        centro.add(lblNombre);
+
+        add(centro, java.awt.BorderLayout.CENTER);
 
         if (mesa.getEstado() == EstadoMesaDTO.DISPONIBLE) {
             this.comandaActiva = false;
