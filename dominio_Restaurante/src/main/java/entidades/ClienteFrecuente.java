@@ -41,7 +41,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
      * Puntos acumulados por el cliente frecuente.
      */
     @Column(name = "puntos", nullable = false)
-    private Integer puntos;
+    private Long puntos;
 
     /**
      * Método que se ejecuta automáticamente antes de persistir la entidad.
@@ -54,7 +54,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
         super.prePersist();
 
         if (puntos == null) {
-            puntos = 0;
+            puntos = 0L;
         }
         if (numVisitas == null) {
             numVisitas = 0;
@@ -78,7 +78,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
      * @param telefono número telefónico
      * @param correo correo electrónico
      */
-    public ClienteFrecuente(Integer numVisitas, Double totalGastado, Integer puntos,
+    public ClienteFrecuente(Integer numVisitas, Double totalGastado, Long puntos,
             Long id, String nombres, String apellidoPaterno,
             String apellidoMaterno, String telefono, String correo) {
         super(id, nombres, apellidoPaterno, apellidoMaterno, telefono, correo);
@@ -95,7 +95,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
      * @param totalGastado total gastado por el cliente
      * @param puntos puntos acumulados
      */
-    public ClienteFrecuente(Integer numVisitas, Double totalGastado, Integer puntos) {
+    public ClienteFrecuente(Integer numVisitas, Double totalGastado, Long puntos) {
         this.numVisitas = numVisitas;
         this.totalGastado = totalGastado;
         this.puntos = puntos;
@@ -149,7 +149,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
      *
      * @return puntos del cliente
      */
-    public Integer getPuntos() {
+    public Long getPuntos() {
         return puntos;
     }
 
@@ -158,7 +158,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
      *
      * @param puntos nuevos puntos
      */
-    public void setPuntos(Integer puntos) {
+    public void setPuntos(Long puntos) {
         this.puntos = puntos;
     }
 }

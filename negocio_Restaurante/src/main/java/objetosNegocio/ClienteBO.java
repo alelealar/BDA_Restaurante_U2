@@ -119,7 +119,7 @@ public class ClienteBO implements IClienteBO {
             }
 
             if (clienteDTO.getPuntos() == null) {
-                clienteDTO.setPuntos(0);
+                clienteDTO.setPuntos(0L);
             }
 
             if (clienteDTO.getNumVisitas() == null) {

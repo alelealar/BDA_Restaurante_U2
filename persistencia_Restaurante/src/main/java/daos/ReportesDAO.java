@@ -88,15 +88,15 @@ public class ReportesDAO implements IReportesDAO{
             
             String JPQL = """
                           SELECT NEW dtos.ReporteClientesDTO(
-                            CONCAT( CONCAT( CONCAT(c.nombres, ' '), CONCAT(c.apellidoPaterno, ' ') ), c.apellidoMaterno ),
+                            CONCAT(CONCAT(CONCAT(c.nombres, ' '), c.apellidoPaterno), CONCAT(' ', c.apellidoMaterno)),  
                             COUNT(co),
-                            SUM(co.total),
+                            COALESCE(SUM(co.total), 0),
                             MAX(co.fechaHora),
-                            TREAT(c AS ClienteFrecuente).puntos
+                            COALESCE(TREAT(c AS ClienteFrecuente).puntos, 0L)
                           )
-                          FROM Comanda co
-                          LEFT JOIN co.cliente c
-                          GROUP by c.nombres, c.apellidoPaterno, c.apellidoMaterno, TREAT(c AS ClienteFrecuente).puntos          
+                          FROM Cliente c
+                          LEFT JOIN c.comandas co
+                          GROUP BY c.id, c.nombres, c.apellidoPaterno, c.apellidoMaterno
                           """;
             
             TypedQuery<ReporteClientesDTO> query = em.createQuery(JPQL,ReporteClientesDTO.class);
@@ -121,7 +121,7 @@ public class ReportesDAO implements IReportesDAO{
      * @throws PersistenciaException en caso de error al consultar la base de datos
      */
     @Override
-    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Integer visitas) throws PersistenciaException {
+    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Long visitas) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
         
         CriteriaBuilder cb = em.getCriteriaBuilder();

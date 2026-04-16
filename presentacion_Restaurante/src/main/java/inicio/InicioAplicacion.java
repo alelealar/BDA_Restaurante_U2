@@ -14,6 +14,13 @@ public class InicioAplicacion {
             javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
         }
+        
+        try {
+            insertsMasivos.DataInitializer.ejecutar();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         CoordinadorInterfaces coordinadorInterfaces = new CoordinadorInterfaces();
 
         coordinadorInterfaces.iniciarSistema();

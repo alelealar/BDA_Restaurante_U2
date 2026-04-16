@@ -70,7 +70,7 @@ public class ClienteDTO {
     /**
      * Puntos acumulados por el cliente frecuente.
      */
-    private Integer puntos;
+    private Long puntos;
 
     /**
      * Constructor que inicializa los datos básicos del cliente.
@@ -114,7 +114,7 @@ public class ClienteDTO {
     public ClienteDTO(Long id, String nombres, String apellidoPaterno,
             String apellidoMaterno, String telefono, String correo,
             LocalDate fechaRegistro, Integer numVisitas,
-            Double totalGastado, Integer puntos) {
+            Double totalGastado, Long puntos) {
 
         this.id = id;
         this.nombres = nombres;
@@ -303,7 +303,7 @@ public class ClienteDTO {
      *
      * @return puntos acumulados
      */
-    public Integer getPuntos() {
+    public Long getPuntos() {
         return puntos;
     }
 
@@ -312,7 +312,7 @@ public class ClienteDTO {
      *
      * @param puntos nuevos puntos
      */
-    public void setPuntos(Integer puntos) {
+    public void setPuntos(Long puntos) {
         this.puntos = puntos;
     }
 

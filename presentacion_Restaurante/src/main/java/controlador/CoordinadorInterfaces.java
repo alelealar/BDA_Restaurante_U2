@@ -75,6 +75,11 @@ public class CoordinadorInterfaces {
      * Coordinador del módulo de comandas.
      */
     private CoordinadorModuloComandas coordinadorComandas;
+    
+    /**
+     * Coordinador del modulo de ingredientes.
+     */
+    private Coordinador_ModuloIngredientes coordinadorIngredientes;
 
     /**
      * Constructor que inicializa los coordinadores del sistema.
@@ -83,7 +88,10 @@ public class CoordinadorInterfaces {
         this.coordinadorNegocio = new Coordinador();
         this.coordinadorProducto = new Coordinador_ModuloProductos();
         this.coordinadorComandas = new CoordinadorModuloComandas();
+        this.coordinadorIngredientes = new Coordinador_ModuloIngredientes();
+        
         this.coordinadorComandas.setCoordinador(this);
+        this.coordinadorIngredientes.setCoordinadorProductos(coordinadorProducto);
     }
 
     /**
@@ -117,9 +125,13 @@ public class CoordinadorInterfaces {
     public void mostrarPantallaIngredientes() {
         if (frmIngredientes == null) {
             frmIngredientes = new FrmIngredientes();
+            frmIngredientes.setCoordinadorIngredientes(coordinadorIngredientes);
         }
 
-        formInicio.dispose();
+        if (formInicio != null) {
+            formInicio.dispose();
+        }
+
         frmIngredientes.desactivarModoProducto();
         frmIngredientes.setVisible(true);
     }

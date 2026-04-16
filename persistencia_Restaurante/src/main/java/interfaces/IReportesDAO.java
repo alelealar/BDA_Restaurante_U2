@@ -41,7 +41,7 @@ public interface IReportesDAO {
      * @return lista de clientes que cumplen con el filtro
      * @throws PersistenciaException en caso de error al consultar la base de datos
      */
-    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Integer visitas) throws PersistenciaException;
+    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Long visitas) throws PersistenciaException;
         
     /**
      * Obtiene el reporte de comandas filtrado por un rango de fechas.

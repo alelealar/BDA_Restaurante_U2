@@ -6,9 +6,14 @@ import entidades.ClienteFrecuente;
 import entidades.ClienteGeneral;
 import excepciones.PersistenciaException;
 import interfaces.IClienteDAO;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 /**
  * Implementación de la interfaz IClienteDAO para la gestión de clientes en la
@@ -316,6 +321,50 @@ public class ClienteDAO implements IClienteDAO {
             em.close();
         }
     }
+    
+    /**
+     * Busca clientes aplicando filtros por nombre, correo electrónico y teléfono.
+     *
+     * Este método permite realizar búsquedas de clientes en la base de datos
+     * utilizando criterios opcionales. Los parámetros pueden ser utilizados de
+     * forma individual o combinada, permitiendo filtrar la información según
+     * los datos proporcionados por el usuario.
+     *
+     * @param nombre nombre del cliente a buscar (puede ser parcial o completo)
+     * @param correo correo electrónico del cliente a buscar
+     * @param telefono número telefónico del cliente a buscar
+     * @return lista de clientes que coinciden con los filtros proporcionados
+     * @throws PersistenciaException si ocurre un error durante la ejecución de la consulta
+     */
+    public List<Cliente> buscarClientesFiltro(String nombre, String correo, String telefono) throws PersistenciaException{
+        EntityManager em = ConexionBD.crearConexion();
+        
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Cliente> query = cb.createQuery(Cliente.class);
+        Root<Cliente> cliente = query.from(Cliente.class);
+        
+        List<Predicate> filtros = new ArrayList<>();
+        
+        if (nombre != null && !nombre.trim().isEmpty()){
+            filtros.add(cb.like(cb.lower(cliente.get("nombres")), "%" + nombre.toLowerCase() + "%" ));
+        }
+        
+        if (correo != null && !correo.trim().isEmpty()){
+            filtros.add(cb.like(cb.lower(cliente.get("correo")), "%" + correo.toLowerCase() + "%" ));
+        }
+        
+        if (telefono != null && !telefono.trim().isEmpty()){
+            filtros.add(cb.like(cb.lower(cliente.get("telefono")), "%" + telefono.toLowerCase() + "%" ));
+        }
+        
+        if (!filtros.isEmpty()) {
+            query.where(cb.and(filtros.toArray(new Predicate[0])));
+        }
+        
+        query.select(cliente);
+        return em.createQuery(query).getResultList();
+    }
+
 
     /**
      * Verifica si ya existe un cliente registrado con el mismo número de

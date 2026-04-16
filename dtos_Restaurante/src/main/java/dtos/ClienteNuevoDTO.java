@@ -54,7 +54,7 @@ public class ClienteNuevoDTO {
     /**
      * Puntos acumulados por el cliente frecuente.
      */
-    private Integer puntos;
+    private Long puntos;
 
     /**
      * Constructor vacío requerido para frameworks y serialización.
@@ -213,7 +213,7 @@ public class ClienteNuevoDTO {
      *
      * @return puntos acumulados
      */
-    public Integer getPuntos() {
+    public Long getPuntos() {
         return puntos;
     }
 
@@ -222,7 +222,7 @@ public class ClienteNuevoDTO {
      *
      * @param puntos nuevos puntos
      */
-    public void setPuntos(Integer puntos) {
+    public void setPuntos(Long puntos) {
         this.puntos = puntos;
     }
 

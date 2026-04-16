@@ -75,7 +75,7 @@ public class ClienteDAOTest {
         return new ClienteFrecuente(
                 0,
                 0.0,
-                0,
+                0L,
                 null,
                 "Cliente" + n,
                 "ApellidoP",
@@ -131,7 +131,7 @@ public class ClienteDAOTest {
                 = (ClienteFrecuente) dao.guardarCliente(cliente);
 
         guardado.setNombres("Actualizado");
-        guardado.setPuntos(100);
+        guardado.setPuntos(100L);
 
         Cliente actualizado = dao.actualizarCliente(guardado);
 
@@ -217,6 +217,7 @@ public class ClienteDAOTest {
         assertNotNull(lista);
         assertTrue(lista.size() >= 1);
     }
+    
 
     /**
      * Verifica la obtención exclusiva de clientes frecuentes.

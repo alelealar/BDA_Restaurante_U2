@@ -17,14 +17,14 @@ import java.time.LocalDateTime;
 
 public class ReporteClientesDTO {
     
-    private String nombre;
+    private String nombres;
     private Long visitas;
     private Double totalGastado;
     private LocalDateTime fechaUltimaComanda;
-    private Integer puntosAcumulados;
+    private Long puntosAcumulados;
 
-    public ReporteClientesDTO(String nombre, Long visitas, Double totalGastado, LocalDateTime fechaUltimaComanda, Integer puntosAcumulados) {
-        this.nombre = nombre;
+    public ReporteClientesDTO(String nombres, Long visitas, Double totalGastado, LocalDateTime fechaUltimaComanda, Long puntosAcumulados) {
+        this.nombres = nombres;
         this.visitas = visitas;
         this.totalGastado = totalGastado;
         this.fechaUltimaComanda = fechaUltimaComanda;
@@ -35,11 +35,11 @@ public class ReporteClientesDTO {
     }
 
     public String getNombre() {
-        return nombre;
+        return nombres;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombre(String nombres) {
+        this.nombres = nombres;
     }
 
     public Long getVisitas() {
@@ -66,11 +66,11 @@ public class ReporteClientesDTO {
         this.fechaUltimaComanda = fechaUltimaComanda;
     }
 
-    public Integer getPuntosAcumulados() {
+    public Long getPuntosAcumulados() {
         return puntosAcumulados;
     }
 
-    public void setPuntosAcumulados(Integer puntosAcumulados) {
+    public void setPuntosAcumulados(Long puntosAcumulados) {
         this.puntosAcumulados = puntosAcumulados;
     }
     

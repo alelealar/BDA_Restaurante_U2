@@ -40,7 +40,7 @@ public interface IReportesBO {
      * @return lista de clientes que cumplen con el filtro
      * @throws NegocioException en caso de error en la lógica de negocio
      */
-    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Integer visitas) throws NegocioException;
+    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Long visitas) throws NegocioException;
     
     /**
      * Obtiene el reporte de comandas filtrado por rango de fechas.

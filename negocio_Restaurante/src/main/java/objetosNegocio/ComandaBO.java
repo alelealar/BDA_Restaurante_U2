@@ -304,7 +304,7 @@ public class ComandaBO implements IComandaBO {
             double nuevoTotal = cliente.getTotalGastado() + comanda.getTotal();
             cliente.setTotalGastado(nuevoTotal);
 
-            cliente.setPuntos((int) (nuevoTotal / 20));
+            cliente.setPuntos((long) (nuevoTotal / 20));
 
             try {
                 clienteDAO.actualizarCliente(cliente);

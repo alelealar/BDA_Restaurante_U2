@@ -848,6 +848,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
         panPrincipal.repaint();
 
         this.pack();
+        this.setLocationRelativeTo(null);
     }
     
     /**
@@ -872,6 +873,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
         panPrincipal.repaint();
         
         this.pack();
+        this.setLocationRelativeTo(null);
     }
     
     /**

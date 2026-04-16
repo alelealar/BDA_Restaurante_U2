@@ -45,7 +45,7 @@ public class ReportesDAONGTest {
 
         em.getTransaction().begin();
 
-        cliente = new ClienteFrecuente(2, 500.0, 10, null, "Alejandra", "Leal", "Armenta", "6440000000", "test@test.com");
+        cliente = new ClienteFrecuente(2, 500.0, 10L, null, "Alejandra", "Leal", "Armenta", "6440000000", "test@test.com");
         em.persist(cliente);
         
         mesa = new Mesa(null, 1, EstadoMesa.OCUPADA);
@@ -82,11 +82,12 @@ public class ReportesDAONGTest {
 
         assertNotNull(resultado);
         assertTrue(resultado.size() >= 0);
+        
     }
     
     @Test
     public void testObtenerReporteClientesFiltro_correcto() throws Exception {
-        List<ReporteClientesDTO> resultado = reportesDAO.obtenerReporteClientesFiltro("alejandra", 2);
+        List<ReporteClientesDTO> resultado = reportesDAO.obtenerReporteClientesFiltro("alejandra", 2L);
         assertNotNull(resultado);
         assertFalse(resultado.isEmpty());
 

@@ -73,7 +73,7 @@ public class ReportesBO implements IReportesBO{
     }
 
     @Override
-    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Integer visitas) throws NegocioException {
+    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Long visitas) throws NegocioException {
         try{
             return dao.obtenerReporteClientesFiltro(nombre, visitas);   
         } catch (PersistenciaException ex) {

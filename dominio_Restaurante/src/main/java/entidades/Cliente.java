@@ -7,6 +7,7 @@ package entidades;
 import java.io.Serializable;
 import java.lang.annotation.Inherited;
 import java.time.LocalDate;
+import java.util.List;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -16,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
@@ -78,6 +80,12 @@ public class Cliente implements Serializable{
      */
     @Column(name = "fecha_registro", nullable = false)
     private LocalDate fechaRegistro;
+    
+    /**
+     * lista de las comandas realizadas por el cliente.
+     */
+    @OneToMany(mappedBy = "cliente")
+    private List<Comanda> comandas;
 
     /**
      * Método que se ejecuta automáticamente antes de persistir la entidad.
