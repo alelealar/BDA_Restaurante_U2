@@ -5,7 +5,6 @@ import dtos.ClienteNuevoDTO;
 import entidades.Cliente;
 import entidades.ClienteFrecuente;
 import excepciones.NegocioException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +26,20 @@ import java.util.List;
 public class ClienteAdapter {
 
     /**
-     * Convierte un objeto Cliente (entidad) a un objeto ClienteNuevoDTO.
+     * Constructor vacio.
+     */
+    public ClienteAdapter() {
+    }
+
+
+    /**
+     * Convierte un objeto Cliente (entidad) a un objeto ClienteDTO.
+     *
+     * Este método permite transformar la entidad Cliente en su representación
+     * DTO para su uso en capas superiores del sistema.
      *
      * @param cliente objeto Cliente a convertir
-     * @return objeto ClienteNuevoDTO con los datos del cliente, o null si el
-     * parámetro es null
+     * @return objeto ClienteDTO con los datos del cliente, o null si el parámetro es null
      */
     public static ClienteDTO entidadADTO(Cliente cliente) {
         if (cliente == null) {
@@ -65,11 +73,14 @@ public class ClienteAdapter {
     }
 
     /**
-     * Convierte un objeto ClienteNuevoDTO a un objeto Cliente (entidad).
+     * Convierte un DTO (ClienteNuevoDTO o ClienteDTO) a una entidad Cliente.
      *
-     * @param dto dto a convertir
-     * @return objeto Cliente con los datos del DTO, o null si el parámetro es
-     * null
+     * Permite transformar objetos de transferencia en entidades persistentes
+     * para su uso en la capa de negocio y persistencia.
+     *
+     * @param dto objeto ClienteNuevoDTO o ClienteDTO
+     * @return entidad Cliente con los datos del DTO, o null si el parámetro es null
+     * @throws NegocioException si el tipo de DTO no es soportado
      */
     public static Cliente dtoAEntidad(Object dto) throws NegocioException {
         if (dto == null) {
@@ -101,13 +112,14 @@ public class ClienteAdapter {
     }
 
     /**
-     * Convierte un ClienteDTO a ClienteFrecuente.
+     * Convierte un DTO (ClienteNuevoDTO o ClienteDTO) a una entidad ClienteFrecuente.
      *
-     * Se utiliza cuando se necesita actualizar información de fidelidad.
+     * Se utiliza cuando el cliente debe manejar información de fidelidad como
+     * visitas, total gastado y puntos acumulados.
      *
-     * @param dto cliente DTO
-     * @return entidad ClienteFrecuente
-     * @throws excepciones.NegocioException
+     * @param dto objeto ClienteNuevoDTO o ClienteDTO
+     * @return entidad ClienteFrecuente con los datos del DTO, o null si el parámetro es null
+     * @throws NegocioException si el tipo de DTO no es soportado
      */
     public static ClienteFrecuente dtoAFrecuente(Object dto) throws NegocioException {
         if (dto == null) {
@@ -146,13 +158,12 @@ public class ClienteAdapter {
     }
 
     /**
-     * Convierte una lista de objetos Cliente (entidades) a una lista de
-     * ClienteDTO.Recorre la lista de entidades y transforma cada elemento en su
-     * representación DTO.
+     * Convierte una lista de entidades Cliente a una lista de ClienteDTO.
      *
+     * Recorre la lista de clientes y transforma cada entidad en su DTO correspondiente.
      *
-     * @param clientes lista de objetos Cliente
-     * @return lista de objetos ClienteNuevoDTO
+     * @param clientes lista de entidades Cliente
+     * @return lista de objetos ClienteDTO
      */
     public static List<ClienteDTO> listaEntidadADTO(List<Cliente> clientes) {
         List<ClienteDTO> listaDtos = new ArrayList<>();

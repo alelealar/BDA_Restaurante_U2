@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package adaptadores;
 
 import dtos.ProductoDTO;
@@ -13,26 +9,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase adaptadora encargada de convertir objetos entre la entidad ProductoIngredientes
- * y su correspondiente DTO (ProductoIngredienteDTO).
+ * Clase encargada de convertir entre la entidad ProductoIngrediente
+ * y su correspondiente DTO.
  *
- * Esta clase permite desacoplar la capa de persistencia de la capa de
- * presentación o lógica de negocio, facilitando el manejo de datos y evitando
- * exponer directamente las entidades.
+ * Se usa para evitar que las entidades de base de datos se usen directamente
+ * en capas superiores como negocio o presentación.
  *
- * Proporciona métodos para convertir objetos individuales y listas de entidades
- * a DTOs.
- * 
+ * Aquí se manejan conversiones individuales y listas completas.
  * 
  * @author Alejandra Leal Armenta - 262719
  * @author María José Valdez Iglesias - 262775
  */
 public class ProductoIngredienteAdapter {
+
+    /**
+     * constructor vacio.
+     */
+    public ProductoIngredienteAdapter() {
+    }
     
     /**
-     * Método que convierte un objeto de tipo entidad a su versión DTO.
-     * @param detalles objeto a transformar.
-     * @return un objeto de tipo ProductoIngredienteDTO.
+     * Convierte una entidad ProductoIngrediente a su DTO.
+     *
+     * @param entidad objeto de base de datos a convertir
+     * @return DTO equivalente o null si la entidad es null
      */
     public static ProductoIngredienteDTO entidadADTO(ProductoIngrediente entidad){
         if(entidad == null){
@@ -47,9 +47,12 @@ public class ProductoIngredienteAdapter {
     }
     
     /**
-     * Método que transforma los objetos de tipo DTO a Entidad.
-     * @param dto DTO a transformar a su versión entidad.
-     * @return El objeto de tipo entidad con toda su información.
+     * Convierte un DTO a entidad ProductoIngrediente.
+     *
+     * @param dto información del detalle del producto
+     * @param producto producto al que pertenece el ingrediente
+     * @return entidad lista para persistencia
+     * @throws NegocioException si ocurre algún problema en la conversión
      */
     public static ProductoIngrediente dtoAEntidad(ProductoIngredienteDTO dto, Producto producto) throws NegocioException {
         if(dto == null){
@@ -65,9 +68,10 @@ public class ProductoIngredienteAdapter {
     }
     
     /**
-     * Método que transforma una lista de objetos de entidad a su versión DTO.
-     * @param detalles Lista con objetos de la entidad producto.
-     * @return Lista con objetos de ProductoIngredienteDTO.
+     * Convierte una lista de entidades ProductoIngrediente a DTOs.
+     *
+     * @param detalles lista de entidades
+     * @return lista de DTOs (vacía si no hay datos)
      */
     public static List<ProductoIngredienteDTO> listaEntidadADTO(List<ProductoIngrediente> detalles){
         List<ProductoIngredienteDTO> listaDtos = new ArrayList<>();

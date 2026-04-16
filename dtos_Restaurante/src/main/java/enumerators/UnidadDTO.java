@@ -6,7 +6,7 @@
 package enumerators;
 
 /**
- *
+ * Unidades de medida que puede tener un ingrediente.
  * @author Alejandra Leal Armenta, 262719
  */
 public enum UnidadDTO {

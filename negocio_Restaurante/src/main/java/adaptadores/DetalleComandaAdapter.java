@@ -9,17 +9,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Adaptador para convertir entre DetalleComanda y DetalleComandaDTO.
+ * Adaptador encargado de convertir entre la entidad DetalleComanda y su DTO.
  *
- * Maneja la transformación entre entidades y DTOs utilizando identificadores en
- * lugar de relaciones completas.
+ * Esta clase permite transformar objetos de persistencia en objetos DTO y
+ * viceversa, utilizando identificadores en lugar de relaciones completas para
+ * mantener el desacoplamiento entre capas.
  *
  * @author Brian Kaleb Sandoval Rodríguez
  */
 public class DetalleComandaAdapter {
 
     /**
-     * Convierte una entidad a DTO.
+     * Constructor vacio.
+     */
+    public DetalleComandaAdapter() {
+    }
+    
+    
+    /**
+     * Convierte una entidad DetalleComanda a su representación DTO.
+     *
+     * @param detalle entidad DetalleComanda a convertir
+     * @return objeto DetalleComandaDTO equivalente, o null si la entrada es null
      */
     public static DetalleComandaDTO entidadADTO(DetalleComanda detalle) {
         if (detalle == null) {
@@ -38,7 +49,11 @@ public class DetalleComandaAdapter {
     }
 
     /**
-     * Convierte un DTO a entidad.
+     * Convierte un objeto DetalleComandaDTO a su entidad correspondiente.
+     *
+     * @param dto objeto DetalleComandaDTO a convertir
+     * @return entidad DetalleComanda equivalente, o null si la entrada es null
+     * @throws NegocioException si ocurre un error durante la conversión o validación
      */
     public static DetalleComanda dtoAEntidad(DetalleComandaDTO dto) throws NegocioException {
         if (dto == null) {
@@ -68,7 +83,10 @@ public class DetalleComandaAdapter {
     }
 
     /**
-     * Convierte lista de entidades a DTOs.
+     * Convierte una lista de entidades DetalleComanda a una lista de DTOs.
+     *
+     * @param detalles lista de entidades DetalleComanda
+     * @return lista de objetos DetalleComandaDTO (nunca null)
      */
     public static List<DetalleComandaDTO> listaEntidadADTO(List<DetalleComanda> detalles) {
         List<DetalleComandaDTO> lista = new ArrayList<>();
@@ -87,7 +105,11 @@ public class DetalleComandaAdapter {
     }
 
     /**
-     * Convierte lista de DTOs a entidades.
+     * Convierte una lista de DTOs a entidades DetalleComanda.
+     *
+     * @param dtos lista de objetos DetalleComandaDTO
+     * @return lista de entidades DetalleComanda (nunca null)
+     * @throws NegocioException si ocurre un error durante la conversión
      */
     public static List<DetalleComanda> listaDTOAEntidad(List<DetalleComandaDTO> dtos) throws NegocioException {
         List<DetalleComanda> lista = new ArrayList<>();

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package adaptadores;
 
 import dtos.ProductoDTO;
@@ -19,30 +15,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase adaptadora encargada de convertir objetos entre la entidad Producto
- * y su correspondiente DTO (ProductoDTO).
+ * Adaptador encargado de convertir entre la entidad Producto y su DTO correspondiente.
  *
- * Esta clase permite desacoplar la capa de persistencia de la capa de
- * presentación o lógica de negocio, facilitando el manejo de datos y evitando
- * exponer directamente las entidades.
+ * Esta clase desacopla la capa de persistencia de la capa de negocio/presentación,
+ * permitiendo la transformación de entidades complejas a objetos DTO.
  *
- * Proporciona métodos para convertir objetos individuales y listas de entidades
- * a DTOs.
- * 
+ * Incluye conversiones individuales y de listas, así como manejo de ingredientes
+ * asociados a un producto.
+ *
  * @author María José Valdez Iglesias - 262775
  */
 public class ProductoAdapter {
-    
+
     /**
-     * Método que convierte un objeto de tipo entidad a su versión DTO.
-     * @param producto objeto a transformar.
-     * @return un objeto de tipo ProductoDTO.
+     * Constructor vacio.
      */
-    public static ProductoDTO entidadADTO(Producto producto){
-        if(producto == null){
+    public ProductoAdapter() {
+    }
+
+    /**
+     * Convierte una entidad Producto a su representación ProductoDTO.
+     *
+     * @param producto entidad Producto a convertir
+     * @return objeto ProductoDTO equivalente o null si la entrada es null
+     */
+    public static ProductoDTO entidadADTO(Producto producto) {
+        if (producto == null) {
             return null;
         }
-      
+
         return new ProductoDTO(
                 producto.getId(),
                 producto.getIdentificador(),
@@ -56,20 +57,21 @@ public class ProductoAdapter {
                 producto.getUrlImagen()
         );
     }
-    
+
     /**
-     * Método que transforma los objetos de tipo DTO a Entidad, ya sean objetos
-     * ProductoDTO o ProductoNuevoDTO.
-     * @param dto DTO a transformar a su versión entidad.
-     * @return El objeto de tipo entidad con toda su información.
-     * @throws NegocioException Salta excepción si la clase del objeto del 
-     * parámetro no es adecuada (ProductoDTO/ProductoNuevoDTO).
+     * Convierte un DTO (ProductoDTO o ProductoNuevoDTO) a entidad Producto.
+     *
+     * Soporta ambos tipos de DTO para creación y actualización de productos.
+     *
+     * @param dto objeto ProductoDTO o ProductoNuevoDTO a convertir
+     * @return entidad Producto equivalente
+     * @throws NegocioException si el DTO no es válido
      */
     public static Producto dtoAEntidad(Object dto) throws NegocioException {
-        if(dto == null){
+        if (dto == null) {
             return null;
         }
-        
+
         if (dto instanceof ProductoNuevoDTO p) {
             Producto pNuevo = new Producto(
                     null,
@@ -82,17 +84,18 @@ public class ProductoAdapter {
                     DisponibilidadProducto.DISPONIBLE,
                     p.getUrlImagen()
             );
-            
-            if(p.getIngredientes() != null){
-                for(ProductoIngredienteDTO detalle : p.getIngredientes()){
-                    ProductoIngrediente detalleEntidad = ProductoIngredienteAdapter.dtoAEntidad(detalle, null);
+
+            if (p.getIngredientes() != null) {
+                for (ProductoIngredienteDTO detalle : p.getIngredientes()) {
+                    ProductoIngrediente detalleEntidad =
+                            ProductoIngredienteAdapter.dtoAEntidad(detalle, null);
                     pNuevo.agregarProductoIngrediente(detalleEntidad);
                 }
             }
-            
+
             return pNuevo;
         }
-        
+
         if (dto instanceof ProductoDTO p) {
             Producto pRegistrado = new Producto(
                     p.getId(),
@@ -105,30 +108,38 @@ public class ProductoAdapter {
                     DisponibilidadProducto.valueOf(p.getDisponibilidad()),
                     p.getUrlImagen()
             );
-            
-            if(p.getIngredientes() != null){
-                for(ProductoIngredienteDTO detalle : p.getIngredientes()){
-                    ProductoIngrediente detalleEntidad = ProductoIngredienteAdapter.dtoAEntidad(detalle, pRegistrado);
+
+            if (p.getIngredientes() != null) {
+                for (ProductoIngredienteDTO detalle : p.getIngredientes()) {
+                    ProductoIngrediente detalleEntidad =
+                            ProductoIngredienteAdapter.dtoAEntidad(detalle, pRegistrado);
                     pRegistrado.agregarProductoIngrediente(detalleEntidad);
                 }
             }
-            
+
             return pRegistrado;
         }
-        
-        throw new NegocioException("DTO inválido: " + dto.getClass());
+
+        throw new NegocioException("DTO inválido: " + dto.getClass().getSimpleName());
     }
-    
+
     /**
-     * Método que transforma una lista de objetos de entidad a su versión DTO.
-     * @param productos Lista con objetos de la entidad producto.
-     * @return Lista con objetos de ProductoDTO.
+     * Convierte una lista de entidades Producto a una lista de ProductoDTO.
+     *
+     * @param productos lista de entidades Producto
+     * @return lista de objetos ProductoDTO (nunca null)
      */
-    public static List<ProductoDTO> listaEntidadADTO(List<Producto> productos){
+    public static List<ProductoDTO> listaEntidadADTO(List<Producto> productos) {
         List<ProductoDTO> listaDtos = new ArrayList<>();
 
+        if (productos == null) {
+            return listaDtos;
+        }
+
         for (Producto p : productos) {
-            listaDtos.add(entidadADTO(p));
+            if (p != null) {
+                listaDtos.add(entidadADTO(p));
+            }
         }
 
         return listaDtos;

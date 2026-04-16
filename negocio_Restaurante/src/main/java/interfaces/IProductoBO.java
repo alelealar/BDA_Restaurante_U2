@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package interfaces;
 
 import dtos.ProductoDTO;
@@ -11,104 +7,100 @@ import excepciones.NegocioException;
 import java.util.List;
 
 /**
- * Interfaz que define las operaciones de la lógica de negocio (BO) para la
- * gestión de productos.
+ * Interfaz que define las operaciones de lógica de negocio (BO) para la gestión de productos.
  *
  * Esta interfaz actúa como intermediaria entre la capa de presentación y la
  * capa de acceso a datos (DAO), aplicando reglas de negocio, validaciones y
  * controlando el flujo de la información.
  *
- * Utiliza objetos DTO para evitar exponer directamente las entidades de
- * persistencia.
- * 
+ * Utiliza objetos DTO para evitar exponer directamente las entidades de persistencia.
+ *
  * @author María José Valdez Iglesias - 262775
  */
 public interface IProductoBO {
-    
+
     /**
-     * Registra un nuevo producto en el sistema. Este método valida la información
-     * del producto antes de enviarla a la capa de persistencia.
+     * Registra un nuevo producto en el sistema.
      *
-     * @param producto objeto ProductoDTO con los datos del producto a
-     * registrar
-     * @throws NegocioException si ocurre un error en las reglas de negocio.
+     * Valida la información del producto antes de enviarla a la capa de persistencia.
+     *
+     * @param producto objeto ProductoNuevoDTO con los datos del producto a registrar
+     * @throws NegocioException si ocurre un error de validación o reglas de negocio
      */
     void agregarProducto(ProductoNuevoDTO producto) throws NegocioException;
-    
+
     /**
-     * Actualiza la información de un producto existente. Este método valida la 
-     * información del producto antes de actualizarlo.
+     * Actualiza la información de un producto existente.
      *
-     * @param producto objeto ProductoDTO con la información actualizada.
-     * @throws NegocioException si ocurre un error en las reglas de negocio.
+     * Valida los datos antes de realizar la actualización en la base de datos.
+     *
+     * @param producto objeto ProductoDTO con la información actualizada
+     * @throws NegocioException si ocurre un error de validación o reglas de negocio
      */
     void actualizarProducto(ProductoDTO producto) throws NegocioException;
-    
+
     /**
-     * Cambia el estado de un producto existente a 'ACTIVO'. Este método valida
-     * que exista un producto con el ID proporcionado antes de modificar su 
-     * estado.
-     * 
-     * @param idProducto identificador del producto.
-     * @throws NegocioException Si ocurre un error en las reglas del negocio.
+     * Activa un producto existente cambiando su estado a 'ACTIVO'.
+     *
+     * Verifica que el producto exista antes de modificar su estado.
+     *
+     * @param idProducto identificador único del producto
+     * @throws NegocioException si ocurre un error o el producto no existe
      */
     void activarProducto(Long idProducto) throws NegocioException;
-    
+
     /**
-     * Cambia el estado de un producto existente a 'INACTIVO'. Este método valida
-     * que exista un producto con el ID proporcionado antes de modificar su 
-     * estado.
-     * 
-     * @param idProducto identificador del producto.
-     * @throws NegocioException Si ocurre un error en las reglas del negocio.
+     * Desactiva un producto existente cambiando su estado a 'INACTIVO'.
+     *
+     * Verifica que el producto exista antes de modificar su estado.
+     *
+     * @param idProducto identificador único del producto
+     * @throws NegocioException si ocurre un error o el producto no existe
      */
     void desactivarProducto(Long idProducto) throws NegocioException;
-    
+
     /**
-     * Obtiene todos los productos registrados en la BD.
-     * 
-     * @return Una lista con todos los productos que se encuentren registrados.
-     * @throws NegocioException Si ocurre un error en las reglas del negocio.
+     * Obtiene todos los productos registrados en el sistema.
+     *
+     * @return lista de todos los productos
+     * @throws NegocioException si ocurre un error en la consulta
      */
     List<ProductoDTO> consultarTodosProductos() throws NegocioException;
-    
+
     /**
-     * Busca un producto en la BD a partir de su ID.
-     * 
-     * @param idProducto identificador del producto.
-     * @return El producto que encuentra o null si no halla nada.
-     * @throws NegocioException Si ocurre un error en las reglas del negocio.
+     * Busca un producto por su identificador.
+     *
+     * @param idProducto identificador único del producto
+     * @return producto encontrado o null si no existe
+     * @throws NegocioException si ocurre un error en la búsqueda
      */
     ProductoDTO consultarProductoPorID(Long idProducto) throws NegocioException;
-    
+
     /**
-     * Obtiene todos los productos registrados en la BD que su estado sea 
-     * 'ACTIVO'.
-     * 
-     * @return Una lista con todos los productos activos en la BD.
-     * @throws NegocioException Si ocurre un error en las reglas del negocio.
+     * Obtiene todos los productos con estado 'ACTIVO'.
+     *
+     * @return lista de productos activos
+     * @throws NegocioException si ocurre un error en la consulta
      */
     List<ProductoDTO> consultarProductosActivos() throws NegocioException;
-    
+
     /**
-     * Obtiene todos los productos registrados en la BD que cumplan con los
-     * filtros establecidos en los parámetros.
-     * 
-     * @param nombre Nombre de producto que se desea buscar.
-     * @param tipo Tipo de producto que se desea buscar.
-     * @return La lista con los productos registrados que cumplan con los 
-     * parámetros.
-     * @throws NegocioException Si ocurre un error en las reglas del negocio.
+     * Busca productos por nombre y tipo.
+     *
+     * @param nombre nombre o parte del nombre del producto
+     * @param tipo tipo de producto a filtrar
+     * @return lista de productos que coinciden con los criterios
+     * @throws NegocioException si ocurre un error en la búsqueda
      */
     List<ProductoDTO> buscarProductos(String nombre, TipoProductoDTO tipo) throws NegocioException;
-    
+
     /**
-     * 
-     * @param nombre
-     * @param tipo
-     * @return
-     * @throws NegocioException 
+     * Busca productos activos por nombre y tipo.
+     *
+     * @param nombre nombre o parte del nombre del producto
+     * @param tipo tipo de producto a filtrar
+     * @return lista de productos activos que coinciden con los criterios
+     * @throws NegocioException si ocurre un error en la búsqueda
      */
     List<ProductoDTO> buscarProductosActivos(String nombre, TipoProductoDTO tipo) throws NegocioException;
-    
 }

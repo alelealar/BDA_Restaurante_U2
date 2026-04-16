@@ -6,7 +6,8 @@
 package enumerators;
 
 /**
- *
+ * Clase enumerator que detecta el tipo de movimiento de entrada (agregar stock)
+ * y salida (quitar stock) de un ingrediente.
  * @author Alejandra Leal Armenta, 262719
  */
 public enum TipoMovimiento {

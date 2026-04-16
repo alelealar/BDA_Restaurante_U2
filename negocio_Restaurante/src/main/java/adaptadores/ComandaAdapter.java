@@ -10,33 +10,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase adaptadora encargada de convertir entre la entidad Comanda y su DTO
+ * Adaptador encargado de convertir entre la entidad Comanda y su DTO
  * correspondiente.
  *
- * Proporciona métodos para transformar objetos individuales y listas completas,
- * asegurando la correcta conversión de atributos y relaciones.
+ * Esta clase permite desacoplar la capa de persistencia de la capa de
+ * presentación, transformando entidades en objetos DTO y viceversa.
  *
- * También gestiona la conversión de enumeradores y la relación bidireccional
- * entre Comanda y DetalleComanda.
+ * También gestiona la conversión de enumeradores y asegura la correcta
+ * relación entre Comanda y DetalleComanda, manteniendo la consistencia
+ * bidireccional de las asociaciones.
  *
  * @author Brian Kaleb Sandoval Rodríguez - 00000262741
  */
 public class ComandaAdapter {
 
     /**
+     * Constructor vacio.
+     */
+    public ComandaAdapter() {
+    }
+
+    /**
      * Convierte una entidad Comanda a su representación DTO.
      *
-     * @param comanda Entidad Comanda a convertir.
-     * @return Objeto ComandaDTO equivalente o null si la entrada es null.
+     * @param comanda entidad Comanda a convertir
+     * @return objeto ComandaDTO equivalente, o null si la entrada es null
      */
     public static ComandaDTO entidadADTO(Comanda comanda) {
         if (comanda == null) {
             return null;
         }
-        
+
         return new ComandaDTO(
                 comanda.getId(),
-                comanda.getEstadoComanda() != null ? EstadoComandaDTO.valueOf(comanda.getEstadoComanda().name()) : null,
+                comanda.getEstadoComanda() != null
+                        ? EstadoComandaDTO.valueOf(comanda.getEstadoComanda().name())
+                        : null,
                 comanda.getFolio(),
                 comanda.getTotal(),
                 comanda.getFechaHora(),
@@ -52,20 +61,20 @@ public class ComandaAdapter {
      * Este método también asegura la correcta asignación de la relación
      * bidireccional entre Comanda y DetalleComanda.
      *
-     * @param dto Objeto ComandaDTO a convertir.
-     * @return Entidad Comanda equivalente o null si la entrada es null.
-     * @throws NegocioException Si ocurre un error en la conversión.
+     * @param dto objeto ComandaDTO a convertir
+     * @return entidad Comanda equivalente, o null si la entrada es null
+     * @throws NegocioException si ocurre un error durante la conversión o validación
      */
     public static Comanda dtoAEntidad(ComandaDTO dto) throws NegocioException {
         if (dto == null) {
             return null;
         }
-        
+
         Comanda comanda = new Comanda(
                 dto.getId(),
                 dto.getEstadoComanda() != null
-                ? EstadoComanda.valueOf(dto.getEstadoComanda().name())
-                : null,
+                        ? EstadoComanda.valueOf(dto.getEstadoComanda().name())
+                        : null,
                 dto.getFolio(),
                 dto.getTotal(),
                 dto.getFechaHora(),
@@ -74,37 +83,38 @@ public class ComandaAdapter {
                 ClienteAdapter.dtoAEntidad(dto.getCliente())
         );
 
-        // 🔥 mantener consistencia bidireccional
+        // Mantiene consistencia bidireccional entre Comanda y DetalleComanda
         if (comanda.getDetalles() != null) {
             for (DetalleComanda d : comanda.getDetalles()) {
                 d.setComanda(comanda);
             }
         }
-        
+
         return comanda;
     }
 
     /**
-     * Convierte una lista de entidades Comanda a una lista de DTOs.
+     * Convierte una lista de entidades Comanda a una lista de ComandaDTO.
      *
-     * Ignora elementos nulos dentro de la lista.
+     * Este método ignora valores nulos dentro de la lista para evitar errores
+     * durante la transformación.
      *
-     * @param comandas Lista de entidades Comanda.
-     * @return Lista de objetos ComandaDTO.
+     * @param comandas lista de entidades Comanda
+     * @return lista de objetos ComandaDTO (puede estar vacía pero nunca null)
      */
     public static List<ComandaDTO> listaEntidadADTO(List<Comanda> comandas) {
         List<ComandaDTO> listaDtos = new ArrayList<>();
-        
+
         if (comandas == null) {
             return listaDtos;
         }
-        
+
         for (Comanda c : comandas) {
             if (c != null) {
                 listaDtos.add(entidadADTO(c));
             }
         }
-        
+
         return listaDtos;
     }
 }

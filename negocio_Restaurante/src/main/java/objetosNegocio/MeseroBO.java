@@ -9,12 +9,12 @@ import interfaces.IMeseroDAO;
 import java.util.logging.Logger;
 
 /**
- * Lógica de negocio para Mesero.
+ * Implementación de la lógica de negocio para la entidad Mesero.
  *
- * Permite validar la existencia de un mesero en el sistema.
+ * Esta clase permite validar, consultar y registrar meseros en el sistema,
+ * aplicando reglas de negocio antes de interactuar con la capa de persistencia.
  *
  * @author Brian Kaleb Sandoval Rodríguez - 00000262741
- *
  */
 public class MeseroBO implements IMeseroBO {
 
@@ -23,14 +23,14 @@ public class MeseroBO implements IMeseroBO {
     private final IMeseroDAO meseroDAO = MeseroDAO.getInstance();
 
     /**
-     * Instancia única de la clase.
+     * Instancia única de la clase (patrón Singleton).
      */
     private static MeseroBO instancia;
 
     /**
      * Obtiene la instancia única de MeseroBO.
      *
-     * @return instancia de MeseroBO.
+     * @return instancia de MeseroBO
      */
     public static MeseroBO getInstance() {
         if (instancia == null) {
@@ -42,9 +42,9 @@ public class MeseroBO implements IMeseroBO {
     /**
      * Verifica si un mesero existe en el sistema.
      *
-     * @param usuario Nombre de usuario.
-     * @return true si existe, false si no.
-     * @throws NegocioException Si el usuario es inválido o ocurre un error.
+     * @param usuario nombre de usuario del mesero
+     * @return true si el mesero existe, false en caso contrario
+     * @throws NegocioException si el usuario es inválido o ocurre un error en persistencia
      */
     @Override
     public boolean existeMesero(String usuario) throws NegocioException {
@@ -62,14 +62,14 @@ public class MeseroBO implements IMeseroBO {
             throw new NegocioException("No fue posible verificar el mesero", e);
         }
     }
-    
-    @Override
+
     /**
      * Registra un nuevo mesero en el sistema.
      *
-     * @param usuario Nombre de usuario.
-     * @throws NegocioException Si el usuario es inválido o ya existe.
+     * @param usuario nombre de usuario del mesero
+     * @throws NegocioException si el usuario es inválido o ya existe
      */
+    @Override
     public void registrarMesero(String usuario) throws NegocioException {
         try {
             if (usuario == null || usuario.isBlank()) {

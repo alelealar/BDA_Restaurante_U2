@@ -12,6 +12,8 @@ import java.util.List;
  * @author Brian Kaleb Sandoval Rodríguez - 00000262741
  */
 public interface IMesaBO {
+    
+    
 
     /**
      * Inicializa un conjunto de mesas en el sistema.

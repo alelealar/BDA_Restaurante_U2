@@ -23,52 +23,54 @@ import java.util.List;
 public interface IClienteBO {
 
     /**
-     * Registra un nuevo cliente en el sistema.Este método valida la información
-     * del cliente antes de enviarla a la capa de persistencia.
+     * Registra un nuevo cliente en el sistema.
      *
+     * Este método valida la información del cliente antes de enviarla a la
+     * capa de persistencia.
      *
-     * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente a
-     * registrar
-     * @throws NegocioException si ocurre un error en las reglas de negocio
+     * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente a registrar
+     * @throws NegocioException si ocurre un error en las reglas de negocio o validaciones
      */
-    public void registrarCliente(ClienteNuevoDTO clienteDTO) throws NegocioException;
+    void registrarCliente(ClienteNuevoDTO clienteDTO) throws NegocioException;
 
     /**
-     * Registra un nuevo cliente frecuente en el sistema.Este método valida la
-     * información del cliente antes de enviarla a la capa de persistencia.
+     * Registra un nuevo cliente frecuente en el sistema.
      *
-     * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente a
-     * registrar
-     * @throws NegocioException si ocurre un error en las reglas de negocio
+     * Este método valida la información del cliente antes de enviarla a la
+     * capa de persistencia, considerando datos de fidelización.
+     *
+     * @param clienteDTO objeto ClienteNuevoDTO con los datos del cliente a registrar
+     * @throws NegocioException si ocurre un error en las reglas de negocio o validaciones
      */
-    public void registrarClienteFrecuente(ClienteNuevoDTO clienteDTO) throws NegocioException;
+    void registrarClienteFrecuente(ClienteNuevoDTO clienteDTO) throws NegocioException;
 
     /**
-     * Actualiza la información de un cliente existente.Este método valida los
-     * datos antes de realizar la actualización.
+     * Actualiza la información de un cliente existente.
      *
+     * Este método valida los datos antes de realizar la actualización en la
+     * base de datos.
      *
-     * @param clienteDTO objeto ClienteNuevoDTO con la información actualizada
-     * @throws NegocioException si ocurre un error en las reglas de negocio
+     * @param clienteDTO objeto ClienteDTO con la información actualizada del cliente
+     * @throws NegocioException si ocurre un error en las reglas de negocio o validaciones
      */
-    public void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException;
+    void actualizarCliente(ClienteDTO clienteDTO) throws NegocioException;
 
     /**
      * Busca un cliente en el sistema a partir de su identificador.
      *
-     * @param id identificador del cliente
-     * @return objeto ClienteNuevoDTO con la información del cliente buscado
-     * @throws NegocioException si ocurre un error durante la búsqueda
+     * @param id identificador único del cliente
+     * @return objeto ClienteDTO con la información del cliente encontrado
+     * @throws NegocioException si ocurre un error durante la búsqueda o el cliente no existe
      */
-    public ClienteDTO buscarClientePorId(Long id) throws NegocioException;
+    ClienteDTO buscarClientePorId(Long id) throws NegocioException;
 
     /**
      * Elimina un cliente del sistema a partir de su identificador.
      *
-     * @param id identificador del cliente a eliminar
-     * @throws NegocioException si ocurre un error durante la eliminación
+     * @param id identificador único del cliente a eliminar
+     * @throws NegocioException si ocurre un error durante la eliminación o el cliente no existe
      */
-    public void eliminarCliente(Long id) throws NegocioException;
+    void eliminarCliente(Long id) throws NegocioException;
 
     /**
      * Obtiene el cliente general del sistema.
@@ -76,16 +78,16 @@ public interface IClienteBO {
      * Este cliente se utiliza cuando una comanda no está asociada a un cliente
      * registrado.
      *
-     * @return ClienteDTO correspondiente al cliente general
-     * @throws NegocioException si no existe o hay error
+     * @return ClienteDTO correspondiente al cliente general del sistema
+     * @throws NegocioException si no existe o ocurre un error al obtenerlo
      */
-    public ClienteDTO obtenerClienteGeneral() throws NegocioException;
+    ClienteDTO obtenerClienteGeneral() throws NegocioException;
 
     /**
-     * Obtiene a todos los clientes registrados en la BD
+     * Obtiene todos los clientes registrados en el sistema.
      *
-     * @return lista con todos los clientes
-     * @throws NegocioException
+     * @return lista de objetos ClienteDTO con todos los clientes registrados
+     * @throws NegocioException si ocurre un error al consultar los clientes
      */
-    public List<ClienteDTO> obtenerClientes() throws NegocioException;
+    List<ClienteDTO> obtenerClientes() throws NegocioException;
 }

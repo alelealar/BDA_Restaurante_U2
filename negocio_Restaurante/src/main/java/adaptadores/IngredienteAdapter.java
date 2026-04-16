@@ -2,7 +2,6 @@ package adaptadores;
 
 import dtos.IngredienteDTO;
 import dtos.IngredienteNuevoDTO;
-import dtos.IngredienteStockDTO;
 import entidades.Ingrediente;
 import enumerators.Unidad;
 import enumerators.UnidadDTO;
@@ -10,22 +9,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase encargada de convertir entre la entidad Ingrediente
- * y sus diferentes DTOs.
- * 
- * Centraliza las transformaciones entre capas del sistema.
- * 
+ * Adaptador encargado de convertir entre la entidad Ingrediente y sus
+ * diferentes DTOs.
+ *
+ * Esta clase centraliza las transformaciones entre capas del sistema,
+ * asegurando el correcto mapeo de atributos y la conversión de enumeradores
+ * entre entidad y DTO.
+ *
  * @author Alejandra Leal Armenta, 262719
- * 
  */
-
 public class IngredienteAdapter {
 
     /**
-     * Convierte una entidad Ingrediente a IngredienteDTO.
-     * 
-     * @param ingrediente entidad a convertir
-     * @return DTO con los datos del ingrediente o null si es null
+     * Constructor vacio.
+     */
+    public IngredienteAdapter() {
+    }
+
+    /**
+     * Convierte una entidad Ingrediente a su representación IngredienteDTO.
+     *
+     * @param ingrediente entidad Ingrediente a convertir
+     * @return objeto IngredienteDTO equivalente o null si la entrada es null
      */
     public static IngredienteDTO entidadADTO(Ingrediente ingrediente) {
         if (ingrediente == null) {
@@ -42,15 +47,19 @@ public class IngredienteAdapter {
                 ingrediente.getUrlImagen()
         );
     }
-    
+
     /**
      * Convierte un IngredienteNuevoDTO a entidad Ingrediente.
-     * 
-     * @param i DTO de creación
-     * @return entidad nueva o null si el DTO es null
+     *
+     * Se utiliza para la creación de nuevos registros en el sistema.
+     *
+     * @param i objeto IngredienteNuevoDTO a convertir
+     * @return entidad Ingrediente equivalente o null si la entrada es null
      */
     public static Ingrediente nuevoDTOAEntidad(IngredienteNuevoDTO i) {
-        if (i == null) return null;
+        if (i == null) {
+            return null;
+        }
 
         return new Ingrediente(
                 null,
@@ -62,15 +71,19 @@ public class IngredienteAdapter {
                 i.getUrlImagen()
         );
     }
-    
+
     /**
      * Convierte un IngredienteDTO a entidad Ingrediente.
-     * 
-     * @param i DTO a convertir
-     * @return entidad con los datos del DTO o null si es null
+     *
+     * Se utiliza principalmente para operaciones de actualización.
+     *
+     * @param i objeto IngredienteDTO a convertir
+     * @return entidad Ingrediente equivalente o null si la entrada es null
      */
     public static Ingrediente dtoAEntidad(IngredienteDTO i) {
-        if (i == null) return null;
+        if (i == null) {
+            return null;
+        }
 
         return new Ingrediente(
                 i.getId(),
@@ -84,16 +97,25 @@ public class IngredienteAdapter {
     }
 
     /**
-     * Convierte una lista de entidades a lista de DTOs.
-     * 
-     * @param ingredientes lista de entidades
-     * @return lista de DTOs (vacía si no hay elementos)
+     * Convierte una lista de entidades Ingrediente a una lista de IngredienteDTO.
+     *
+     * Este método ignora valores nulos dentro de la lista para evitar errores
+     * durante la transformación.
+     *
+     * @param ingredientes lista de entidades Ingrediente
+     * @return lista de objetos IngredienteDTO (nunca null)
      */
     public static List<IngredienteDTO> listaEntidadADTO(List<Ingrediente> ingredientes) {
         List<IngredienteDTO> listaDtos = new ArrayList<>();
 
+        if (ingredientes == null) {
+            return listaDtos;
+        }
+
         for (Ingrediente i : ingredientes) {
-            listaDtos.add(entidadADTO(i));
+            if (i != null) {
+                listaDtos.add(entidadADTO(i));
+            }
         }
 
         return listaDtos;

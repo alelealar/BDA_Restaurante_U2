@@ -118,6 +118,15 @@ public class Ingrediente implements Serializable {
         this.urlImagen = urlImagen;
     }
 
+    /**
+     * Constructor sin id
+     * @param identificador
+     * @param nombre
+     * @param unidadMedida
+     * @param stockActual
+     * @param stockMinimo
+     * @param urlImagen 
+     */
     public Ingrediente(String identificador, String nombre, Unidad unidadMedida, Integer stockActual, Integer stockMinimo, String urlImagen) {
         this.identificador = identificador;
         this.nombre = nombre;
@@ -126,8 +135,6 @@ public class Ingrediente implements Serializable {
         this.stockMinimo = stockMinimo;
         this.urlImagen = urlImagen;
     }
-
-    
 
     /**
      * Constructor vacio requerido por JPA.

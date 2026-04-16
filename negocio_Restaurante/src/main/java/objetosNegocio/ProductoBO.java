@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package objetosNegocio;
 
 import adaptadores.ProductoAdapter;
@@ -26,36 +22,36 @@ import java.util.logging.Logger;
  * convertir DTOs a entidades y delegar las operaciones a la capa de acceso a
  * datos (DAO).
  *
- * Además, maneja excepciones de negocio y registra eventos mediante Logger.
+ * También maneja errores del sistema y registra eventos con Logger.
  * 
  * @author María José Valdez Iglesias - 262775
  */
 public class ProductoBO implements IProductoBO {
 
     /**
-     * Atributo instancia que la clase regresa para ser utilizado.
+     * Instancia única de la clase (patrón Singleton).
      */
     private static ProductoBO instance;
-    
+
     /**
-     * Logger para registrar eventos y errores del sistema.
+     * Logger para registrar eventos del sistema.
      */
     private static final Logger LOG = Logger.getLogger(ProductoBO.class.getName());
-    
+
     /**
-     * Objeto DAO utilizado para interactuar con la base de datos.
+     * DAO utilizado para el acceso a datos de productos.
      */
     private final IProductoDAO productoDAO = ProductoDAO.getInstance();
-    
+
     /**
-     * Constructor vacío y privado, para que no se puedan crear instancias de 
-     * la clase.
+     * Constructor privado para evitar instanciación externa.
      */
     private ProductoBO(){}
-    
+
     /**
-     * Método estático para regresar la instancia ya creada de la clase.
-     * @return El ProductoBO de la clase.
+     * Obtiene la instancia única de ProductoBO.
+     *
+     * @return instancia de ProductoBO
      */
     public static ProductoBO getInstance(){
         if(instance == null){
@@ -63,13 +59,14 @@ public class ProductoBO implements IProductoBO {
         }
         return instance;
     }
-    
+
     /**
-     * Método encargado de manejar objeto DTO, transformar el objeto y pasarlo
-     * a la DAO para agregarlo.
-     * @param producto ProductoDTO que se quiere agregar.
-     * @throws NegocioException Si ocurre un error al agregar el producto
-     * llamando a la DAO.
+     * Registra un nuevo producto en el sistema.
+     *
+     * Convierte el DTO a entidad, genera su identificador y lo guarda en la base de datos.
+     *
+     * @param producto objeto ProductoNuevoDTO con la información del producto
+     * @throws NegocioException si ocurre un error al registrar el producto
      */
     @Override
     public void agregarProducto(ProductoNuevoDTO producto) throws NegocioException {
@@ -80,17 +77,18 @@ public class ProductoBO implements IProductoBO {
             productoDAO.agregarProducto(p);
             LOG.info(() -> "Se agregó el producto: " + p.getNombre().toUpperCase());
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al querer agregar el producto: " + producto.getNombre().toUpperCase());
+            LOG.warning(() -> "Error al agregar producto: " + producto.getNombre().toUpperCase());
             throw new NegocioException("No fue posible agregar el producto.", ex);
         }
     }
 
     /**
-     * Método encargado de manejar objeto DTO, tranformar el objeto y pasarlo
-     * a la DAO para actualizarlo.
-     * @param producto ProductoDTO que se quiere actualizar.
-     * @throws NegocioException Si ocurre un error al actualizar el producto
-     * llamando a la DAO.
+     * Actualiza un producto existente.
+     *
+     * Convierte el DTO a entidad y lo envía al DAO para su actualización.
+     *
+     * @param producto objeto ProductoDTO con los datos actualizados
+     * @throws NegocioException si ocurre un error al actualizar el producto
      */
     @Override
     public void actualizarProducto(ProductoDTO producto) throws NegocioException {
@@ -100,145 +98,116 @@ public class ProductoBO implements IProductoBO {
             productoDAO.actualizarProducto(p);
             LOG.info(() -> "Se actualizó el producto: " + p.getNombre().toUpperCase());
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al querer actualizar el producto: " + producto.getNombre().toUpperCase());
+            LOG.warning(() -> "Error al actualizar producto: " + producto.getNombre().toUpperCase());
             throw new NegocioException("No fue posible actualizar el producto.", ex);
         }
     }
 
     /**
-     * Método que consulta todos los productos registrados por medio de la DAO.
-     * @return Una lista de ProductoDTO con todos los registros.
-     * @throws NegocioException Si ocurre un error al consultar todos los
-     * productos llamando a la DAO.
+     * Consulta todos los productos registrados.
+     *
+     * @return lista de productos en formato DTO
+     * @throws NegocioException si ocurre un error en la consulta
      */
     @Override
     public List<ProductoDTO> consultarTodosProductos() throws NegocioException {
         try{
             List<Producto> productos = productoDAO.consultarTodos();
-            
             return ProductoAdapter.listaEntidadADTO(productos);
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al querer consultar todos los productos.");
+            LOG.warning("Error al consultar productos.");
             throw new NegocioException("No fue posible consultar todos los productos.", ex);
         }
     }
-    
+
     /**
-     * Método que válida los datos de entrada en los parámetros.
-     * @param dto Objeto de tipo DTO a validar.
-     * @throws NegocioException Si exite un error con los datos del producto.
+     * Valida los datos de un producto antes de procesarlo.
+     *
+     * @param dto objeto ProductoDTO o ProductoNuevoDTO
+     * @throws NegocioException si los datos no cumplen con las reglas
      */
     private void validarDatos(Object dto) throws NegocioException {
         if(dto == null){
             throw new NegocioException("El producto no puede ser nulo.");
         }
-        
+
         if(dto instanceof ProductoNuevoDTO p){
-            if(p.getNombre() == null || p.getNombre().isEmpty() || p.getNombre().isBlank()){
+            if(p.getNombre() == null || p.getNombre().isBlank()){
                 throw new NegocioException("El producto debe tener un nombre.");
-            } else {
-                p.setNombre(p.getNombre().trim());
             }
-            
-            if(p.getDescripcion() == null || p.getDescripcion().isEmpty() || p.getDescripcion().isBlank()){
-                throw new NegocioException("El producto debe contar con una descripción.");
-            } else {
-                p.setDescripcion(p.getDescripcion().trim());
+
+            if(p.getDescripcion() == null || p.getDescripcion().isBlank()){
+                throw new NegocioException("El producto debe tener una descripción.");
             }
-            
+
             if(p.getPrecio() == null){
-                throw new NegocioException("El producto debe contar con un precio.");
+                throw new NegocioException("El producto debe tener un precio.");
             }
-            
+
             if(p.getTipo() == null){
-                throw new NegocioException("El producto debe tener un tipo asignado.");
+                throw new NegocioException("El producto debe tener un tipo.");
             }
-            
+
             if(p.getEstado() == null){
-                throw new NegocioException("El producto debe venir con un estado.");
+                throw new NegocioException("El producto debe tener un estado.");
             }
-            
-            if(p.getUrlImagen() == null || p.getUrlImagen().isEmpty() || p.getUrlImagen().isBlank()){
-                p.setUrlImagen(null);
-            } else if(!p.getUrlImagen().matches("(?i).*\\.(jpg|jpeg|png)$")){
-                throw new NegocioException("La imagen solo puede ser JPG o PNG.");
-            } else {
-                p.setUrlImagen(p.getUrlImagen().trim());
+
+            if(p.getUrlImagen() != null && !p.getUrlImagen().isBlank()
+                    && !p.getUrlImagen().matches("(?i).*\\.(jpg|jpeg|png)$")){
+                throw new NegocioException("La imagen debe ser JPG o PNG.");
             }
-            
         }
-        
+
         if(dto instanceof ProductoDTO p){
-            if(p.getId() == null){
-                throw new NegocioException("El producto debe contar con un ID.");
-            } else if(p.getId() < 1) {
-                throw new NegocioException("ID inválido.");
-            } 
-            
-            if(p.getIdentificador() == null || p.getIdentificador().isEmpty() || p.getIdentificador().isBlank()){
-                throw new NegocioException("El producto debe tener un identificador.");
-            } else {
-                p.setIdentificador(p.getIdentificador().trim());
+            if(p.getId() == null || p.getId() < 1){
+                throw new NegocioException("ID de producto inválido.");
             }
-            
-            if(p.getNombre() == null || p.getNombre().isEmpty() || p.getNombre().isBlank()){
+
+            if(p.getNombre() == null || p.getNombre().isBlank()){
                 throw new NegocioException("El producto debe tener un nombre.");
-            } else {
-                p.setNombre(p.getNombre().trim());
             }
-            
-            if(p.getDescripcion() == null || p.getDescripcion().isEmpty() || p.getDescripcion().isBlank()){
-                throw new NegocioException("El producto debe contar con una descripción.");
-            } else {
-                p.setDescripcion(p.getDescripcion().trim());
+
+            if(p.getDescripcion() == null || p.getDescripcion().isBlank()){
+                throw new NegocioException("El producto debe tener una descripción.");
             }
-            
+
             if(p.getPrecio() == null){
-                throw new NegocioException("El producto debe contar con un precio.");
+                throw new NegocioException("El producto debe tener un precio.");
             }
-            
+
             if(p.getTipo() == null){
-                throw new NegocioException("El producto debe tener un tipo asignado.");
+                throw new NegocioException("El producto debe tener un tipo.");
             }
-            
+
             if(p.getEstado() == null){
-                throw new NegocioException("El producto debe venir con un estado.");
-            }
-            
-            if(p.getUrlImagen() == null || p.getUrlImagen().isEmpty() || p.getUrlImagen().isBlank()){
-                p.setUrlImagen(null);
-            } else if(!p.getUrlImagen().matches("(?i).*\\.(jpg|jpeg|png)$")){
-                throw new NegocioException("La imagen solo puede ser JPG o PNG.");
-            } else {
-                p.setUrlImagen(p.getUrlImagen().trim());
+                throw new NegocioException("El producto debe tener un estado.");
             }
         }
     }
-    
+
     /**
-     * Método que genera identificadores/códigos para los productos antes de almacenarlos
-     * en la base de datos.
-     * @param tipo El tipo del producto.
-     * @return El identificador generado.
-     * @throws NegocioException Si el parámetro es nulo o si no se reconoce al 
-     * tipo de producto.
+     * Genera un identificador único para el producto según su tipo.
+     *
+     * @param tipo tipo de producto
+     * @return identificador generado
+     * @throws NegocioException si el tipo es inválido
      */
     private String generarIdentificador(TipoProductoDTO tipo) throws NegocioException {
         if(tipo == null){
-            throw new NegocioException("El producto debe contar con un tipo para generar su identificador.");
+            throw new NegocioException("El tipo de producto no puede ser nulo.");
         }
-        
+
         try {
             TipoProducto tipoEntidad = TipoProducto.valueOf(tipo.name());
             int numero = 1;
-            
-            String ultimo = productoDAO.obtenerUltimoIdentificador(tipoEntidad);    
-            
+
+            String ultimo = productoDAO.obtenerUltimoIdentificador(tipoEntidad);
+
             if (ultimo != null && ultimo.contains("-")) {
                 numero = Integer.parseInt(ultimo.trim().substring(3));
                 numero++;
             }
-            
+
             switch(tipo){
                 case BEBIDA:
                     return String.format("BE-%03d", numero);
@@ -250,89 +219,80 @@ public class ProductoBO implements IProductoBO {
                     throw new NegocioException("Tipo de producto no válido.");
             }
         } catch (PersistenciaException ex) {
-            throw new NegocioException("Error al generar el identificador único.", ex);
+            throw new NegocioException("Error al generar identificador.", ex);
         }
     }
 
     /**
-     * Método encargado de activar un producto por medio de la DAO.
-     * @param idProducto ID del producto que se quiere activar.
-     * @throws NegocioException Si ocurre un error al activar el producto por 
-     * medio de la DAO.
+     * Activa un producto en el sistema.
+     *
+     * @param idProducto identificador del producto
+     * @throws NegocioException si ocurre un error al activarlo
      */
     @Override
     public void activarProducto(Long idProducto) throws NegocioException {
         try{
             productoDAO.activarProducto(idProducto);
-            LOG.info(() -> "Se activó el producto con ID=" + idProducto);
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al querer activar el producto con ID=" + idProducto);
             throw new NegocioException("No fue posible activar el producto.", ex);
         }
     }
 
     /**
-     * Método encargado de desactivar un producto por medio de la DAO.
-     * @param idProducto ID del producto que se quiere desactivar.
-     * @throws NegocioException Si ocurre un error al activar el producto por 
-     * medio de la DAO.
+     * Desactiva un producto en el sistema.
+     *
+     * @param idProducto identificador del producto
+     * @throws NegocioException si ocurre un error al desactivarlo
      */
     @Override
     public void desactivarProducto(Long idProducto) throws NegocioException {
         try{
             productoDAO.desactivarProducto(idProducto);
-            LOG.info(() -> "Se desactivó el producto con ID=" + idProducto);
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al querer desactivar el producto con ID=" + idProducto);
             throw new NegocioException("No fue posible desactivar el producto.", ex);
         }
     }
 
     /**
-     * Método encargado de buscar un producto por medio de su ID con la DAO.
-     * @param idProducto ID del producto que se desea buscar.
-     * @return Un ProductoDTO con la información del producto encontrado.
-     * @throws NegocioException Si ocurre un error al buscar el producto por 
-     * medio de la DAO.
+     * Consulta un producto por su ID.
+     *
+     * @param idProducto identificador del producto
+     * @return producto en formato DTO
+     * @throws NegocioException si ocurre un error en la búsqueda
      */
     @Override
     public ProductoDTO consultarProductoPorID(Long idProducto) throws NegocioException {
         try{
             Producto p = productoDAO.consultarProductoPorID(idProducto);
-            LOG.info(() -> "Se encontró el producto con ID=" + idProducto);
             return ProductoAdapter.entidadADTO(p);
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al querer buscar el producto con ID=" + idProducto);
             throw new NegocioException("No fue posible buscar el producto.", ex);
         }
     }
 
-     /**
-     * Método que consulta todos los productos activos registrados por medio 
-     * de la DAO.
-     * @return Una lista de ProductoDTO con todos los registros de estado activo.
-     * @throws NegocioException Si ocurre un error al consultar todos los
-     * productos llamando a la DAO.
+    /**
+     * Consulta productos activos.
+     *
+     * @return lista de productos activos
+     * @throws NegocioException si ocurre un error en la consulta
      */
     @Override
     public List<ProductoDTO> consultarProductosActivos() throws NegocioException {
         try{
             List<Producto> activos = productoDAO.consultarProductosActivos();
-            LOG.info(() -> "Se consultaron los productos activos.");
             return ProductoAdapter.listaEntidadADTO(activos);
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al consultar los productos activos.");
-            throw new NegocioException("No fue posible consultar los productos activos.", ex);
+            throw new NegocioException("No fue posible consultar productos activos.", ex);
         }
     }
-    
+
     /**
-     * Método que consulta los productos que cumplan los parámetros establecidos.
-     * @param nombre Nombre a buscar.
-     * @param tipo Tipo de producto a buscar.
-     * @return Una lista de ProductoDTO con todas las coincidencias.
-     * @throws NegocioException Si ocurre un error al consultar los productos 
-     * filtrados llamando a la DAO.
+     * Busca productos por nombre y tipo.
+     *
+     * @param nombre nombre del producto
+     * @param tipo tipo de producto
+     * @return lista de coincidencias
+     * @throws NegocioException si ocurre un error en la búsqueda
      */
     @Override
     public List<ProductoDTO> buscarProductos(String nombre, TipoProductoDTO tipo) throws NegocioException {
@@ -341,21 +301,21 @@ public class ProductoBO implements IProductoBO {
             if(tipo != null){
                 tipoEntidad = TipoProducto.valueOf(tipo.name());
             }
+
             List<Producto> filtrados = productoDAO.buscarProductos(nombre, tipoEntidad);
-            LOG.info(() -> "Se encontraron los productos: " + nombre + ", " + tipo);
             return ProductoAdapter.listaEntidadADTO(filtrados);
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al buscar los productos: " + nombre + ", " + tipo);
-            throw new NegocioException("No fue posible buscar los productos: " + nombre + ", " + tipo, ex);
+            throw new NegocioException("No fue posible buscar productos.", ex);
         }
     }
-    
+
     /**
-     * 
-     * @param nombre
-     * @param tipo
-     * @return
-     * @throws NegocioException 
+     * Busca productos activos filtrados por nombre y tipo.
+     *
+     * @param nombre nombre del producto
+     * @param tipo tipo de producto
+     * @return lista de productos activos
+     * @throws NegocioException si ocurre un error en la búsqueda
      */
     @Override 
     public List<ProductoDTO> buscarProductosActivos(String nombre, TipoProductoDTO tipo) throws NegocioException {
@@ -364,12 +324,11 @@ public class ProductoBO implements IProductoBO {
             if(tipo != null){
                 tipoEntidad = TipoProducto.valueOf(tipo.name());
             }
+
             List<Producto> filtrados = productoDAO.buscarProductos(nombre, tipoEntidad);
-            LOG.info(() -> "Se encontraron los productos: " + nombre + ", " + tipo);
             return ProductoAdapter.listaEntidadADTO(filtrados);
         } catch(PersistenciaException ex){
-            LOG.warning(() -> "Ocurrió un error al buscar los productos activos: " + nombre + ", " + tipo);
-            throw new NegocioException("No fue posible buscar los productos: " + nombre + ", " + tipo);
+            throw new NegocioException("No fue posible buscar productos activos.", ex);
         }
     }
 }
