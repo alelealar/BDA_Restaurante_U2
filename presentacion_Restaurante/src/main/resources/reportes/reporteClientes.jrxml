@@ -20,7 +20,7 @@
         <field name="nombres" class="java.lang.String"/>
         <field name="visitas" class="java.lang.Long"/>
         <field name="totalGastado" class="java.lang.Double"/>
-        <field name="fechaUltimaComanda" class="java.util.Date"/>
+        <field name="fechaUltimaComanda" class="java.time.LocalDateTime"/>
         <field name="puntosAcumulados" class="java.lang.Long"/>
     </subDataset>
 
@@ -172,7 +172,7 @@
                                     <pen lineWidth="0.5" lineColor="#D4D4D4"/>
                                 </box>
                                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
-                                <textFieldExpression><![CDATA[$F{fechaUltimaComanda}]]></textFieldExpression>
+                                <textFieldExpression><![CDATA[$F{fechaUltimaComanda} == null ? "Sin registro" : $F{fechaUltimaComanda}.format( java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm") )]]></textFieldExpression>
                             </textField>
                         </jr:detailCell>
                     </jr:column>

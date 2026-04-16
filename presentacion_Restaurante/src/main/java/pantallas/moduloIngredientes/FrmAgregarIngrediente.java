@@ -32,7 +32,7 @@ import validaciones.ValidadorCampos;
  */
 public class FrmAgregarIngrediente extends javax.swing.JFrame {
     
-    CoordinadorInterfaces coordinadorInterfaces = new CoordinadorInterfaces();
+    CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
     private Coordinador_ModuloIngredientes coordinador;
     File archivoImagen;
     private boolean modoActualizar = false;
@@ -72,7 +72,6 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         txtStockInicial = new javax.swing.JTextField();
         lblMedida = new javax.swing.JLabel();
         lblStockInicial1 = new javax.swing.JLabel();
-        btnCancelar = new javax.swing.JButton();
         btnAgregar = new javax.swing.JButton();
         lblAgregarImagen = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
@@ -81,6 +80,18 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         txtStockMinimo = new javax.swing.JTextField();
         jSeparator7 = new javax.swing.JSeparator();
         cbxMedida = new javax.swing.JComboBox<>();
+        btnCancelar = new javax.swing.JButton();
+        jPanel7 = new javax.swing.JPanel();
+        btnClientes2 = new javax.swing.JButton();
+        jSeparator12 = new javax.swing.JSeparator();
+        jSeparator13 = new javax.swing.JSeparator();
+        btnInventario2 = new javax.swing.JButton();
+        jSeparator14 = new javax.swing.JSeparator();
+        btnProductos2 = new javax.swing.JButton();
+        jSeparator15 = new javax.swing.JSeparator();
+        btnReportesClientes2 = new javax.swing.JButton();
+        btnReportes2 = new javax.swing.JButton();
+        btnReportesComandas2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -103,7 +114,7 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(32, 32, 32)
-                .addComponent(lblPantalla, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblPantalla, javax.swing.GroupLayout.PREFERRED_SIZE, 616, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -146,22 +157,6 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
 
         lblStockInicial1.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         lblStockInicial1.setText("Stock Inicial");
-
-        btnCancelar.setBackground(new java.awt.Color(47, 47, 47));
-        btnCancelar.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        btnCancelar.setForeground(new java.awt.Color(255, 255, 255));
-        btnCancelar.setText("Cancelar");
-        btnCancelar.setBorder(null);
-        btnCancelar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnCancelarMouseClicked(evt);
-            }
-        });
-        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelarActionPerformed(evt);
-            }
-        });
 
         btnAgregar.setBackground(new java.awt.Color(47, 47, 47));
         btnAgregar.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
@@ -222,16 +217,30 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
             }
         });
 
+        btnCancelar.setBackground(new java.awt.Color(47, 47, 47));
+        btnCancelar.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        btnCancelar.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancelar.setText("Cancelar");
+        btnCancelar.setToolTipText("");
+        btnCancelar.setBorder(null);
+        btnCancelar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCancelarMouseClicked(evt);
+            }
+        });
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(114, 114, 114)
-                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
                         .addGap(65, 65, 65)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -246,7 +255,11 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(txtStockMinimo)
                                     .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(lblStockMinimo, javax.swing.GroupLayout.Alignment.LEADING)))))
+                                .addComponent(lblStockMinimo, javax.swing.GroupLayout.Alignment.LEADING))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(9, 9, 9)))
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addGap(87, 87, 87)
@@ -309,9 +322,124 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(38, 38, 38)))
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(75, Short.MAX_VALUE))
+        );
+
+        jPanel7.setBackground(new java.awt.Color(255, 246, 222));
+
+        btnClientes2.setBackground(new java.awt.Color(255, 246, 222));
+        btnClientes2.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
+        btnClientes2.setText("Clientes");
+        btnClientes2.setBorder(null);
+        btnClientes2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnClientes2MouseClicked(evt);
+            }
+        });
+
+        btnInventario2.setBackground(new java.awt.Color(255, 226, 150));
+        btnInventario2.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
+        btnInventario2.setText("Inventario");
+        btnInventario2.setBorder(null);
+        btnInventario2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnInventario2MouseClicked(evt);
+            }
+        });
+        btnInventario2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInventario2ActionPerformed(evt);
+            }
+        });
+
+        btnProductos2.setBackground(new java.awt.Color(255, 246, 222));
+        btnProductos2.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
+        btnProductos2.setText("Productos");
+        btnProductos2.setBorder(null);
+        btnProductos2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnProductos2MouseClicked(evt);
+            }
+        });
+
+        btnReportesClientes2.setBackground(new java.awt.Color(255, 246, 222));
+        btnReportesClientes2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnReportesClientes2.setText("• Clientes");
+        btnReportesClientes2.setBorder(null);
+        btnReportesClientes2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesClientes2MouseClicked(evt);
+            }
+        });
+
+        btnReportes2.setBackground(new java.awt.Color(255, 246, 222));
+        btnReportes2.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
+        btnReportes2.setText("Reportes");
+        btnReportes2.setBorder(null);
+        btnReportes2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportes2MouseClicked(evt);
+            }
+        });
+
+        btnReportesComandas2.setBackground(new java.awt.Color(255, 246, 222));
+        btnReportesComandas2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnReportesComandas2.setText("• Comandas");
+        btnReportesComandas2.setBorder(null);
+        btnReportesComandas2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnReportesComandas2MouseExited(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(btnClientes2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator12)
+                    .addComponent(jSeparator13)
+                    .addComponent(jSeparator14)
+                    .addComponent(btnProductos2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSeparator15)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addGap(0, 27, Short.MAX_VALUE)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnReportesComandas2, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnReportesClientes2, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(9, 9, 9))
+                    .addComponent(btnReportes2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addComponent(btnInventario2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addComponent(btnClientes2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jSeparator12, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnInventario2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jSeparator13, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnProductos2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jSeparator14, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnReportes2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator15, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
+                .addComponent(btnReportesComandas2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnReportesClientes2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -320,7 +448,8 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(0, 101, Short.MAX_VALUE)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(81, 81, 81))
         );
@@ -328,9 +457,12 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(51, 51, 51)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(65, Short.MAX_VALUE))
+                    .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -356,10 +488,6 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private void txtStockInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStockInicialActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtStockInicialActionPerformed
-
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
@@ -459,19 +587,6 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
         coordinador.fileChooser();
     }//GEN-LAST:event_btnSubirImagenMouseClicked
 
-    private void btnCancelarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarMouseClicked
-        if(!txtNombre.getText().isEmpty() || !txtStockInicial.getText().isEmpty()){
-            int opcion = JOptionPane.showConfirmDialog(this, "Se perderan los datos registrados", "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (opcion == JOptionPane.YES_OPTION) {
-                txtNombre.setText("");
-                txtStockInicial.setText("");
-                txtStockMinimo.setText("");
-                coordinador.abrirFrmIngredientes();
-                this.dispose();
-            }
-        }
-    }//GEN-LAST:event_btnCancelarMouseClicked
-
     private void txtStockMinimoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStockMinimoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtStockMinimoActionPerformed
@@ -479,6 +594,59 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private void cbxMedidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxMedidaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cbxMedidaActionPerformed
+
+    private void btnClientes2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClientes2MouseClicked
+        interfaces.mostrarFormularioClientes();
+        this.dispose();
+    }//GEN-LAST:event_btnClientes2MouseClicked
+
+    private void btnInventario2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventario2ActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "No disponible aún...");
+    }//GEN-LAST:event_btnInventario2ActionPerformed
+
+    private void btnProductos2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProductos2MouseClicked
+        interfaces.abrirProductos();
+        this.dispose();
+    }//GEN-LAST:event_btnProductos2MouseClicked
+
+    private void btnReportesClientes2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesClientes2MouseClicked
+        interfaces.mostrarPantallaReporteClientes();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesClientes2MouseClicked
+
+    private void btnReportes2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportes2MouseClicked
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportes2MouseClicked
+
+    private void btnReportesComandas2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesComandas2MouseExited
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesComandas2MouseExited
+
+    private void btnInventario2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnInventario2MouseClicked
+        interfaces.mostrarPantallaIngredientes();
+        this.dispose();
+    }//GEN-LAST:event_btnInventario2MouseClicked
+
+    private void btnCancelarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelarMouseClicked
+        if(!txtNombre.getText().isEmpty() || !txtStockInicial.getText().isEmpty()){ 
+            int opcion = JOptionPane.showConfirmDialog(this, "Se perderan los datos registrados", "Confirmar", JOptionPane.YES_NO_OPTION); 
+            if (opcion == JOptionPane.YES_OPTION) { 
+                txtNombre.setText(""); 
+                txtStockInicial.setText(""); 
+                txtStockMinimo.setText(""); 
+                 
+            }
+        }
+        coordinador.abrirFrmIngredientes(); 
+        this.dispose();
+    }//GEN-LAST:event_btnCancelarMouseClicked
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCancelarActionPerformed
     
     /**
      * Agrega la imagen al campo de imagen del frame.
@@ -542,6 +710,12 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnClientes2;
+    private javax.swing.JButton btnInventario2;
+    private javax.swing.JButton btnProductos2;
+    private javax.swing.JButton btnReportes2;
+    private javax.swing.JButton btnReportesClientes2;
+    private javax.swing.JButton btnReportesComandas2;
     private javax.swing.JLabel btnSubirImagen;
     private javax.swing.JComboBox<UnidadDTO> cbxMedida;
     private javax.swing.JLabel jLabel1;
@@ -549,6 +723,11 @@ public class FrmAgregarIngrediente extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JSeparator jSeparator12;
+    private javax.swing.JSeparator jSeparator13;
+    private javax.swing.JSeparator jSeparator14;
+    private javax.swing.JSeparator jSeparator15;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JSeparator jSeparator7;

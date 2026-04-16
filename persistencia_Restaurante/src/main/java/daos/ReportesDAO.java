@@ -191,15 +191,21 @@ public class ReportesDAO implements IReportesDAO{
                 /*
                 mappeo lo que regresa la consulta para generar la lista de detalles.
                 */
-                List<DetalleComandaDTO> detallesDto = co.getDetalles().stream().map(det -> {
-                    DetalleComandaDTO dto = new DetalleComandaDTO();
-                    dto.setCantidad(det.getCantidad());
-                    dto.setComentario(det.getComentario());
-                    dto.setPrecioUnitario(det.getPrecioUnitario());
-                    dto.setIdProducto(det.getProducto().getId());
-                    return dto;
-                }).collect(Collectors.toList());
-                String nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
+                List<DetalleComandaDTO> detallesDto = new ArrayList<>();
+                String nombreCompleto = "";
+                
+                if (co.getDetalles() != null) {
+                    detallesDto = co.getDetalles().stream().map(det -> {
+                        DetalleComandaDTO dto = new DetalleComandaDTO();
+                        dto.setCantidad(det.getCantidad());
+                        dto.setComentario(det.getComentario());
+                        dto.setPrecioUnitario(det.getPrecioUnitario());
+                        dto.setIdProducto(det.getProducto().getId());
+                        return dto;
+                    }).collect(Collectors.toList());
+                    nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
+                }
+                
                 /*
                 se crean los objetos y se agregan.
                 */

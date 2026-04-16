@@ -211,8 +211,8 @@ public class FrmIngredientes extends javax.swing.JFrame {
         btnReportesComandas.setText("• Comandas");
         btnReportesComandas.setBorder(null);
         btnReportesComandas.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnReportesComandasMouseExited(evt);
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesComandasMouseClicked(evt);
             }
         });
 
@@ -324,9 +324,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
         btnAtras.setForeground(new java.awt.Color(255, 255, 255));
         btnAtras.setText("Atrás");
         btnAtras.setBorder(null);
-        btnAtras.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAtrasActionPerformed(evt);
+        btnAtras.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAtrasMouseClicked(evt);
             }
         });
 
@@ -560,10 +560,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
         aplicarFiltro();
     }//GEN-LAST:event_txtBusquedaKeyReleased
 
-    private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
-        
-    }//GEN-LAST:event_btnAtrasActionPerformed
-
     private void btnAnadirIngredienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAnadirIngredienteMouseClicked
         coordinador.abrirFrmAgregarIngrediente();
         this.dispose();
@@ -760,15 +756,23 @@ public class FrmIngredientes extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnReportesMouseClicked
 
-    private void btnReportesComandasMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesComandasMouseExited
-        interfaces.mostrarPantallaReporteComandas();
-        this.dispose();
-    }//GEN-LAST:event_btnReportesComandasMouseExited
-
     private void btnReportesClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesClientesMouseClicked
         interfaces.mostrarPantallaReporteClientes();
         this.dispose();
     }//GEN-LAST:event_btnReportesClientesMouseClicked
+
+    private void btnAtrasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAtrasMouseClicked
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de regresar?", "Cerrar seleccion cliente", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (opcion == JOptionPane.YES_OPTION) {
+            interfaces.iniciarSistema();
+        }
+        this.dispose();
+    }//GEN-LAST:event_btnAtrasMouseClicked
+
+    private void btnReportesComandasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesComandasMouseClicked
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnReportesComandasMouseClicked
     
     /**
      * Actualiza la tabla donde se ven los ingredientes
@@ -864,9 +868,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
         pnlSeleccion.removeAll();
 
         scrollMenuLateral.setVisible(false);
-        btnAtras.setVisible(false);
         /*
-        majojo:
         Misma, que se desactive el botón que agregué.
         */
         btnAgregarIngredientes.setVisible(false);

@@ -10,6 +10,8 @@ import controlador.Coordinador_ModuloReportes;
 import dtos.ReporteClientesDTO;
 import excepciones.NegocioException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,9 +96,9 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         btnAtras.setForeground(new java.awt.Color(255, 255, 255));
         btnAtras.setText("Atrás");
         btnAtras.setBorder(null);
-        btnAtras.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAtrasActionPerformed(evt);
+        btnAtras.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAtrasMouseClicked(evt);
             }
         });
 
@@ -389,10 +391,6 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
-
-    }//GEN-LAST:event_btnAtrasActionPerformed
-
     private void btnClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClientesMouseClicked
         interfaces.mostrarFormularioClientes();
         this.dispose();
@@ -495,6 +493,14 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         actualizarTabla();
     }//GEN-LAST:event_txtBusquedaVisitasKeyReleased
 
+    private void btnAtrasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAtrasMouseClicked
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Seguro de regresar?", "Cerrar seleccion cliente", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (opcion == JOptionPane.YES_OPTION) {
+            interfaces.iniciarSistema();
+        }
+        this.dispose();
+    }//GEN-LAST:event_btnAtrasMouseClicked
+
     private void actualizarTabla() {
     try {
         List<ReporteClientesDTO> lista = coor.obtenerReporteClientesFiltro(filtroNombre, filtroVisitas);
@@ -508,35 +514,58 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
         modelo.setRowCount(0);
         try {
-            List<ReporteClientesDTO> lista = coor.obtenerClientes();
-            
-            for(ReporteClientesDTO rc: lista){
-                modelo.addRow( new Object[] {
-                        rc.getNombres(),
-                        rc.getVisitas(),
-                        rc.getTotalGastado(),
-                        rc.getFechaUltimaComanda(),
-                        rc.getPuntosAcumulados()     
-                }); 
+             List<ReporteClientesDTO> lista = coor.obtenerClientes();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+            for (ReporteClientesDTO rc : lista) {
+
+                Object fechaFormateada;
+
+                if (rc.getFechaUltimaComanda() == null) {
+                    fechaFormateada = "";
+                } else {
+                    fechaFormateada = rc.getFechaUltimaComanda().format(formatter);
+                }
+
+                modelo.addRow(new Object[] {
+                    rc.getNombres(),
+                    rc.getVisitas(),
+                    rc.getTotalGastado(),
+                    fechaFormateada,
+                    rc.getPuntosAcumulados()
+                });
             }
         } catch (NegocioException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }  
     }
     
-    public void cargarTabla(List<ReporteClientesDTO> lista){
-        DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
-        modelo.setRowCount(0);
-        for(ReporteClientesDTO rc: lista){
-            modelo.addRow( new Object[] {
-                rc.getNombres(),
-                rc.getVisitas(),
-                rc.getTotalGastado(),
-                rc.getFechaUltimaComanda(),
-                rc.getPuntosAcumulados()
-            });
-        }  
+    public void cargarTabla(List<ReporteClientesDTO> lista) {
+    DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
+    modelo.setRowCount(0);
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    for (ReporteClientesDTO rc : lista) {
+
+        Object fechaFormateada;
+
+        if (rc.getFechaUltimaComanda() == null) {
+            fechaFormateada = "";
+        } else {
+            fechaFormateada = rc.getFechaUltimaComanda().format(formatter);
+        }
+
+        modelo.addRow(new Object[] {
+            rc.getNombres(),
+            rc.getVisitas(),
+            rc.getTotalGastado(),
+            fechaFormateada,
+            rc.getPuntosAcumulados()
+        });
     }
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtras;

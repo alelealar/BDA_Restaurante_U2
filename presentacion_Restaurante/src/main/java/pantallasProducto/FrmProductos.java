@@ -82,10 +82,10 @@ public class FrmProductos extends javax.swing.JFrame {
         btnProductos = new javax.swing.JButton();
         btnInventario = new javax.swing.JButton();
         btnReportes = new javax.swing.JButton();
-        btnRepCom = new javax.swing.JButton();
-        btnRepCli = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator4 = new javax.swing.JSeparator();
+        btnReportesClientes = new javax.swing.JButton();
+        btnReportesComandas = new javax.swing.JButton();
         lblBuscarpOR = new javax.swing.JPanel();
         lblProReg = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -166,20 +166,31 @@ public class FrmProductos extends javax.swing.JFrame {
         btnReportes.setText("Reportes");
         btnReportes.setBorder(null);
         btnReportes.setFocusPainted(false);
+        btnReportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesMouseClicked(evt);
+            }
+        });
 
-        btnRepCom.setBackground(new java.awt.Color(255, 246, 222));
-        btnRepCom.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        btnRepCom.setText("• Comandas");
-        btnRepCom.setBorder(null);
-        btnRepCom.setFocusPainted(false);
-        btnRepCom.addActionListener(this::btnRepComActionPerformed);
+        btnReportesClientes.setBackground(new java.awt.Color(255, 246, 222));
+        btnReportesClientes.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnReportesClientes.setText("• Clientes");
+        btnReportesClientes.setBorder(null);
+        btnReportesClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesClientesMouseClicked(evt);
+            }
+        });
 
-        btnRepCli.setBackground(new java.awt.Color(255, 246, 222));
-        btnRepCli.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        btnRepCli.setText("• Clientes");
-        btnRepCli.setBorder(null);
-        btnRepCli.setFocusPainted(false);
-        btnRepCli.addActionListener(this::btnRepCliActionPerformed);
+        btnReportesComandas.setBackground(new java.awt.Color(255, 246, 222));
+        btnReportesComandas.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btnReportesComandas.setText("• Comandas");
+        btnReportesComandas.setBorder(null);
+        btnReportesComandas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnReportesComandasMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -187,19 +198,16 @@ public class FrmProductos extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(btnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addComponent(btnInventario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnInventario, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
             .addComponent(jSeparator4)
             .addComponent(btnProductos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnReportes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(27, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(btnRepCom)
-                        .addGap(14, 14, 14))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(btnRepCli, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnReportesComandas, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnReportesClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -217,9 +225,9 @@ public class FrmProductos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnRepCom, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReportesComandas, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnRepCli)
+                .addComponent(btnReportesClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -426,15 +434,6 @@ public class FrmProductos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnProductosActionPerformed
 
     /**
-     * Botón que abre el módulo reportes - clientes.
-     */
-    private void btnRepCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepCliActionPerformed
-        // TODO add your handling code here:
-         interfaces.mostrarPantallaReporteClientes();
-         this.dispose();
-    }//GEN-LAST:event_btnRepCliActionPerformed
-
-    /**
      * Botón que abre el módulo de inventario-ingredientes.
      */
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
@@ -572,14 +571,20 @@ public class FrmProductos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tipoBusquedaItemStateChanged
 
-    /**
-     * Botón que abre el módulo de reportes-comandas.
-     */
-    private void btnRepComActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepComActionPerformed
-        // TODO add your handling code here:
-        interfaces.mostrarPantallaReporteComandas();
+    private void btnReportesClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesClientesMouseClicked
+        interfaces.mostrarPantallaReporteClientes();
         this.dispose();
-    }//GEN-LAST:event_btnRepComActionPerformed
+    }//GEN-LAST:event_btnReportesClientesMouseClicked
+
+    private void btnReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesMouseClicked
+        interfaces.mostrarPantallaReporteComandas(); 
+        this.dispose();
+    }//GEN-LAST:event_btnReportesMouseClicked
+
+    private void btnReportesComandasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesComandasMouseClicked
+        interfaces.mostrarPantallaReporteComandas(); 
+        this.dispose();
+    }//GEN-LAST:event_btnReportesComandasMouseClicked
 
     /**
      * Método que consulta todos los registros y se encarga de mostrarlos
@@ -646,9 +651,9 @@ public class FrmProductos extends javax.swing.JFrame {
     private javax.swing.JButton btnInventario;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnProductos;
-    private javax.swing.JButton btnRepCli;
-    private javax.swing.JButton btnRepCom;
     private javax.swing.JButton btnReportes;
+    private javax.swing.JButton btnReportesClientes;
+    private javax.swing.JButton btnReportesComandas;
     private javax.swing.JLabel iconBusqueda;
     private javax.swing.JLabel iconSistema;
     private javax.swing.JPanel jPanel1;

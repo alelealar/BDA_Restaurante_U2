@@ -140,10 +140,12 @@ public class frmInicio extends javax.swing.JFrame {
 
     private void btnSoyAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSoyAdminActionPerformed
         coordinador.mostrarFormularioClientes();
+        this.dispose();
     }//GEN-LAST:event_btnSoyAdminActionPerformed
 
     private void btnSoyMeseroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSoyMeseroActionPerformed
         coordinador.mostrarISMeseros();
+        this.dispose();
     }//GEN-LAST:event_btnSoyMeseroActionPerformed
 
 
