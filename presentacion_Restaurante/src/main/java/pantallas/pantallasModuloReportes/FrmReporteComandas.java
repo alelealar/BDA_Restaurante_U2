@@ -10,6 +10,7 @@ import controlador.Coordinador_ModuloReportes;
 import dtos.ReporteComandasDTO;
 import excepciones.NegocioException;
 import interfaces.IReportesBO;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -17,27 +18,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import notificaciones.DlgNotificacion;
 import notificaciones.TipoNotificacion;
-import objetosNegocio.ReportesBO;
 import reportes.GenerarReportes;
 
 /**
- *
- * @author Home
+ * Interfaz gráfica encargada de gestionar y mostrar el Reporte de Comandas.
+ * Permite al usuario filtrar comandas por fecha, verlas en una tabla y generar 
+ * un documento imprimible utilizando JasperReports.
+ * 
+ * @author Brian Kaleb Sandoval Rodriguez - 262741
+ * @author Alejandra Leal Armenta - 262719
+ * @author María José Valdez Iglesias - 262775
  */
 public class FrmReporteComandas extends javax.swing.JFrame {
     
+    /**
+     * Coordinador del frame.
+     */
     Coordinador_ModuloReportes coordinador = new Coordinador_ModuloReportes();
+    
+    /**
+     * Coordinador para conectar el frame con el resto del sistema.
+     */
     CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
-    IReportesBO reportesBO = ReportesBO.getInstance();
 
     /**
-     * Creates new form FrmReporteComandas
+     * Constructor de la clase.
      */
     public FrmReporteComandas() {
         initComponents();
         this.setLocationRelativeTo(null);
+        cargarTabla();
     }
 
     /**
@@ -132,6 +153,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         btnClientes.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnClientes.setText("Clientes");
         btnClientes.setBorder(null);
+        btnClientes.setFocusPainted(false);
         btnClientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnClientesMouseClicked(evt);
@@ -167,26 +189,11 @@ public class FrmReporteComandas extends javax.swing.JFrame {
                 btnReportesClientesMouseClicked(evt);
             }
         });
-        btnReportesClientes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesClientesActionPerformed(evt);
-            }
-        });
 
         btnReportes.setBackground(new java.awt.Color(255, 246, 222));
         btnReportes.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnReportes.setText("Reportes");
         btnReportes.setBorder(null);
-        btnReportes.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnReportesMouseClicked(evt);
-            }
-        });
-        btnReportes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReportesActionPerformed(evt);
-            }
-        });
 
         btnReportesComandas.setBackground(new java.awt.Color(255, 226, 150));
         btnReportesComandas.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -371,83 +378,117 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Evento del botón "Atrás".
+     * Muestra una advertencia al usuario y, si confirma, lo devuelve a la pantalla 
+     * de inicio de sesión o sistema principal, cerrando esta ventana.
+     */
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
-
+        int opcion = DlgNotificacion.mostrarNotificacion(this, "Con está acción tendrá que identificarse otra vez para acceder a este apartado, ¿Está seguro?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        interfaces.iniciarSistema();
+        this.dispose();
     }//GEN-LAST:event_btnAtrasActionPerformed
 
+    /**
+     * Evento del menú lateral "Clientes".
+     * Navega a la pantalla de gestión de clientes.
+     */
     private void btnClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnClientesMouseClicked
         interfaces.mostrarFormularioClientes();
         this.dispose();
     }//GEN-LAST:event_btnClientesMouseClicked
 
+    /**
+     * Evento del menú lateral "Inventario".
+     * Navega a la pantalla de gestión de ingredientes/inventario.
+     */
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
+        interfaces.mostrarPantallaIngredientes();
+        this.dispose();
     }//GEN-LAST:event_btnInventarioActionPerformed
 
+    /**
+     * Evento del menú lateral "Productos".
+     * Navega a la pantalla de gestión de productos.
+     */
     private void btnProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProductosMouseClicked
-        interfaces.abrirProductos();
+        interfaces.mostrarPantallaProductos();
         this.dispose();
     }//GEN-LAST:event_btnProductosMouseClicked
 
-    private void btnReportesClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesClientesActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesClientesActionPerformed
-
-    private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
-    }//GEN-LAST:event_btnReportesActionPerformed
-
+    /**
+     * Evento del submenú lateral "Reportes > Comandas".
+     * Notifica al usuario que ya se encuentra en esta pantalla.
+     */
     private void btnReportesComandasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesComandasActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "No disponible aún...");
+        DlgNotificacion.mostrarNotificacion(this, "Ya está en el menú de Reportes Comandas.", TipoNotificacion.MENSAJE);
     }//GEN-LAST:event_btnReportesComandasActionPerformed
 
-    private void btnReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesMouseClicked
-        
-    }//GEN-LAST:event_btnReportesMouseClicked
-
+    /**
+     * Evento del submenú lateral "Reportes > Clientes".
+     * Navega a la pantalla del reporte de clientes.
+     */
     private void btnReportesClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesClientesMouseClicked
         interfaces.mostrarPantallaReporteClientes();
         this.dispose();
     }//GEN-LAST:event_btnReportesClientesMouseClicked
 
     /**
-     * 
-     * @param evt 
+     * Método encargado de generar los reportes de las comandas.
      */
     private void btnGenerarReporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGenerarReporteMouseClicked
-        // TODO add your handling code here:
+        // valida las fechas
         if (!validarFechas()) {
             return;
         }
-
+        // las formatea
         LocalDateTime inicio = convertirFecha((Date) spinFechaInicio.getValue());
         LocalDateTime fin = convertirFecha((Date) spinFechaFin.getValue());
-        
-        List<ReporteComandasDTO> comandas = coordinador.obtenerReporteComandasFiltro(inicio, fin);
-        if(comandas == null || comandas.isEmpty()){
-            DlgNotificacion.mostrarNotificacion(this, "No se encontraron comandas en este rango de fecha.", TipoNotificacion.MENSAJE);
-            return;
-        }
-        
-        Map<String, Object> parametros = new HashMap<>();
-        parametros.put("FECHA_INICIO", inicio.toString());
-        parametros.put("FECHA_FIN", fin.toString());
+        // empieza las operaciones para generar el pdf
+        try {
+            // obtiene la lista de reportes de comandas 
+            List<ReporteComandasDTO> comandas = coordinador.obtenerReporteComandasFiltro(inicio, fin);
+            if (comandas == null || comandas.isEmpty()) {
+                DlgNotificacion.mostrarNotificacion(this, "No se encontraron comandas en este rango de fecha.", TipoNotificacion.MENSAJE);
+                return;
+            }
+            // las transforma para ser procesadas por Jasper
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(comandas);
 
-        GenerarReportes.generarReporte(
-                "/reportes/ReporteComandas.jasper",
-                parametros,
-                comandas,
-                btnGenerarReporte,
-                this
-        );
+            // se envía la info al archivo del reporte
+            HashMap<String, Object> parametros = new HashMap<>();
+            parametros.put("FECHA_INICIO", inicio.toString()); 
+            parametros.put("FECHA_FIN", fin.toString());
+            parametros.put("ItemDataSource", dataSource);
+
+            // carga el archivo
+            InputStream jrxml = getClass().getResourceAsStream("/reportes/reporteComandas.jrxml");
+
+            // lo compila 
+            JasperReport report = JasperCompileManager.compileReport(jrxml);
+
+            // empieza a pasarle la información
+            JasperPrint print = JasperFillManager.fillReport(report, parametros, new JREmptyDataSource());
+
+            // Da una vista previa del reporte
+            JasperViewer.viewReport(print, false);
+
+        } catch (JRException ex) {
+            ex.printStackTrace();
+            DlgNotificacion.mostrarNotificacion(this, "Ocurrió un error al compilar/generar el reporte de Jasper.", TipoNotificacion.ERROR);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            DlgNotificacion.mostrarNotificacion(this, "Ocurrió un error al querer obtener los datos de comandas.", TipoNotificacion.ERROR);
+        }
     }//GEN-LAST:event_btnGenerarReporteMouseClicked
 
     /**
-     * 
+     * Metodo que válida que las fechas en los spin no estén al revés.
      * @return 
      */
     private boolean validarFechas(){
@@ -461,14 +502,34 @@ public class FrmReporteComandas extends javax.swing.JFrame {
     }
     
     /**
-     * 
-     * @param fecha
-     * @return 
+     * Método que convierte las fechas a objetos de LocalDateTime.
+     * @param fecha Fecha a convertir.
+     * @return La fecha ya en objeto de tipo LocalDateTime.
      */
     private LocalDateTime convertirFecha(Date fecha) {
         return fecha.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
+    }
+    
+    /**
+     * Método para cargar la lista con reportes de comandas DTO.
+     */
+    public void cargarTabla(){
+        DefaultTableModel modelo = (DefaultTableModel) tblReportes.getModel();
+        modelo.setRowCount(0);
+        List<ReporteComandasDTO> lista = coordinador.obtenerReporteComandas();
+
+        for (ReporteComandasDTO rc : lista) {
+            modelo.addRow(new Object[]{
+                rc.getNombreCliente(),
+                rc.getMesa(),
+                rc.getTotalVenta(),
+                rc.getEstadoComanda(),
+                rc.getFechaHora(),
+                rc.getPedidos()
+            });
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

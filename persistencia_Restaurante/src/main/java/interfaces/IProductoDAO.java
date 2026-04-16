@@ -134,12 +134,27 @@ public interface IProductoDAO {
     public List<Producto> buscarProductos(String nombre, TipoProducto tipo) throws PersistenciaException;
     
     /**
+     * Obtiene una lista con los productos activos que cumplan con los filtros 
+     * especificados en los parámetros.
      * 
-     * @param nombre
-     * @param tipo
-     * @return
-     * @throws PersistenciaException 
+     * @param nombre Nombre que se desea buscar.
+     * @param tipo Tipo de producto que se desea buscar.
+     * @return La lista con los productos activos que cumplan con dicho filtro.
+     * @throws PersistenciaException Si ocurre un error durante la búsqueda.
      */
     public List<Producto> buscarProductosActivos(String nombre, TipoProducto tipo) throws PersistenciaException;
+    
+    /**
+     * Verifica si ya existe un producto registrado con el mismo nombre.
+     *
+     * Este método se utiliza principalmente para validar la unicidad del
+     * nombre antes de guardar un producto.
+     *
+     * @param nombre Nombre a verificar.
+     * @return true si ya existe un producto con ese nombre, false en caso
+     * contrario.
+     * @throws PersistenciaException Si ocurre un error durante la consulta.
+     */
+    public boolean existeNombre(String nombre) throws PersistenciaException;
     
 }

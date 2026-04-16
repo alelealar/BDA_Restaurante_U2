@@ -158,6 +158,71 @@ public class ReportesDAO implements IReportesDAO{
         
         return em.createQuery(query).getResultList();
     }
+    
+    /**
+     * Obtiene los reportes de todas las comandas.
+     * Permite consultar comandas y sus datos importantes.
+     * @return lista de comandas registradas.
+     * @throws PersistenciaException en caso de error al consultar la base de datos
+     */
+    @Override
+    public List<ReporteComandasDTO> obtenerReportesComandas() throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        
+        try{
+            em.getTransaction().begin();
+            String jpql = 
+                        """
+                        select distinct c 
+                        from Comanda c 
+                        join fetch c.cliente 
+                        left join fetch c.detalles 
+                        """;
+            /*
+            se crea la lista de comandas.
+            */
+            List<Comanda> comandas = em
+                    .createQuery(jpql, Comanda.class)
+                    .getResultList();       
+            /*
+            se crea la lista de reportes comandas.
+            */
+            List<ReporteComandasDTO> listaReportes = comandas.stream().map(co -> {
+                /*
+                mappeo lo que regresa la consulta para generar la lista de detalles.
+                */
+                List<DetalleComandaDTO> detallesDto = co.getDetalles().stream().map(det -> {
+                    DetalleComandaDTO dto = new DetalleComandaDTO();
+                    dto.setCantidad(det.getCantidad());
+                    dto.setComentario(det.getComentario());
+                    dto.setPrecioUnitario(det.getPrecioUnitario());
+                    dto.setIdProducto(det.getProducto().getId());
+                    return dto;
+                }).collect(Collectors.toList());
+                String nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
+                /*
+                se crean los objetos y se agregan.
+                */
+                return new ReporteComandasDTO(
+                        nombreCompleto,
+                        co.getMesa().getNumero(),
+                        co.getTotal(),
+                        EstadoComandaDTO.valueOf(co.getEstadoComanda().name()),
+                        co.getFechaHora(),
+                        detallesDto 
+                );
+            }).collect(Collectors.toList());           
+            em.getTransaction().commit();            
+            return listaReportes;          
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException("Error al obtener el reporte de las comandas.", e);
+        } finally {
+            em.close();
+        }
+    }
 
     /**
      * Obtiene el reporte de comandas filtrado por un rango de fechas.
@@ -175,7 +240,8 @@ public class ReportesDAO implements IReportesDAO{
             em.getTransaction().begin();
             
             /*
-            
+            a lo que investigué, esta era la forma recomendable para obtener
+            las relaciones de las comandas respecto a los pedidos, con join fetch.
             */
             String jpql = 
                         """
@@ -187,7 +253,7 @@ public class ReportesDAO implements IReportesDAO{
                         """;
 
             /*
-            
+            se crea la lista de comandas.
             */
             List<Comanda> comandas = em
                     .createQuery(jpql, Comanda.class)
@@ -196,11 +262,11 @@ public class ReportesDAO implements IReportesDAO{
                     .getResultList();
             
             /*
-            
+            se crea la lista de reportes comandas.
             */
             List<ReporteComandasDTO> listaReportes = comandas.stream().map(co -> {
                 /*
-                
+                mappeo lo que regresa la consulta para generar la lista de detalles.
                 */
                 List<DetalleComandaDTO> detallesDto = co.getDetalles().stream().map(det -> {
                     DetalleComandaDTO dto = new DetalleComandaDTO();
@@ -214,7 +280,7 @@ public class ReportesDAO implements IReportesDAO{
                 String nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
 
                 /*
-                
+                se crean los objetos y se agregan.
                 */
                 return new ReporteComandasDTO(
                         nombreCompleto,
@@ -234,7 +300,7 @@ public class ReportesDAO implements IReportesDAO{
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("Error al obtener el reporte de las comandas", e);
+            throw new PersistenciaException("Error al obtener el reporte de las comandas por rango de fecha.", e);
         } finally {
             em.close();
         }

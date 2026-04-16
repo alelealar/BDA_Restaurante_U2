@@ -165,4 +165,9 @@ public class DetalleComandaDTO {
     public void setNombreCliente(String nombreCliente) {
         this.nombreCliente = nombreCliente;
     }
+    
+    @Override
+    public String toString(){
+        return this.idProducto + " x" + this.cantidad + ", Comentario: '" + this.comentario + "'."; 
+    }
 }

@@ -52,5 +52,13 @@ public interface IReportesDAO {
      * @throws PersistenciaException en caso de error al consultar la base de datos
      */
     public List<ReporteComandasDTO> obtenerReporteComandasFiltro(LocalDateTime inicio, LocalDateTime fin) throws PersistenciaException;
+    
+    /**
+     * Obtiene los reportes de todas las comandas.
+     * Permite consultar comandas y sus datos importantes.
+     * @return lista de comandas registradas.
+     * @throws PersistenciaException en caso de error al consultar la base de datos
+     */
+    public List<ReporteComandasDTO> obtenerReportesComandas() throws PersistenciaException;
 
 }

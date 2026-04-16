@@ -51,4 +51,12 @@ public interface IReportesBO {
      * @throws NegocioException en caso de error en la lógica de negocio
      */
     public List<ReporteComandasDTO> obtenerReporteComandasFiltro(LocalDateTime inicio, LocalDateTime fin) throws NegocioException;
+    
+    /**
+     * Obtiene los reportes de todas las comandas.
+     * Permite consultar comandas y sus datos importantes.
+     * @return lista de comandas registradas.
+     * @throws NegocioException en caso de error en la lógica de negocio.
+     */
+    public List<ReporteComandasDTO> obtenerReportesComandas() throws NegocioException; 
 }

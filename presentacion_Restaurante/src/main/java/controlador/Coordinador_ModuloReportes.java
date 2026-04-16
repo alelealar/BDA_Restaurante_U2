@@ -23,7 +23,9 @@ import pantallas.pantallasModuloReportes.FrmReporteComandas;
 
 /**
  *
+ * @author Brian Kaleb Sandoval Rodriguez, 262741
  * @author Alejandra Leal Armenta, 262719
+ * @author María José Valdez Iglesias, 262775
  */
 
 public class Coordinador_ModuloReportes {
@@ -45,9 +47,28 @@ public class Coordinador_ModuloReportes {
         }
     }
     
+    /**
+     * Método para consultar todos los reportes de comandas en un rango de fechas.
+     * @param inicio Inicio del periodo a buscar.
+     * @param fin Fin del periodo a buscar.
+     * @return La lista con los reportes de comandas dentro del periodo.
+     */
     public List<ReporteComandasDTO> obtenerReporteComandasFiltro(LocalDateTime inicio, LocalDateTime fin) {
         try{
             return bo.obtenerReporteComandasFiltro(inicio, fin);
+        } catch(NegocioException ne){
+            DlgNotificacion.mostrarNotificacion(frmReporteComandas, "No se pudieron obtener las comandas filtradas según el rango de fecha establecido: " + ne.getMessage(), TipoNotificacion.ERROR);
+            return null;
+        }
+    }
+    
+    /**
+     * Método para consultar todos los reportes de comandas que hayan.
+     * @return La lista con los reportes de comandas
+     */
+    public List<ReporteComandasDTO> obtenerReporteComandas(){
+        try{
+            return bo.obtenerReportesComandas();
         } catch(NegocioException ne){
             DlgNotificacion.mostrarNotificacion(frmReporteComandas, "No se pudieron obtener las comandas filtradas según el rango de fecha establecido: " + ne.getMessage(), TipoNotificacion.ERROR);
             return null;

@@ -291,9 +291,10 @@ FrmProductos.
     }
     
     /**
-     * 
-     * @param frame
-     * @return 
+     * Método para buscar todos los productos activos con cierto nombre, esta es
+     * una versión gráfica para implementar en frames.
+     * @param frame Frame donde se quiera mostrar.
+     * @return La lista de coincidencias de tipo ProductoDTO.
      */
     public List<ProductoDTO> buscarProductosActivos(Frame frame){
         try{

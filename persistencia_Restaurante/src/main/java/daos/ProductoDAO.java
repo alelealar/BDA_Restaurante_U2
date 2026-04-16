@@ -324,11 +324,13 @@ public class ProductoDAO implements IProductoDAO {
     }
     
     /**
+     * Obtiene una lista con los productos activos que cumplan con los filtros 
+     * especificados en los parámetros.
      * 
-     * @param nombre
-     * @param tipo
-     * @return
-     * @throws PersistenciaException 
+     * @param nombre Nombre que se desea buscar.
+     * @param tipo Tipo de producto que se desea buscar.
+     * @return La lista con los productos activos que cumplan con dicho filtro.
+     * @throws PersistenciaException Si ocurre un error durante la búsqueda.
      */
     @Override
     public List<Producto> buscarProductosActivos(String nombre, TipoProducto tipo) throws PersistenciaException {
@@ -354,5 +356,37 @@ public class ProductoDAO implements IProductoDAO {
         query.select(producto);
         
         return em.createQuery(query).getResultList();
+    }
+    
+     /**
+     * Verifica si ya existe un producto registrado con el mismo nombre.
+     *
+     * Este método se utiliza principalmente para validar la unicidad del
+     * nombre antes de guardar un producto.
+     *
+     * @param nombre Nombre a verificar.
+     * @return true si ya existe un producto con ese nombre, false en caso
+     * contrario.
+     * @throws PersistenciaException Si ocurre un error durante la consulta.
+     */
+    @Override
+    public boolean existeNombre(String nombre) throws PersistenciaException {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            String JPQL;
+            TypedQuery<Long> query;
+
+            JPQL = "select count(p) from Producto p where p.nombre like :nom";
+            query = em.createQuery(JPQL, Long.class);
+            query.setParameter("nom", nombre);
+
+            Long conteo = query.getSingleResult();
+            return conteo > 0;
+
+        } catch (Exception e) {
+            throw new PersistenciaException("Nombre ya existe en la base de datos.", e);
+        } finally {
+            em.close();
+        }
     }
 }

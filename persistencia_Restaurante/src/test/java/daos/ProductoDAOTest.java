@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Clase de pruebas unitarias para validar el comportamiento de ProductoDAO.
@@ -35,7 +36,7 @@ public class ProductoDAOTest {
      * Limpia las tablas de la base de datos después de cada prueba.
      * Esto asegura que cada test sea independiente y no existan conflictos de datos.
      */
-    @AfterEach
+    @BeforeEach
     public void limpiar() {
         EntityManager em = ConexionBD.crearConexion();
         try {
@@ -45,6 +46,7 @@ public class ProductoDAOTest {
             en caso de que existan otros registros independientes  alos de esta clase de 
             prueba, se eliminan los registros de esta tabla también.
             */
+            em.createQuery("delete from DetalleComanda").executeUpdate();
             em.createQuery("delete from ProductoIngrediente").executeUpdate();
             em.createQuery("delete from Producto").executeUpdate();
             em.getTransaction().commit();
@@ -337,14 +339,64 @@ public class ProductoDAOTest {
     }
     
     /**
-     * 
+     * Prueba la búsqueda de productos activos enviando un nombre parcial y un
+     * tipo válido. Se espera que la lista retorne el producto que insertamos
+     * con el método auxiliar.
      */
     @Test
-    public void buscarProductosActivosExiste(){}
-    
+    public void buscarProductosActivosExiste() {
+        Producto productoTest = productoPrueba();
+        assertDoesNotThrow(() -> instance.agregarProducto(productoTest));
+        List<Producto> resultados = assertDoesNotThrow(
+                () -> instance.buscarProductosActivos("Test", TipoProducto.BEBIDA));
+        assertNotNull(resultados);
+        assertFalse(resultados.isEmpty());
+
+        boolean encontrado = resultados.stream()
+                .anyMatch(p -> p.getNombre().equals(productoTest.getNombre()));
+        assertTrue(encontrado);
+    }
+
     /**
-     * 
+     * Prueba la búsqueda de productos activos enviando un nombre que no existe
+     * en la BD. Gracias al @BeforeEach, la BD está limpia, por lo que se espera
+     * una lista vacía.
      */
     @Test
-    public void buscarProductosActivosNoExiste(){}
+    public void buscarProductosActivosNoExiste() {
+        String nombreInexistente = "ProductoFantasma";
+        List<Producto> resultados = assertDoesNotThrow(
+                () -> instance.buscarProductosActivos(nombreInexistente, TipoProducto.BEBIDA));
+
+        assertNotNull(resultados);
+        assertTrue(resultados.isEmpty());
+    }
+
+    /**
+     * Prueba la validación de nombre existente. Inserta un producto usando el
+     * auxiliar y verifica que devuelva 'true' al buscar su nombre.
+     */
+    @Test
+    public void existeNombreExito() {;
+        Producto productoTest = productoPrueba();
+        assertDoesNotThrow(() -> instance.agregarProducto(productoTest));
+
+        boolean existe = assertDoesNotThrow(
+                () -> instance.existeNombre(productoTest.getNombre()));
+
+        assertTrue(existe);
+    }
+
+    /**
+     * Prueba la validación de nombre enviando un nombre que no está en la BD.
+     * Se espera que devuelva 'false' con la BD limpia.
+     */
+    @Test
+    public void existeNombreFallo() {
+        String nombreInexistente = "NombreQueNoExiste";
+
+        boolean existe = assertDoesNotThrow(
+                () -> instance.existeNombre(nombreInexistente));
+        assertFalse(existe);
+    }
 }

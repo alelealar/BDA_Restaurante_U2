@@ -27,7 +27,9 @@ import notificaciones.TipoNotificacion;
 
 /**
  *
- * @author Home
+ * @author Brian Kaleb Sandoval Rodriguez - 262741
+ * @author Alejandra Leal Armenta - 262719
+ * @author María José Valdez Iglesias - 262775
  */
 public class FrmReporteClientes extends javax.swing.JFrame {
     
@@ -138,13 +140,14 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         btnClientes.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnClientes.setText("Clientes");
         btnClientes.setBorder(null);
+        btnClientes.setFocusPainted(false);
         btnClientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnClientesMouseClicked(evt);
             }
         });
 
-        btnInventario.setBackground(new java.awt.Color(255, 226, 150));
+        btnInventario.setBackground(new java.awt.Color(255, 246, 222));
         btnInventario.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnInventario.setText("Inventario");
         btnInventario.setBorder(null);
@@ -164,7 +167,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
             }
         });
 
-        btnReportesClientes.setBackground(new java.awt.Color(255, 246, 222));
+        btnReportesClientes.setBackground(new java.awt.Color(255, 226, 150));
         btnReportesClientes.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnReportesClientes.setText("• Clientes");
         btnReportesClientes.setBorder(null);
