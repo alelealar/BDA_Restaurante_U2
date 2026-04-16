@@ -3,7 +3,6 @@ package pantallas.moduloComandas.vistas;
 import controlador.CoordinadorModuloComandas;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
-import dtos.IngredienteDTO;
 import dtos.ProductoDTO;
 import dtos.ProductoIngredienteDTO;
 import enumerators.TipoMovimiento;
@@ -11,7 +10,6 @@ import excepciones.NegocioException;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -154,23 +152,55 @@ public class panProductoPedido extends javax.swing.JPanel {
      * Elimina el producto de la comanda.
      */
     private void eliminarProducto() {
-
         try {
             ComandaDTO comandaActual = coordinador.obtenerComanda(detalle.getIdComanda());
 
-            comandaActual.getDetalles().removeIf(
-                    d -> d.getId() != null && d.getId().equals(detalle.getId())
-            );
+            DetalleComandaDTO detalleEliminar = null;
+
+            for (DetalleComandaDTO d : comandaActual.getDetalles()) {
+                if (d.getId() != null && d.getId().equals(detalle.getId())) {
+                    detalleEliminar = d;
+                    break;
+                }
+            }
+
+            if (detalleEliminar == null) {
+                return;
+            }
+
+            regresarIngredientes(detalleEliminar);
+
+            comandaActual.getDetalles().remove(detalleEliminar);
 
             comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
-
-            actualizarIngredientesEntrada();
 
             coordinador.actualizarComanda(comandaActual);
             coordinador.refrescarComandas();
 
         } catch (NegocioException ex) {
             mostrarError(ex.getMessage());
+        }
+    }
+
+    /**
+     * Logica para regresar ingredientes por detalle
+     *
+     * @param detalleEliminar
+     * @throws NegocioException
+     */
+    private void regresarIngredientes(DetalleComandaDTO detalleEliminar) throws NegocioException {
+
+        ProductoDTO producto = coordinador.obtenerProducto(detalleEliminar.getIdProducto());
+
+        for (ProductoIngredienteDTO pi : producto.getIngredientes()) {
+
+            int cantidadRegresar = pi.getCantidad() * detalleEliminar.getCantidad();
+
+            coordinador.actualizarIngredientes(
+                    pi.getIngrediente().getId(),
+                    cantidadRegresar,
+                    TipoMovimiento.ENTRADA
+            );
         }
     }
 

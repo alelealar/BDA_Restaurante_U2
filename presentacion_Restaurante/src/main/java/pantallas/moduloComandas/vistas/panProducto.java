@@ -1,11 +1,9 @@
 package pantallas.moduloComandas.vistas;
 
 import controlador.CoordinadorModuloComandas;
-import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
 import dtos.ProductoDTO;
 import excepciones.NegocioException;
-import java.awt.Container;
 import java.awt.Image;
 import java.net.URL;
 import java.util.List;
@@ -67,16 +65,6 @@ public class panProducto extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(334, 163));
         setMinimumSize(new java.awt.Dimension(334, 163));
         setMaximumSize(new java.awt.Dimension(334, 163));
-    }
-
-    /**
-     * Obtiene la comanda actual
-     *
-     * @return comanda actual
-     * @throws NegocioException
-     */
-    private ComandaDTO obtenerComandaActual() throws NegocioException {
-        return coordinador.obtenerComanda(detalle.getIdComanda());
     }
 
     /**
@@ -150,19 +138,6 @@ public class panProducto extends javax.swing.JPanel {
         btnDisminuir.setOpaque(activo);
         btnDisminuir.setContentAreaFilled(activo);
         btnDisminuir.setBorderPainted(false);
-    }
-
-    /**
-     * Calcula el total de la comanda.
-     */
-    private double calcularTotal(List<DetalleComandaDTO> detalles) {
-        double total = 0.0;
-
-        for (DetalleComandaDTO d : detalles) {
-            total += d.getCantidad() * d.getPrecioUnitario();
-        }
-
-        return total;
     }
 
     /**

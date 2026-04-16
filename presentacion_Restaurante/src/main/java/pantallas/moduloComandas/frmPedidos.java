@@ -3,6 +3,7 @@ package pantallas.moduloComandas;
 import controlador.CoordinadorModuloComandas;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
+import dtos.IngredienteDTO;
 import dtos.MesaDTO;
 import dtos.ProductoDTO;
 import dtos.ProductoIngredienteDTO;
@@ -147,11 +148,19 @@ public class frmPedidos extends javax.swing.JFrame {
     }
 
     public void eliminarDetalleTemporal(DetalleComandaDTO detalle) {
-        detallesTemporales.remove(detalle);
-        total = calcularTotal(detallesTemporales);
-        lblTotal.setText(String.format("Total: $%.2f", total));
-
-        refrescarPanelPedidos();
+        try {
+            detallesTemporales.remove(detalle);
+            total = calcularTotal(detallesTemporales);
+            lblTotal.setText(String.format("Total: $%.2f", total));
+            ProductoDTO productoDetalle = coordinador.obtenerProducto(detalle.getIdProducto());
+            List<ProductoIngredienteDTO> ingredientesDetalle = productoDetalle.getIngredientes();
+            for (ProductoIngredienteDTO productoIngredienteDTO : ingredientesDetalle) {
+             coordinador.actualizarIngredientes(productoIngredienteDTO.getIngrediente().getId(), detalle.getCantidad(), TipoMovimiento.ENTRADA);   
+            }
+            refrescarPanelPedidos();
+        } catch (NegocioException ex) {
+            System.getLogger(frmPedidos.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     /**
