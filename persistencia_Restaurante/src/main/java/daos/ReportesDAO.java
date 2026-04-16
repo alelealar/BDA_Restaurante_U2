@@ -9,7 +9,7 @@ import com.mysql.cj.x.protobuf.MysqlxCrud;
 import java.util.stream.Collectors;
 import java.util.stream.Collector;
 import conexion.ConexionBD;
-import enumerators.EstadoComandaDTO;
+import enumerators.EstadoComanda;
 import dtos.DetalleComandaDTO;
 import dtos.ReporteClientesDTO;
 import dtos.ReporteComandasDTO;
@@ -160,40 +160,44 @@ public class ReportesDAO implements IReportesDAO{
     }
     
     /**
-     * Obtiene los reportes de todas las comandas.
-     * Permite consultar comandas y sus datos importantes.
+     * Obtiene los reportes de todas las comandas. Permite consultar comandas y
+     * sus datos importantes.
+     *
      * @return lista de comandas registradas.
-     * @throws PersistenciaException en caso de error al consultar la base de datos
+     * @throws PersistenciaException en caso de error al consultar la base de
+     * datos
      */
     @Override
     public List<ReporteComandasDTO> obtenerReportesComandas() throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
-        
-        try{
+
+        try {
             em.getTransaction().begin();
-            String jpql = 
-                        """
+            String jpql
+                    = """
                         select distinct c 
                         from Comanda c 
                         join fetch c.cliente 
                         left join fetch c.detalles 
+                        where c.estadoComanda = :est
                         """;
             /*
             se crea la lista de comandas.
-            */
+             */
             List<Comanda> comandas = em
                     .createQuery(jpql, Comanda.class)
-                    .getResultList();       
+                    .setParameter("est", EstadoComanda.ENTREGADA)
+                    .getResultList();
             /*
             se crea la lista de reportes comandas.
-            */
+             */
             List<ReporteComandasDTO> listaReportes = comandas.stream().map(co -> {
                 /*
                 mappeo lo que regresa la consulta para generar la lista de detalles.
-                */
+                 */
                 List<DetalleComandaDTO> detallesDto = new ArrayList<>();
                 String nombreCompleto = "";
-                
+
                 if (co.getDetalles() != null) {
                     detallesDto = co.getDetalles().stream().map(det -> {
                         DetalleComandaDTO dto = new DetalleComandaDTO();
@@ -203,23 +207,27 @@ public class ReportesDAO implements IReportesDAO{
                         dto.setIdProducto(det.getProducto().getId());
                         return dto;
                     }).collect(Collectors.toList());
-                    nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
+                    if (co.getCliente() != null) {
+                        nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
+                    } else {
+                        nombreCompleto = "";
+                    }
                 }
-                
+
                 /*
                 se crean los objetos y se agregan.
-                */
+                 */
                 return new ReporteComandasDTO(
                         nombreCompleto,
                         co.getMesa().getNumero(),
                         co.getTotal(),
                         EstadoComandaDTO.valueOf(co.getEstadoComanda().name()),
                         co.getFechaHora(),
-                        detallesDto 
+                        detallesDto
                 );
-            }).collect(Collectors.toList());           
-            em.getTransaction().commit();            
-            return listaReportes;          
+            }).collect(Collectors.toList());
+            em.getTransaction().commit();
+            return listaReportes;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -231,77 +239,87 @@ public class ReportesDAO implements IReportesDAO{
     }
 
     /**
-     * Obtiene el reporte de comandas filtrado por un rango de fechas.
-     * Permite consultar comandas entre una fecha de inicio y fin.
+     * Obtiene el reporte de comandas filtrado por un rango de fechas. Permite
+     * consultar comandas entre una fecha de inicio y fin.
+     *
      * @param inicio fecha inicial del rango
      * @param fin fecha final del rango
      * @return lista de comandas dentro del rango
-     * @throws PersistenciaException en caso de error al consultar la base de datos
+     * @throws PersistenciaException en caso de error al consultar la base de
+     * datos
      */
     @Override
     public List<ReporteComandasDTO> obtenerReporteComandasFiltro(LocalDateTime inicio, LocalDateTime fin) throws PersistenciaException {
         EntityManager em = ConexionBD.crearConexion();
-        
-        try{
+
+        try {
             em.getTransaction().begin();
-            
+
             /*
             a lo que investigué, esta era la forma recomendable para obtener
             las relaciones de las comandas respecto a los pedidos, con join fetch.
-            */
-            String jpql = 
-                        """
+             */
+            String jpql
+                    = """
                         select distinct c 
                         from Comanda c 
                         join fetch c.cliente 
                         left join fetch c.detalles 
-                        where c.fechaHora between :inicio and :fin
+                        where c.fechaHora between :inicio and :fin 
+                        and c.estadoComanda = :est
                         """;
 
             /*
             se crea la lista de comandas.
-            */
+             */
             List<Comanda> comandas = em
                     .createQuery(jpql, Comanda.class)
                     .setParameter("inicio", inicio)
                     .setParameter("fin", fin)
+                    .setParameter("est", EstadoComanda.ENTREGADA)
                     .getResultList();
-            
+
             /*
             se crea la lista de reportes comandas.
-            */
+             */
             List<ReporteComandasDTO> listaReportes = comandas.stream().map(co -> {
                 /*
                 mappeo lo que regresa la consulta para generar la lista de detalles.
-                */
-                List<DetalleComandaDTO> detallesDto = co.getDetalles().stream().map(det -> {
-                    DetalleComandaDTO dto = new DetalleComandaDTO();
-                    dto.setCantidad(det.getCantidad());
-                    dto.setComentario(det.getComentario());
-                    dto.setPrecioUnitario(det.getPrecioUnitario());
-                    dto.setIdProducto(det.getProducto().getId());
-                    return dto;
-                }).collect(Collectors.toList());
+                 */
+                List<DetalleComandaDTO> detallesDto = new ArrayList<>();
+                if (co.getDetalles() != null) {
+                    detallesDto = co.getDetalles().stream().map(det -> {
+                        DetalleComandaDTO dto = new DetalleComandaDTO();
+                        dto.setCantidad(det.getCantidad());
+                        dto.setComentario(det.getComentario());
+                        dto.setPrecioUnitario(det.getPrecioUnitario());
+                        dto.setIdProducto(det.getProducto().getId());
+                        return dto;
+                    }).collect(Collectors.toList());
+                }
 
-                String nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
+                String nombreCompleto = "";
+                if (co.getCliente() != null) {
+                    nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
+                }
 
                 /*
                 se crean los objetos y se agregan.
-                */
+                 */
                 return new ReporteComandasDTO(
                         nombreCompleto,
                         co.getMesa().getNumero(),
                         co.getTotal(),
                         EstadoComandaDTO.valueOf(co.getEstadoComanda().name()),
                         co.getFechaHora(),
-                        detallesDto 
+                        detallesDto
                 );
             }).collect(Collectors.toList());
-            
+
             em.getTransaction().commit();
-            
+
             return listaReportes;
-            
+
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

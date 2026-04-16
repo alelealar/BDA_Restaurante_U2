@@ -51,8 +51,8 @@ public class ReportesDAONGTest {
         mesa = new Mesa(null, 1, EstadoMesa.OCUPADA);
         em.persist(mesa);
 
-        comanda1 = new Comanda(null, EstadoComanda.ABIERTA, "F001", 100.0, LocalDateTime.now().minusDays(2), mesa, null, cliente);
-        comanda2 = new Comanda(null, EstadoComanda.ABIERTA, "F002", 200.0, LocalDateTime.now(), mesa, null, cliente);
+        comanda1 = new Comanda(null, EstadoComanda.ENTREGADA, "F001", 100.0, LocalDateTime.now().minusDays(2), mesa, null, cliente);
+        comanda2 = new Comanda(null, EstadoComanda.ENTREGADA, "F002", 200.0, LocalDateTime.now(), mesa, null, cliente);
 
         em.persist(comanda1);
         em.persist(comanda2);

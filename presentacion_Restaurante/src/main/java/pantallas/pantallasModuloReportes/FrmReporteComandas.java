@@ -51,7 +51,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
      * Coordinador para conectar el frame con el resto del sistema.
      */
     CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
-
+    
     /**
      * Constructor de la clase.
      */
@@ -59,6 +59,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         cargarTabla();
+        totalAcumulado.setText("-");
     }
 
     /**
@@ -71,7 +72,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
     private void initComponents() {
 
         jComboBox1 = new javax.swing.JComboBox<>();
-        jPanel1 = new javax.swing.JPanel();
+        lblTotal = new javax.swing.JPanel();
         btnAtras = new javax.swing.JButton();
         lblTitulo = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -95,18 +96,22 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         btnGenerarReporte = new javax.swing.JButton();
+        btnFiltrar = new javax.swing.JButton();
+        totalAcumulado = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        lblTotal.setBackground(new java.awt.Color(255, 255, 255));
 
         btnAtras.setBackground(new java.awt.Color(47, 47, 47));
         btnAtras.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         btnAtras.setForeground(new java.awt.Color(255, 255, 255));
         btnAtras.setText("Atrás");
         btnAtras.setBorder(null);
+        btnAtras.setFocusPainted(false);
         btnAtras.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAtrasActionPerformed(evt);
@@ -295,70 +300,98 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         btnGenerarReporte.setForeground(new java.awt.Color(255, 255, 255));
         btnGenerarReporte.setText("Generar Reporte");
         btnGenerarReporte.setBorder(null);
+        btnGenerarReporte.setFocusPainted(false);
         btnGenerarReporte.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnGenerarReporteMouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        btnFiltrar.setBackground(new java.awt.Color(255, 246, 222));
+        btnFiltrar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnFiltrar.setText("Filtrar");
+        btnFiltrar.setFocusPainted(false);
+        btnFiltrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFiltrarActionPerformed(evt);
+            }
+        });
+
+        totalAcumulado.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        totalAcumulado.setEnabled(false);
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setText("Total Acumulado:");
+
+        javax.swing.GroupLayout lblTotalLayout = new javax.swing.GroupLayout(lblTotal);
+        lblTotal.setLayout(lblTotalLayout);
+        lblTotalLayout.setHorizontalGroup(
+            lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(lblTotalLayout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(42, 42, 42)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(lblTotalLayout.createSequentialGroup()
                         .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnGenerarReporte, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(lblTotalLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(lblTotalLayout.createSequentialGroup()
+                                .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(spinFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel2))
-                                .addGap(34, 34, 34)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(lblTotalLayout.createSequentialGroup()
+                                        .addGap(34, 34, 34)
                                         .addComponent(jLabel3)
                                         .addGap(93, 93, 93)
                                         .addComponent(lblTitulo))
-                                    .addComponent(spinFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(lblTotalLayout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addComponent(spinFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(34, 34, 34)
+                                        .addComponent(btnFiltrar)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(totalAcumulado, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        lblTotalLayout.setVerticalGroup(
+            lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(lblTotalLayout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addComponent(lblTitulo)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)))
-                                .addComponent(spinFechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(lblTotalLayout.createSequentialGroup()
+                        .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(lblTotalLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(lblTotalLayout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(lblTitulo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE))
+                            .addGroup(lblTotalLayout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spinFechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(5, 5, 5)))
+                        .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(spinFechaInicio)
+                            .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnFiltrar)
+                                .addComponent(totalAcumulado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel4)
+                                .addComponent(spinFechaFin)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(lblTotalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnGenerarReporte, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(19, 19, 19))))
@@ -368,11 +401,11 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(lblTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(lblTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -443,6 +476,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
      */
     private void btnGenerarReporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGenerarReporteMouseClicked
         // valida las fechas
+        Double total = 0d;
         if (!validarFechas()) {
             return;
         }
@@ -457,6 +491,9 @@ public class FrmReporteComandas extends javax.swing.JFrame {
                 DlgNotificacion.mostrarNotificacion(this, "No se encontraron comandas en este rango de fecha.", TipoNotificacion.MENSAJE);
                 return;
             }
+            for(ReporteComandasDTO comanda: comandas){
+                total += comanda.getTotalVenta();
+            }
             // las transforma para ser procesadas por Jasper
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(comandas);
 
@@ -464,6 +501,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
             HashMap<String, Object> parametros = new HashMap<>();
             parametros.put("FECHA_INICIO", inicio.toString()); 
             parametros.put("FECHA_FIN", fin.toString());
+            parametros.put("TOTAL ACUMULADO EN VENTAS", "$" + total);
             parametros.put("ItemDataSource", dataSource);
 
             // carga el archivo
@@ -486,6 +524,11 @@ public class FrmReporteComandas extends javax.swing.JFrame {
             DlgNotificacion.mostrarNotificacion(this, "Ocurrió un error al querer obtener los datos de comandas.", TipoNotificacion.ERROR);
         }
     }//GEN-LAST:event_btnGenerarReporteMouseClicked
+
+    private void btnFiltrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFiltrarActionPerformed
+        // TODO add your handling code here:
+        filtrar();
+    }//GEN-LAST:event_btnFiltrarActionPerformed
 
     /**
      * Metodo que válida que las fechas en los spin no estén al revés.
@@ -519,6 +562,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         DefaultTableModel modelo = (DefaultTableModel) tblReportes.getModel();
         modelo.setRowCount(0);
         List<ReporteComandasDTO> lista = coordinador.obtenerReporteComandas();
+        Double total = 0d;
 
         for (ReporteComandasDTO rc : lista) {
             modelo.addRow(new Object[]{
@@ -529,12 +573,50 @@ public class FrmReporteComandas extends javax.swing.JFrame {
                 rc.getFechaHora(),
                 rc.getPedidos()
             });
+            total += rc.getTotalVenta();
         }
+        totalAcumulado.setText("$" + total);
+    }
+    
+    /**
+     * Método para cargar la lista con reportes de comandas DTO filtrada.
+     */
+    private void cargarTablaFiltrada(List<ReporteComandasDTO> lista){
+        DefaultTableModel modelo = (DefaultTableModel) tblReportes.getModel();
+        modelo.setRowCount(0);
+        Double total = 0d;
+
+        for (ReporteComandasDTO rc : lista) {
+            modelo.addRow(new Object[]{
+                rc.getNombreCliente(),
+                rc.getMesa(),
+                rc.getTotalVenta(),
+                rc.getEstadoComanda(),
+                rc.getFechaHora(),
+                rc.getPedidos()
+            });
+            total += rc.getTotalVenta();
+        }
+        totalAcumulado.setText("$" + total);
+    }
+    
+    /**
+     * Métrodo para filtrar la tabla.
+     */
+    private void filtrar(){
+        if (!validarFechas()) {
+            return;
+        }
+        LocalDateTime inicio = convertirFecha((Date) spinFechaInicio.getValue());
+        LocalDateTime fin = convertirFecha((Date) spinFechaFin.getValue());
+        List<ReporteComandasDTO> lista = coordinador.obtenerReporteComandasFiltro(inicio, fin);
+        cargarTablaFiltrada(lista);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtras;
     private javax.swing.JButton btnClientes;
+    private javax.swing.JButton btnFiltrar;
     private javax.swing.JButton btnGenerarReporte;
     private javax.swing.JButton btnInventario;
     private javax.swing.JButton btnProductos;
@@ -545,7 +627,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
@@ -555,8 +637,10 @@ public class FrmReporteComandas extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblTitulo;
+    private javax.swing.JPanel lblTotal;
     private javax.swing.JSpinner spinFechaFin;
     private javax.swing.JSpinner spinFechaInicio;
     private javax.swing.JTable tblReportes;
+    private javax.swing.JTextField totalAcumulado;
     // End of variables declaration//GEN-END:variables
 }

@@ -8,6 +8,7 @@ import dtos.IngredienteDTO;
 import enumerators.UnidadDTO;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.plaf.basic.BasicButtonUI;
 import notificaciones.TipoNotificacion;
 import notificaciones.DlgNotificacion;
 
@@ -32,6 +33,7 @@ public class panIngredientesProducto extends javax.swing.JPanel {
      */
     public panIngredientesProducto() {
         initComponents();
+        btnEliminar.setUI(new BasicButtonUI());
     }
     
     /**

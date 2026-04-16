@@ -95,12 +95,13 @@ public interface IProductoBO {
     List<ProductoDTO> buscarProductos(String nombre, TipoProductoDTO tipo) throws NegocioException;
 
     /**
-     * Busca productos activos por nombre y tipo.
-     *
-     * @param nombre nombre o parte del nombre del producto
-     * @param tipo tipo de producto a filtrar
-     * @return lista de productos activos que coinciden con los criterios
-     * @throws NegocioException si ocurre un error en la búsqueda
+     * Obtiene una lista con los productos activos que cumplan con los filtros 
+     * especificados en los parámetros.
+     * 
+     * @param nombre Nombre que se desea buscar.
+     * @param tipo Tipo de producto que se desea buscar.
+     * @return La lista con los productos activos que cumplan con dicho filtro.
+     * @throws NegocioException Si ocurre un error durante la búsqueda.
      */
     List<ProductoDTO> buscarProductosActivos(String nombre, TipoProductoDTO tipo) throws NegocioException;
 }

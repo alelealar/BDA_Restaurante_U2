@@ -72,6 +72,9 @@ public class ProductoBO implements IProductoBO {
     public void agregarProducto(ProductoNuevoDTO producto) throws NegocioException {
         try{
             validarDatos(producto);
+            if(productoDAO.existeNombre(producto.getNombre())){
+                throw new NegocioException("El nombre ya se encuentra registrado en la base de datos.");
+            }
             Producto p = ProductoAdapter.dtoAEntidad(producto);
             p.setIdentificador(generarIdentificador(producto.getTipo()));
             productoDAO.agregarProducto(p);
@@ -310,12 +313,13 @@ public class ProductoBO implements IProductoBO {
     }
 
     /**
-     * Busca productos activos filtrados por nombre y tipo.
-     *
-     * @param nombre nombre del producto
-     * @param tipo tipo de producto
-     * @return lista de productos activos
-     * @throws NegocioException si ocurre un error en la búsqueda
+     * Obtiene una lista con los productos activos que cumplan con los filtros 
+     * especificados en los parámetros.
+     * 
+     * @param nombre Nombre que se desea buscar.
+     * @param tipo Tipo de producto que se desea buscar.
+     * @return La lista con los productos activos que cumplan con dicho filtro.
+     * @throws NegocioException Si ocurre un error durante la búsqueda.
      */
     @Override 
     public List<ProductoDTO> buscarProductosActivos(String nombre, TipoProductoDTO tipo) throws NegocioException {

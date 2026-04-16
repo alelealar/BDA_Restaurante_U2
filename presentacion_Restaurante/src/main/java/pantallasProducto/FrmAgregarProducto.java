@@ -792,6 +792,10 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
             }
         } else {
             ProductoNuevoDTO dto = new ProductoNuevoDTO(nombre, tipo, descripcion, precio, EstadoProductoDTO.ACTIVO, urlImagen);
+            if(detallesProducto == null || detallesProducto.isEmpty()){
+                DlgNotificacion.mostrarNotificacion(this, "El producto debe llevar lista de ingredientes.", TipoNotificacion.MENSAJE);
+                return;
+            }
             dto.setIngredientes(detallesProducto);
             resultado = coordinador.agregarProducto(dto);
             if (resultado) {
