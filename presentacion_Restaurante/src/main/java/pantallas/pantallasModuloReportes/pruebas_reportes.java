@@ -15,6 +15,8 @@ public class pruebas_reportes {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+//        FrmReporteComandas frmComandas = new FrmReporteComandas();
+//        frmComandas.setVisible(true);
         FrmReporteClientes frm = new FrmReporteClientes();
         frm.setVisible(true);
         

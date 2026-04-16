@@ -6,12 +6,17 @@
 package daos;
 
 import com.mysql.cj.x.protobuf.MysqlxCrud;
+import java.util.stream.Collectors;
+import java.util.stream.Collector;
 import conexion.ConexionBD;
+import enumerators.EstadoComandaDTO;
+import dtos.DetalleComandaDTO;
 import dtos.ReporteClientesDTO;
 import dtos.ReporteComandasDTO;
 import entidades.Cliente;
 import entidades.ClienteFrecuente;
 import entidades.Comanda;
+import enumerators.EstadoComandaDTO;
 import excepciones.PersistenciaException;
 import interfaces.IReportesDAO;
 import java.time.LocalDateTime;
@@ -167,7 +172,75 @@ public class ReportesDAO implements IReportesDAO{
      */
     @Override
     public List<ReporteComandasDTO> obtenerReporteComandasFiltro(LocalDateTime inicio, LocalDateTime fin) throws PersistenciaException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        EntityManager em = ConexionBD.crearConexion();
+        
+        try{
+            em.getTransaction().begin();
+            
+            /*
+            
+            */
+            String jpql = 
+                        """
+                        select distinct c 
+                        from Comanda c 
+                        join fetch c.cliente 
+                        left join fetch c.detalles 
+                        where c.fechaHora between :inicio and :fin
+                        """;
+
+            /*
+            
+            */
+            List<Comanda> comandas = em
+                    .createQuery(jpql, Comanda.class)
+                    .setParameter("inicio", inicio)
+                    .setParameter("fin", fin)
+                    .getResultList();
+            
+            /*
+            
+            */
+            List<ReporteComandasDTO> listaReportes = comandas.stream().map(co -> {
+                /*
+                
+                */
+                List<DetalleComandaDTO> detallesDto = co.getDetalles().stream().map(det -> {
+                    DetalleComandaDTO dto = new DetalleComandaDTO();
+                    dto.setCantidad(det.getCantidad());
+                    dto.setComentario(det.getComentario());
+                    dto.setPrecioUnitario(det.getPrecioUnitario());
+                    dto.setIdProducto(det.getProducto().getId());
+                    return dto;
+                }).collect(Collectors.toList());
+
+                String nombreCompleto = co.getCliente().getNombres() + " " + co.getCliente().getApellidoPaterno();
+
+                /*
+                
+                */
+                return new ReporteComandasDTO(
+                        nombreCompleto,
+                        co.getMesa().getNumero(),
+                        co.getTotal(),
+                        EstadoComandaDTO.valueOf(co.getEstadoComanda().name()),
+                        co.getFechaHora(),
+                        detallesDto 
+                );
+            }).collect(Collectors.toList());
+            
+            em.getTransaction().commit();
+            
+            return listaReportes;
+            
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException("Error al obtener el reporte de las comandas", e);
+        } finally {
+            em.close();
+        }
     }
 
 }

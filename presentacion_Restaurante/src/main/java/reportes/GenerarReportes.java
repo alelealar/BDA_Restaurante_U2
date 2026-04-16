@@ -5,6 +5,7 @@
 package reportes;
 
 import java.awt.Frame;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
@@ -43,8 +44,12 @@ public class GenerarReportes {
                 llamador.setEnabled(false);
                 llamador.setText("Generando Reporte...");
                 try {
+                    InputStream reporteStream = GenerarReportes.class.getResourceAsStream(rutaReporte);
+                    if (reporteStream == null) {
+                        throw new Exception("No se encontró el archivo del reporte en la ruta: " + rutaReporte);
+                    }
                     JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(datos);
-                    JasperPrint jasperPrint = JasperFillManager.fillReport(rutaReporte, parametros, dataSource);
+                    JasperPrint jasperPrint = JasperFillManager.fillReport(reporteStream, parametros, dataSource);                    
                     JasperViewer.viewReport(jasperPrint, false);
                 } catch (Exception ex) {
                     ex.printStackTrace();

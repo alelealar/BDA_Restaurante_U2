@@ -9,11 +9,15 @@ import controlador.CoordinadorInterfaces;
 import controlador.Coordinador_ModuloReportes;
 import dtos.ReporteClientesDTO;
 import excepciones.NegocioException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import notificaciones.DlgNotificacion;
+import notificaciones.TipoNotificacion;
 
 /**
  *
@@ -239,7 +243,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombre", "Visitas", "Total gastado", "Fecha ultima comanda", "puntos"
+                "Nombre", "Visitas", "Total gastado", "Fecha Última Comanda", "Puntos"
             }
         ) {
             Class[] types = new Class [] {
@@ -268,6 +272,11 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         btnGenerarReporte.setForeground(new java.awt.Color(255, 255, 255));
         btnGenerarReporte.setText("Generar Reporte");
         btnGenerarReporte.setBorder(null);
+        btnGenerarReporte.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnGenerarReporteMouseClicked(evt);
+            }
+        });
 
         checkVisitas.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         checkVisitas.setText("Visitas");
@@ -422,6 +431,10 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         interfaces.mostrarPantallaReporteClientes();
         this.dispose();
     }//GEN-LAST:event_btnReportesClientesMouseClicked
+
+    private void btnGenerarReporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGenerarReporteMouseClicked
+
+    }//GEN-LAST:event_btnGenerarReporteMouseClicked
 
     public void cargarTabla(){
         DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();

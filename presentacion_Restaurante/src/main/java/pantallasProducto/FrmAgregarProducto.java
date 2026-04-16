@@ -4,6 +4,7 @@
  */
 package pantallasProducto;
 
+import controlador.CoordinadorInterfaces;
 import controlador.Coordinador_ModuloProductos;
 import dtos.ProductoDTO;
 import dtos.ProductoIngredienteDTO;
@@ -12,6 +13,9 @@ import enumerators.EstadoProductoDTO;
 import enumerators.TipoProductoDTO;
 import java.awt.Image;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import java.util.List;
@@ -44,6 +48,17 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
      * Para saber si la pantalla se encuentra en modo modificar.
      */
     private boolean modificar = false;
+    
+    /**
+     * Ruta de dónde se almacena la imagen localmente y que se mandará a la BD.
+     */
+    private String rutaParaBD;
+    
+    /**
+     * Atributo que representa el coordinador de las interfaces que representan
+     * el resto de los módulos del sistema.
+     */
+    private CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
     
     /**
      * El coordinador de las pantallas del módulo Productos.
@@ -138,8 +153,8 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
      * la pantalla y además deshabilita aquellos botones/opciones que no pueden 
      * ser modificadas.
      */
-    public void cargarDatos(){
-        if(producto == null){
+    public void cargarDatos() {
+        if (producto == null) {
             return;
         }
         txtNombre.setText(producto.getNombre());
@@ -149,13 +164,26 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
         txtDescripcion.setText(producto.getDescripcion());
         txtPrecio.setText(String.valueOf(producto.getPrecio()));
         this.detallesProducto = producto.getIngredientes();
-        for(ProductoIngredienteDTO ingrediente : producto.getIngredientes()){
+        for (ProductoIngredienteDTO ingrediente : producto.getIngredientes()) {
             modelo.addElement(ingrediente.toString());
-        }   
+        }
         if (producto.getUrlImagen() != null) {
             ImageIcon icono = new ImageIcon(producto.getUrlImagen());
-            Image img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            if (icono.getIconWidth() == -1) {
+                System.out.println("No se pudo encontrar la imagen en: " + producto.getUrlImagen());
+                return;
+            }
+            int ancho = btnSubirImagen.getWidth();
+            int alto = btnSubirImagen.getHeight();
+            if (ancho <= 0) {
+                ancho = 120;
+            }
+            if (alto <= 0) {
+                alto = 120;
+            }
+            Image img = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
             btnSubirImagen.setIcon(new ImageIcon(img));
+            btnSubirImagen.setText("");
             mostrarBotonEliminarImagen();
         }
     }
@@ -247,7 +275,6 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
         btnReportes.setText("Reportes");
         btnReportes.setBorder(null);
         btnReportes.setFocusPainted(false);
-        btnReportes.addActionListener(this::btnReportesActionPerformed);
 
         btnRepCom.setBackground(new java.awt.Color(255, 246, 222));
         btnRepCom.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -412,6 +439,7 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
         btnEliminarImagen.setFocusPainted(false);
         btnEliminarImagen.addActionListener(this::btnEliminarImagenActionPerformed);
 
+        txtDescripcion.setColumns(20);
         txtDescripcion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         txtDescripcion.setBorder(null);
         txtDescripcion.setMaximumSize(new java.awt.Dimension(308, 31));
@@ -441,11 +469,11 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
                             .addComponent(lblDescripcion)
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addComponent(lblIngredientes)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnAgregarIngrediente))
                             .addComponent(txtNombre)
                             .addComponent(jSeparator1)
-                            .addComponent(txtDescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(txtDescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -575,17 +603,17 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Botón que abre el módulo de reportes. 
-     */
-    private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnReportesActionPerformed
-
-    /**
      * Botón que abre el módulo de reporte -> clientes.
      */
     private void btnRepCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepCliActionPerformed
         // TODO add your handling code here:
+        int opcion = DlgNotificacion.mostrarNotificacion(this, "Se perderá la información y se cancelará el proceso, ¿Está seguro?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        interfaces.mostrarPantallaReporteClientes();
+        limpiar();
+        this.dispose();
     }//GEN-LAST:event_btnRepCliActionPerformed
 
     /**
@@ -593,6 +621,13 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
      */
     private void btnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientesActionPerformed
         // TODO add your handling code here:
+        int opcion = DlgNotificacion.mostrarNotificacion(this, "Se perderá la información y se cancelará el proceso, ¿Está seguro?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        interfaces.mostrarFormularioClientes();
+        limpiar();
+        this.dispose();
     }//GEN-LAST:event_btnClientesActionPerformed
 
     /**
@@ -600,6 +635,13 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
      */
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
+        int opcion = DlgNotificacion.mostrarNotificacion(this, "Se perderá la información y se cancelará el proceso, ¿Está seguro?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        coordinador.abrirFrmProductos();
+        limpiar();
+        this.dispose();
     }//GEN-LAST:event_btnProductosActionPerformed
 
     /**
@@ -607,6 +649,13 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
      */
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
+        int opcion = DlgNotificacion.mostrarNotificacion(this, "Se perderá la información y se cancelará el proceso, ¿Está seguro?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        interfaces.mostrarPantallaIngredientes();
+        limpiar();
+        this.dispose();
     }//GEN-LAST:event_btnInventarioActionPerformed
 
     /**
@@ -614,6 +663,13 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
      */
     private void btnRepComActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepComActionPerformed
         // TODO add your handling code here:
+        int opcion = DlgNotificacion.mostrarNotificacion(this, "Se perderá la información y se cancelará el proceso, ¿Está seguro?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        interfaces.mostrarPantallaReporteComandas();
+        limpiar();
+        this.dispose();
     }//GEN-LAST:event_btnRepComActionPerformed
 
     /**
@@ -695,7 +751,7 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
 
         // url imagen
         if(archivo != null){
-            urlImagen = archivo.getAbsolutePath();
+            urlImagen = rutaParaBD;
             /*
             esto de abajo era por unos detalles de cuando trabajamos con windows, 
             para cuidar el formato, pero la nt no se ha requerido.
@@ -756,20 +812,41 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
     private void btnSubirImagenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubirImagenMouseClicked
         // TODO add your handling code here:
         JFileChooser selector = new JFileChooser();
-
         FileNameExtensionFilter filtro = new FileNameExtensionFilter("Imágenes (PNG, JPG)", "png", "jpg", "jpeg");
         selector.setFileFilter(filtro);
-
         int resultado = selector.showOpenDialog(this);
-
         if (resultado == JFileChooser.APPROVE_OPTION) {
-
             archivo = selector.getSelectedFile();
-
             ImageIcon icono = new ImageIcon(archivo.getAbsolutePath());
-            Image img = icono.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            int ancho = btnSubirImagen.getWidth();
+            int alto = btnSubirImagen.getHeight();
+            if (ancho == 0) {
+                ancho = 120;
+            }
+            if (alto == 0) {
+                alto = 120;
+            }
+            Image img = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
             btnSubirImagen.setIcon(new ImageIcon(img));
             mostrarBotonEliminarImagen();
+            try {
+                Path rutaOrigen = archivo.toPath();
+                Path carpetaDestino = java.nio.file.Paths.get("imagenes_productos");
+
+                if (!Files.exists(carpetaDestino)) {
+                    Files.createDirectories(carpetaDestino);
+                }
+                String nombreUnico = System.currentTimeMillis() + "_" + archivo.getName();
+                Path rutaDestino = carpetaDestino.resolve(nombreUnico);
+
+                Files.copy(rutaOrigen, rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+
+                rutaParaBD = rutaDestino.toString();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                DlgNotificacion.mostrarNotificacion(this, "Falló al guardar el archivo.", TipoNotificacion.ERROR);
+            }
         }
     }//GEN-LAST:event_btnSubirImagenMouseClicked
 
@@ -785,6 +862,7 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
             return;
         }
         archivo = null;
+        rutaParaBD = null;
         imagenEliminada = true;
         btnSubirImagen.setIcon(new ImageIcon(getClass().getResource("/img/subir-archivo icon.png")));
         ocultarBotonEliminarImagen();
@@ -809,6 +887,7 @@ public class FrmAgregarProducto extends javax.swing.JFrame {
         txtPrecio.setText("");
         txtPrecio.setEditable(true);
         archivo = null;
+        rutaParaBD = null;
         imagenEliminada = false;
         btnSubirImagen.setIcon(new ImageIcon(getClass().getResource("/img/subir-archivo icon.png")));
         modelo.clear();

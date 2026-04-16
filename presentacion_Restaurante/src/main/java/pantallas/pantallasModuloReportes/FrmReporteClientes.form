@@ -403,8 +403,8 @@
                     <Column editable="false" title="Nombre" type="java.lang.String"/>
                     <Column editable="false" title="Visitas" type="java.lang.Integer"/>
                     <Column editable="false" title="Total gastado" type="java.lang.Double"/>
-                    <Column editable="false" title="Fecha ultima comanda" type="java.lang.Object"/>
-                    <Column editable="false" title="puntos" type="java.lang.Integer"/>
+                    <Column editable="false" title="Fecha &#xda;ltima Comanda" type="java.lang.Object"/>
+                    <Column editable="false" title="Puntos" type="java.lang.Integer"/>
                   </Table>
                 </Property>
                 <Property name="gridColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -438,6 +438,9 @@
               <Border info="null"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnGenerarReporteMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkVisitas">
           <Properties>

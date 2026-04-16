@@ -4,6 +4,7 @@
  */
 package pantallasProducto;
 
+import controlador.CoordinadorInterfaces;
 import controlador.Coordinador_ModuloProductos;
 import dtos.ProductoDTO;
 import enumerators.EstadoProductoDTO;
@@ -26,6 +27,12 @@ import notificaciones.DlgNotificacion;
  * @author María José Valdez Iglesias - 262775
  */
 public class FrmProductos extends javax.swing.JFrame {
+    
+    /**
+     * Atributo que representa el coordinador de las interfaces que representan
+     * el resto de los módulos del sistema.
+     */
+    private CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
     
     /**
      * Atributo que representa el coordinador de las interfaces que representan
@@ -159,13 +166,13 @@ public class FrmProductos extends javax.swing.JFrame {
         btnReportes.setText("Reportes");
         btnReportes.setBorder(null);
         btnReportes.setFocusPainted(false);
-        btnReportes.addActionListener(this::btnReportesActionPerformed);
 
         btnRepCom.setBackground(new java.awt.Color(255, 246, 222));
         btnRepCom.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnRepCom.setText("• Comandas");
         btnRepCom.setBorder(null);
         btnRepCom.setFocusPainted(false);
+        btnRepCom.addActionListener(this::btnRepComActionPerformed);
 
         btnRepCli.setBackground(new java.awt.Color(255, 246, 222));
         btnRepCli.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -307,6 +314,7 @@ public class FrmProductos extends javax.swing.JFrame {
         btnAgregar.addActionListener(this::btnAgregarActionPerformed);
 
         tipoBusqueda.setFont(new java.awt.Font("Segoe UI Semilight", 0, 16)); // NOI18N
+        tipoBusqueda.setFocusable(false);
         tipoBusqueda.addItemListener(this::tipoBusquedaItemStateChanged);
 
         lblBuscarPor.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -405,7 +413,8 @@ public class FrmProductos extends javax.swing.JFrame {
      */
     private void btnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientesActionPerformed
         // TODO add your handling code here:
-         JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
+         interfaces.mostrarFormularioClientes();
+         this.dispose();
     }//GEN-LAST:event_btnClientesActionPerformed
 
     /**
@@ -413,23 +422,16 @@ public class FrmProductos extends javax.swing.JFrame {
      */
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
-         JOptionPane.showMessageDialog(this, "Ya está en la opción de Productos.");
+         DlgNotificacion.mostrarNotificacion(this, "Ya está en el menú de Productos.", TipoNotificacion.MENSAJE);
     }//GEN-LAST:event_btnProductosActionPerformed
-
-    /**
-     * Botón que abre el módulo de reportes.
-     */
-    private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-        // TODO add your handling code here:
-         JOptionPane.showMessageDialog(this, "Aún no está disponible");
-    }//GEN-LAST:event_btnReportesActionPerformed
 
     /**
      * Botón que abre el módulo reportes - clientes.
      */
     private void btnRepCliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepCliActionPerformed
         // TODO add your handling code here:
-         JOptionPane.showMessageDialog(this, "Aún no está disponible.");
+         interfaces.mostrarPantallaReporteClientes();
+         this.dispose();
     }//GEN-LAST:event_btnRepCliActionPerformed
 
     /**
@@ -437,7 +439,8 @@ public class FrmProductos extends javax.swing.JFrame {
      */
     private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
         // TODO add your handling code here:
-         JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
+        interfaces.mostrarPantallaIngredientes();
+        this.dispose();
     }//GEN-LAST:event_btnInventarioActionPerformed
 
     /**
@@ -445,7 +448,12 @@ public class FrmProductos extends javax.swing.JFrame {
      */
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
         // TODO add your handling code here:
-         JOptionPane.showMessageDialog(this, "Aún no te puedo mandar para allá.");
+        int opcion = DlgNotificacion.mostrarNotificacion(this, "Con está acción tendrá que identificarse otra vez para acceder a este apartado, ¿Está seguro?", TipoNotificacion.CONFIRMACIÓN);
+        if(opcion == DlgNotificacion.RET_CANCELAR){
+            return;
+        }
+        interfaces.iniciarSistema();
+        this.dispose();
     }//GEN-LAST:event_btnAtrasActionPerformed
 
     /**
@@ -554,12 +562,24 @@ public class FrmProductos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDesactivarActionPerformed
 
+    /**
+     * Método para el buscador dinámico. 
+     */
     private void tipoBusquedaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tipoBusquedaItemStateChanged
         // TODO add your handling code here:
         if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
             filtrar();
         }
     }//GEN-LAST:event_tipoBusquedaItemStateChanged
+
+    /**
+     * Botón que abre el módulo de reportes-comandas.
+     */
+    private void btnRepComActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRepComActionPerformed
+        // TODO add your handling code here:
+        interfaces.mostrarPantallaReporteComandas();
+        this.dispose();
+    }//GEN-LAST:event_btnRepComActionPerformed
 
     /**
      * Método que consulta todos los registros y se encarga de mostrarlos

@@ -37,6 +37,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
      */
     public FrmReporteComandas() {
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -137,7 +138,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
             }
         });
 
-        btnInventario.setBackground(new java.awt.Color(255, 226, 150));
+        btnInventario.setBackground(new java.awt.Color(255, 246, 222));
         btnInventario.setFont(new java.awt.Font("Tahoma", 0, 22)); // NOI18N
         btnInventario.setText("Inventario");
         btnInventario.setBorder(null);
@@ -187,7 +188,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
             }
         });
 
-        btnReportesComandas.setBackground(new java.awt.Color(255, 246, 222));
+        btnReportesComandas.setBackground(new java.awt.Color(255, 226, 150));
         btnReportesComandas.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnReportesComandas.setText("• Comandas");
         btnReportesComandas.setBorder(null);
@@ -202,6 +203,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(btnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnInventario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -210,15 +212,15 @@ public class FrmReporteComandas extends javax.swing.JFrame {
                     .addComponent(jSeparator4)
                     .addComponent(btnProductos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator5)
+                    .addComponent(btnReportes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGap(0, 27, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnReportesComandas, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnReportesClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(9, 9, 9))
-                    .addComponent(btnReportes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addComponent(btnReportesClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(9, 9, 9))
+                            .addComponent(btnReportesComandas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
-            .addComponent(btnInventario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -436,7 +438,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         parametros.put("FECHA_FIN", fin.toString());
 
         GenerarReportes.generarReporte(
-                "src/reportes/ReporteComandas.jasper",
+                "/reportes/ReporteComandas.jasper",
                 parametros,
                 comandas,
                 btnGenerarReporte,

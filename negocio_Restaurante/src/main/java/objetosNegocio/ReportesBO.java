@@ -84,7 +84,12 @@ public class ReportesBO implements IReportesBO{
 
     @Override
     public List<ReporteComandasDTO> obtenerReporteComandasFiltro(LocalDateTime inicio, LocalDateTime fin) throws NegocioException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try{
+            return dao.obtenerReporteComandasFiltro(inicio, fin);
+        } catch(PersistenciaException ex){
+            LOG.warning(() -> "No se pudo obtener la información de las comandas.");
+            throw new NegocioException(ex.getMessage(), ex);
+        }
     }
     
     
