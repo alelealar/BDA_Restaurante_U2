@@ -9,6 +9,7 @@ import controlador.CoordinadorInterfaces;
 import controlador.Coordinador_ModuloReportes;
 import dtos.ReporteClientesDTO;
 import excepciones.NegocioException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import notificaciones.DlgNotificacion;
 import notificaciones.TipoNotificacion;
 
@@ -28,6 +34,8 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     CoordinadorInterfaces interfaces = new CoordinadorInterfaces();
     Coordinador_ModuloReportes coor = new Coordinador_ModuloReportes();
     
+    private String filtroNombre = null;
+    private Long filtroVisitas = null;
 
     /**
      * Creates new form FrmReporteComandas
@@ -69,9 +77,9 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         tblClientes = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         btnGenerarReporte = new javax.swing.JButton();
-        checkVisitas = new javax.swing.JCheckBox();
-        checkNombre = new javax.swing.JCheckBox();
-        txtBusqueda = new javax.swing.JTextField();
+        txtBusquedaNombre = new javax.swing.JTextField();
+        txtBusquedaVisitas = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -266,7 +274,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tblClientes);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Buscar Por:");
+        jLabel2.setText("NOMBRE");
 
         btnGenerarReporte.setBackground(new java.awt.Color(118, 161, 195));
         btnGenerarReporte.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
@@ -279,33 +287,32 @@ public class FrmReporteClientes extends javax.swing.JFrame {
             }
         });
 
-        checkVisitas.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        checkVisitas.setText("Visitas");
-        checkVisitas.addActionListener(new java.awt.event.ActionListener() {
+        txtBusquedaNombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtBusquedaNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkVisitasActionPerformed(evt);
+                txtBusquedaNombreActionPerformed(evt);
             }
         });
-
-        checkNombre.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        checkNombre.setText("Nombre");
-        checkNombre.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkNombreActionPerformed(evt);
-            }
-        });
-
-        txtBusqueda.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtBusqueda.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtBusquedaActionPerformed(evt);
-            }
-        });
-        txtBusqueda.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtBusquedaNombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtBusquedaKeyReleased(evt);
+                txtBusquedaNombreKeyReleased(evt);
             }
         });
+
+        txtBusquedaVisitas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtBusquedaVisitas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBusquedaVisitasActionPerformed(evt);
+            }
+        });
+        txtBusquedaVisitas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBusquedaVisitasKeyReleased(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setText("VISITAS");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -325,15 +332,16 @@ public class FrmReporteClientes extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(240, 240, 240)
+                                .addGap(308, 308, 308)
                                 .addComponent(lblTitulo))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(checkNombre)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtBusquedaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(checkVisitas)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtBusquedaVisitas, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -344,18 +352,18 @@ public class FrmReporteClientes extends javax.swing.JFrame {
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTitulo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(lblTitulo)
-                                .addGap(0, 41, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(checkVisitas)
-                                    .addComponent(checkNombre)
-                                    .addComponent(txtBusqueda))))
-                        .addGap(18, 18, 18)
+                                .addComponent(txtBusquedaNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtBusquedaVisitas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -402,21 +410,21 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "No disponible aún...");
     }//GEN-LAST:event_btnReportesClientesActionPerformed
 
-    private void checkVisitasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkVisitasActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_checkVisitasActionPerformed
+    private void txtBusquedaNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBusquedaNombreActionPerformed
 
-    private void checkNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkNombreActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_checkNombreActionPerformed
+    }//GEN-LAST:event_txtBusquedaNombreActionPerformed
 
-    private void txtBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBusquedaActionPerformed
+    private void txtBusquedaNombreKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaNombreKeyReleased
+        String texto = txtBusquedaNombre.getText().trim();
 
-    }//GEN-LAST:event_txtBusquedaActionPerformed
+        if (texto.isEmpty()) {
+            filtroNombre = null;
+        } else {
+            filtroNombre = texto;
+        }
 
-    private void txtBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaKeyReleased
-
-    }//GEN-LAST:event_txtBusquedaKeyReleased
+        actualizarTabla();
+    }//GEN-LAST:event_txtBusquedaNombreKeyReleased
 
     private void btnReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnReportesMouseClicked
         interfaces.mostrarPantallaReporteComandas();
@@ -434,9 +442,65 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     }//GEN-LAST:event_btnReportesClientesMouseClicked
 
     private void btnGenerarReporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGenerarReporteMouseClicked
+        try {  
+            /// Obtiene la lista de clientes desde la capa de negocio (DTOs)
+            List<ReporteClientesDTO> listaClientes = coor.obtenerClientes();
 
+            // Convierte la lista de DTOs a un formato que Jasper pueda procesar
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(listaClientes);
+
+            // Parámetros: se envían al archivo .jrxml
+            // El nombre debe coincidir con el definido en el reporte
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("ItemDataSource", dataSource);
+            
+            InputStream jrxml = getClass().getResourceAsStream("/reportes/reporteClientes.jrxml");
+
+            // Compila el archivo .jrxml en un reporte ejecutable
+            JasperReport report = JasperCompileManager.compileReport(jrxml);
+
+            // Llena el reporte con los datos proporcionados
+            JasperPrint print = JasperFillManager.fillReport(
+                    report, params, new JREmptyDataSource()
+            );
+
+            // Muestra la vista previa del reporte
+            JasperViewer.viewReport(print, false);
+            
+        } catch (NegocioException | JRException ex) {
+            Logger.getLogger(FrmReporteClientes.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnGenerarReporteMouseClicked
 
+    private void txtBusquedaVisitasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBusquedaVisitasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBusquedaVisitasActionPerformed
+
+    private void txtBusquedaVisitasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBusquedaVisitasKeyReleased
+        String texto = txtBusquedaVisitas.getText().trim();
+
+        if (texto.isEmpty()) {
+            filtroVisitas = null;
+        } else {
+            try {
+                filtroVisitas = Long.valueOf(texto);
+            } catch (NumberFormatException e) {
+                filtroVisitas = null;
+            }
+        }
+
+        actualizarTabla();
+    }//GEN-LAST:event_txtBusquedaVisitasKeyReleased
+
+    private void actualizarTabla() {
+    try {
+        List<ReporteClientesDTO> lista = coor.obtenerReporteClientesFiltro(filtroNombre, filtroVisitas);
+        cargarTabla(lista);
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    }
+}
     public void cargarTabla(){
         DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
         modelo.setRowCount(0);
@@ -445,7 +509,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
             
             for(ReporteClientesDTO rc: lista){
                 modelo.addRow( new Object[] {
-                        rc.getNombre(),
+                        rc.getNombres(),
                         rc.getVisitas(),
                         rc.getTotalGastado(),
                         rc.getFechaUltimaComanda(),
@@ -454,6 +518,20 @@ public class FrmReporteClientes extends javax.swing.JFrame {
             }
         } catch (NegocioException ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }  
+    }
+    
+    public void cargarTabla(List<ReporteClientesDTO> lista){
+        DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
+        modelo.setRowCount(0);
+        for(ReporteClientesDTO rc: lista){
+            modelo.addRow( new Object[] {
+                rc.getNombres(),
+                rc.getVisitas(),
+                rc.getTotalGastado(),
+                rc.getFechaUltimaComanda(),
+                rc.getPuntosAcumulados()
+            });
         }  
     }
 
@@ -466,11 +544,10 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     private javax.swing.JButton btnReportes;
     private javax.swing.JButton btnReportesClientes;
     private javax.swing.JButton btnReportesComandas;
-    private javax.swing.JCheckBox checkNombre;
-    private javax.swing.JCheckBox checkVisitas;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -482,6 +559,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     private javax.swing.JLabel lblClientes;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JTable tblClientes;
-    private javax.swing.JTextField txtBusqueda;
+    private javax.swing.JTextField txtBusquedaNombre;
+    private javax.swing.JTextField txtBusquedaVisitas;
     // End of variables declaration//GEN-END:variables
 }

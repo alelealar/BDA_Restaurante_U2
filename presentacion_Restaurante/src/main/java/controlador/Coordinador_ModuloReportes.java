@@ -12,6 +12,8 @@ import interfaces.IReportesBO;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import notificaciones.DlgNotificacion;
 import notificaciones.TipoNotificacion;
 import objetosNegocio.ReportesBO;
@@ -32,6 +34,15 @@ public class Coordinador_ModuloReportes {
     
     public List<ReporteClientesDTO> obtenerClientes() throws NegocioException{
         return bo.obtenerClientes();
+    }
+    
+    public List<ReporteClientesDTO> obtenerReporteClientesFiltro(String nombre, Long visitas) {
+        try {
+            return bo.obtenerReporteClientesFiltro(nombre, visitas);
+        } catch (NegocioException ex) {
+            Logger.getLogger(Coordinador_ModuloReportes.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
     
     public List<ReporteComandasDTO> obtenerReporteComandasFiltro(LocalDateTime inicio, LocalDateTime fin) {

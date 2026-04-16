@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports 
+    http://jasperreports.sourceforge.net/xsd/jasperreport.xsd
+    http://jasperreports.sourceforge.net/jasperreports/components 
+    http://jasperreports.sourceforge.net/xsd/components.xsd"
+    name="reporteClientes"
+    pageWidth="595" pageHeight="842"
+    columnWidth="555"
+    leftMargin="20" rightMargin="20"
+    topMargin="20" bottomMargin="20">
+
+    <!-- ===== ESTILOS ===== -->
+    <style name="Header" mode="Opaque" backcolor="#FFC85C" forecolor="#FFFFFF"/>
+
+    <!-- ===== DATASET ===== -->
+    <subDataset name="ItemDataset">
+        <field name="nombres" class="java.lang.String"/>
+        <field name="visitas" class="java.lang.Long"/>
+        <field name="totalGastado" class="java.lang.Double"/>
+        <field name="fechaUltimaComanda" class="java.util.Date"/>
+        <field name="puntosAcumulados" class="java.lang.Long"/>
+    </subDataset>
+
+    <parameter name="ItemDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+
+    <!-- ===== TITULO ===== -->
+    <title>
+        <band height="60">
+            <staticText>
+                <reportElement style="Header" x="0" y="10" width="555" height="40"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <text><![CDATA[REPORTE DE CLIENTES FRECUENTES]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- ===== FECHA ===== -->
+    <pageHeader>
+        <band height="30">
+            <textField>
+                <reportElement x="0" y="5" width="555" height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[
+                "Fecha de reporte: " + 
+                new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())
+                ]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+
+    <!-- ===== TABLA ===== -->
+    <detail>
+        <band height="200">
+            <componentElement>
+                <reportElement x="0" y="0" width="555" height="200"/>
+
+                <jr:table>
+
+                    <datasetRun subDataset="ItemDataset">
+                        <dataSourceExpression><![CDATA[$P{ItemDataSource}]]></dataSourceExpression>
+                    </datasetRun>
+
+                    <!-- ================= NOMBRE ================= -->
+                    <jr:column width="130">
+
+                        <jr:tableHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="130" height="30" mode="Opaque" backcolor="#FFEFB0"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font isBold="true"/>
+                                </textElement>
+                                <text><![CDATA[Nombre]]></text>
+                            </staticText>
+                        </jr:tableHeader>
+
+                        <jr:detailCell height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="130" height="30"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                                <textFieldExpression><![CDATA[$F{nombres}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+
+                    </jr:column>
+
+                    <!-- ================= VISITAS ================= -->
+                    <jr:column width="80">
+                        <jr:tableHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="80" height="30" mode="Opaque" backcolor="#FFEFB0"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font isBold="true"/>
+                                </textElement>
+                                <text><![CDATA[Visitas]]></text>
+                            </staticText>
+                        </jr:tableHeader>
+
+                        <jr:detailCell height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="80" height="30"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                                <textFieldExpression><![CDATA[$F{visitas}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                    <!-- ================= TOTAL ================= -->
+                    <jr:column width="110">
+                        <jr:tableHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="110" height="30" mode="Opaque" backcolor="#FFEFB0"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font isBold="true"/>
+                                </textElement>
+                                <text><![CDATA[Total Gastado]]></text>
+                            </staticText>
+                        </jr:tableHeader>
+
+                        <jr:detailCell height="30">
+                            <textField pattern="$ #,##0.00">
+                                <reportElement x="0" y="0" width="110" height="30"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                                <textFieldExpression><![CDATA[$F{totalGastado}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                    <!-- ================= FECHA ================= -->
+                    <jr:column width="150">
+                        <jr:tableHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="150" height="30" mode="Opaque" backcolor="#FFEFB0"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font isBold="true"/>
+                                </textElement>
+                                <text><![CDATA[Última Comanda]]></text>
+                            </staticText>
+                        </jr:tableHeader>
+
+                        <jr:detailCell height="30">
+                            <textField pattern="dd/MM/yyyy HH:mm">
+                                <reportElement x="0" y="0" width="150" height="30"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                                <textFieldExpression><![CDATA[$F{fechaUltimaComanda}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                    <!-- ================= PUNTOS ================= -->
+                    <jr:column width="85">
+                        <jr:tableHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="85" height="30" mode="Opaque" backcolor="#FFEFB0"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font isBold="true"/>
+                                </textElement>
+                                <text><![CDATA[Puntos]]></text>
+                            </staticText>
+                        </jr:tableHeader>
+
+                        <jr:detailCell height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="85" height="30"/>
+                                <box>
+                                    <pen lineWidth="0.5" lineColor="#D4D4D4"/>
+                                </box>
+                                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                                <textFieldExpression><![CDATA[$F{puntosAcumulados}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                </jr:table>
+            </componentElement>
+        </band>
+    </detail>
+
+    <!-- ===== PAGINA ===== -->
+    <pageFooter>
+        <band height="30">
+            <textField>
+                <reportElement x="455" y="5" width="100" height="20"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+</jasperReport>

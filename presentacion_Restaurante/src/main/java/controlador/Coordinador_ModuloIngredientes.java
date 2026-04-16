@@ -226,7 +226,7 @@ public class Coordinador_ModuloIngredientes {
     
     public List<IngredienteDTO> filtrarIngredientes(String nombre, UnidadDTO unidad) throws NegocioException{
         return bo.buscarIngredientes(nombre, unidad);
-    }
+    } 
     
     
     

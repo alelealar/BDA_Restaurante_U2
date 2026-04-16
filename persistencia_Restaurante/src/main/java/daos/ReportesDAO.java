@@ -126,34 +126,31 @@ public class ReportesDAO implements IReportesDAO{
         
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ReporteClientesDTO> query = cb.createQuery(ReporteClientesDTO.class);
-        Root<Comanda> comanda = query.from(Comanda.class);
-        Join<Comanda, Cliente> cliente = comanda.join("cliente");
+
+        Root<Cliente> cliente = query.from(Cliente.class);
+        Join<Cliente, Comanda> comanda = cliente.join("comandas", JoinType.LEFT);
+
+        query.select(cb.construct(
+                        ReporteClientesDTO.class,
+                        cb.concat( cb.concat( cb.concat(cliente.get("nombres"), " "), cliente.get("apellidoPaterno") ), cb.concat(" ", cliente.get("apellidoMaterno")) ),
+                        cb.count(comanda),
+                        cb.coalesce(cb.sum(comanda.get("total")), 0.0),
+                        cb.max(comanda.get("fechaHora")),
+                        cb.coalesce( cb.treat(cliente, ClienteFrecuente.class).get("puntos"), 0L )
+                ));
         
         List<Predicate> filtros = new ArrayList<>();
         
-        Expression<String> nombreCompleto = cb.concat( cb.concat( cb.concat(cliente.get("nombres"), " "), cb.concat(cliente.get("apellidoPaterno"), " ") ), cliente.get("apellidoMaterno") );
         
         if (nombre != null && !nombre.trim().isEmpty()){
-            filtros.add( cb.like( cb.lower(nombreCompleto), "%" + nombre.toLowerCase() + "%" ) );
+            filtros.add(cb.like( cb.lower(cliente.get("nombres")), "%" + nombre.toLowerCase() + "%" ));
         }  
-        
-        //new ReporteClientesDTO(campo1, campo2, campo3);
-        query.select(cb.construct(
-                        ReporteClientesDTO.class,
-                        nombreCompleto,
-                        cb.count(comanda),
-                        cb.coalesce(cb.sum(comanda.get("total")), 0.0),
-                        cb.greatest(comanda.get("fechaHora").as(LocalDateTime.class)),
-                        cb.treat(cliente, ClienteFrecuente.class).get("puntos")
-                ));
         
         if (!filtros.isEmpty()) {
             query.where(cb.and(filtros.toArray(Predicate[]::new)));
         }
         
-        query.groupBy(
-                cliente.get("id")
-        );
+        query.groupBy(cliente.get("id"), cliente.get("nombres"), cliente.get("apellidoPaterno"), cliente.get("apellidoMaterno"));
         
         if(visitas != null){
             query.having(cb.equal(cb.count(comanda), visitas));

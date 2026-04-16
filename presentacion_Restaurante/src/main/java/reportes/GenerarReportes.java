@@ -25,6 +25,8 @@ import notificaciones.TipoNotificacion;
  * @author María José Valdez Iglesias - 262775
  */
 public class GenerarReportes {
+    
+    
 
     public static void generarReporte(String rutaReporte, Map<String, Object> parametros, List<?> datos, JButton llamador, Frame frame) {
         if (datos == null || datos.isEmpty()) {

@@ -93,7 +93,7 @@ public class ReportesDAONGTest {
 
         ReporteClientesDTO dto = resultado.get(0);
 
-        assertTrue(dto.getNombre().toLowerCase().contains("alejandra"));
+        assertTrue(dto.getNombres().toLowerCase().contains("alejandra"));
         assertEquals(2L, dto.getVisitas());
                 
     }

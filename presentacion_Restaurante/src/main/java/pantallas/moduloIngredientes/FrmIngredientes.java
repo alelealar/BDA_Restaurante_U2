@@ -61,7 +61,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         cargarCBXUnidad();
         aplicarRendererStock();
-        //cargarTabla();
+        diseñoTabla();
     }
     
     /**
@@ -103,7 +103,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
         btnReportesComandas = new javax.swing.JButton();
         lblTitulo = new javax.swing.JLabel();
         txtBusqueda = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        scroll_ing = new javax.swing.JScrollPane();
         tblIngredientes = new javax.swing.JTable();
         btnAtras = new javax.swing.JButton();
         btnAnadirIngrediente = new javax.swing.JButton();
@@ -280,6 +280,9 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         });
 
+        scroll_ing.setBackground(new java.awt.Color(255, 255, 255));
+
+        tblIngredientes.setFont(new java.awt.Font("Trebuchet MS", 0, 14)); // NOI18N
         tblIngredientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -307,12 +310,14 @@ public class FrmIngredientes extends javax.swing.JFrame {
             }
         });
         tblIngredientes.setGridColor(new java.awt.Color(255, 255, 255));
+        tblIngredientes.setRowHeight(28);
+        tblIngredientes.setShowGrid(true);
         tblIngredientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblIngredientesMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblIngredientes);
+        scroll_ing.setViewportView(tblIngredientes);
 
         btnAtras.setBackground(new java.awt.Color(47, 47, 47));
         btnAtras.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -442,7 +447,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
                         .addGap(31, 31, 31))
                     .addGroup(panPrincipalLayout.createSequentialGroup()
                         .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(scroll_ing, javax.swing.GroupLayout.PREFERRED_SIZE, 785, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panPrincipalLayout.createSequentialGroup()
                                 .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(cbxUnidadMedida, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -505,7 +510,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
                                             .addComponent(cbxUnidadMedida)
                                             .addComponent(txtBusqueda))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(scroll_ing, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(21, 21, 21)
                         .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(panPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -821,7 +826,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
      */
     public void activarModoProducto(){
         modoProducto = true;
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(750, 427));
+        scroll_ing.setPreferredSize(new java.awt.Dimension(750, 427));
 
         scrollMenuLateral.setVisible(true);
         /**
@@ -988,6 +993,13 @@ public class FrmIngredientes extends javax.swing.JFrame {
         }
     }
     
+    private void diseñoTabla(){
+        scroll_ing.getViewport().setBackground(Color.WHITE);
+        tblIngredientes.setShowHorizontalLines(true);
+        tblIngredientes.setShowVerticalLines(false);
+        tblIngredientes.setGridColor(new Color(230, 230, 230));
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizarIngrediente;
     private javax.swing.JButton btnAgregarIngredientes;
@@ -1007,7 +1019,6 @@ public class FrmIngredientes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
@@ -1019,6 +1030,7 @@ public class FrmIngredientes extends javax.swing.JFrame {
     private javax.swing.JPanel panPrincipal;
     private javax.swing.JPanel pnlSeleccion;
     private javax.swing.JScrollPane scrollMenuLateral;
+    private javax.swing.JScrollPane scroll_ing;
     private javax.swing.JTable tblIngredientes;
     private javax.swing.JTextField txtBusqueda;
     // End of variables declaration//GEN-END:variables
