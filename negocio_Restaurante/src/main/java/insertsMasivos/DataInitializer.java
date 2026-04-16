@@ -41,9 +41,13 @@ public class DataInitializer {
         // =========================
         // MESAS (CORREGIDO)
         // =========================
-        if (mesaBO.obtenerMesas().isEmpty()) {
-            mesaBO.inicializarMesas(20);
+        List<MesaDTO> mesasExistentes = mesaBO.obtenerMesas();
+
+        for (MesaDTO mesa : mesasExistentes) {
+            mesaBO.eliminarMesa(mesa.getId());
         }
+
+        mesaBO.inicializarMesas(20);
 
         // =========================
         // MESEROS

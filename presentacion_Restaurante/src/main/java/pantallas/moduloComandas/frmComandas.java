@@ -24,7 +24,6 @@ public class frmComandas extends javax.swing.JFrame {
     private boolean creada = false;
 
     private final CoordinadorModuloComandas coordinador;
-    private ClienteDTO cliente;
     private ComandaDTO comanda;
     private final MesaDTO mesa;
 

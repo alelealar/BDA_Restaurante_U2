@@ -9,7 +9,6 @@ import dtos.ProductoIngredienteDTO;
 import enumerators.TipoMovimiento;
 import excepciones.NegocioException;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -57,7 +56,12 @@ public class frmPedidos extends javax.swing.JFrame {
         SwingUtilities.invokeLater(() -> jPanel1.requestFocusInWindow());
 
         panContenedorProductos.setLayout(new java.awt.GridLayout(0, 3, 15, 15));
+        panContenedorProductos.setPreferredSize(null);
         panProductosPedidos.setLayout(new BoxLayout(panProductosPedidos, BoxLayout.Y_AXIS));
+    }
+
+    public javax.swing.JPanel getPanContenedorProductosPedidos() {
+        return panProductosPedidos;
     }
 
     /**
@@ -131,7 +135,7 @@ public class frmPedidos extends javax.swing.JFrame {
         panProductosPedidos.removeAll();
 
         for (DetalleComandaDTO d : detallesTemporales) {
-            panProducto panel = new panProducto(d, coordinador, comanda);
+            panProducto panel = new panProducto(d, coordinador, this);
 
             panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
             panel.setAlignmentX(LEFT_ALIGNMENT);
@@ -140,6 +144,14 @@ public class frmPedidos extends javax.swing.JFrame {
         }
 
         actualizarPanel(panProductosPedidos);
+    }
+
+    public void eliminarDetalleTemporal(DetalleComandaDTO detalle) {
+        detallesTemporales.remove(detalle);
+        total = calcularTotal(detallesTemporales);
+        lblTotal.setText(String.format("Total: $%.2f", total));
+
+        refrescarPanelPedidos();
     }
 
     /**
@@ -324,7 +336,7 @@ public class frmPedidos extends javax.swing.JFrame {
             .addGroup(panBuscadorLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(425, Short.MAX_VALUE))
         );
         panBuscadorLayout.setVerticalGroup(
             panBuscadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -396,9 +408,12 @@ public class frmPedidos extends javax.swing.JFrame {
                 .addContainerGap(13, Short.MAX_VALUE))
         );
 
+        jScrollPane3.setBorder(null);
         jScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         panContenedorProductos.setBackground(new java.awt.Color(255, 255, 255));
+        panContenedorProductos.setMaximumSize(new java.awt.Dimension(612, 505));
+        panContenedorProductos.setMinimumSize(new java.awt.Dimension(612, 505));
 
         javax.swing.GroupLayout panContenedorProductosLayout = new javax.swing.GroupLayout(panContenedorProductos);
         panContenedorProductos.setLayout(panContenedorProductosLayout);
@@ -408,7 +423,7 @@ public class frmPedidos extends javax.swing.JFrame {
         );
         panContenedorProductosLayout.setVerticalGroup(
             panContenedorProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 505, Short.MAX_VALUE)
+            .addGap(0, 511, Short.MAX_VALUE)
         );
 
         jScrollPane3.setViewportView(panContenedorProductos);
@@ -423,13 +438,14 @@ public class frmPedidos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(panBuscador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane3))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(panBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -448,7 +464,7 @@ public class frmPedidos extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(panBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGap(0, 0, 0)
                                 .addComponent(jScrollPane3))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)

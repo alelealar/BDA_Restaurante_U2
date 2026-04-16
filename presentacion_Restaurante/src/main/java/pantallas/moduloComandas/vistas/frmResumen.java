@@ -16,16 +16,25 @@ public class frmResumen extends javax.swing.JFrame {
     private CoordinadorModuloComandas coordinador;
 
     /**
-     * Creates new form frmRecibo
+     * Creates new form frmResumen
      *
-     * @param comanda
-     * @param coordinador
+     * @param comanda DTO que contiene al menos el ID
+     * @param coordinador Coordinador del módulo
      */
     public frmResumen(ComandaDTO comanda, CoordinadorModuloComandas coordinador) {
         initComponents();
         this.coordinador = coordinador;
-        txaResumen.setText(construirMensajeComanda(comanda));
-        lblTotal.setText("Total: $" + comanda.getTotal() + " MXN");
+
+        try {
+            ComandaDTO comandaBD = coordinador.obtenerComanda(comanda.getId());
+
+            txaResumen.setText(construirMensajeComanda(comandaBD));
+            lblTotal.setText("Total: $" + comandaBD.getTotal() + " MXN");
+
+        } catch (NegocioException e) {
+            txaResumen.setText("Error al cargar la comanda");
+            lblTotal.setText("Total: $0 MXN");
+        }
     }
 
     /**

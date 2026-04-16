@@ -4,6 +4,7 @@ import adaptadores.ComandaAdapter;
 import adaptadores.MesaAdapter;
 import daos.ClienteDAO;
 import daos.ComandaDAO;
+import daos.MesaDAO;
 import dtos.ComandaDTO;
 import dtos.DetalleComandaDTO;
 import dtos.MesaDTO;
@@ -19,6 +20,7 @@ import interfaces.IClienteDAO;
 import interfaces.IComandaBO;
 import interfaces.IComandaDAO;
 import interfaces.IMesaBO;
+import interfaces.IMesaDAO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +42,7 @@ public class ComandaBO implements IComandaBO {
 
     private final IComandaDAO comandaDAO = ComandaDAO.getInstance();
     private final IClienteDAO clienteDAO = ClienteDAO.getInstance();
+    private final IMesaDAO mesaDAO = MesaDAO.getInstance();
 
     private static final Logger LOG = Logger.getLogger(ComandaBO.class.getName());
 
@@ -214,7 +217,7 @@ public class ComandaBO implements IComandaBO {
     @Override
     public List<MesaDTO> obtenerMesas() throws NegocioException {
         try {
-            List<Mesa> mesas = comandaDAO.obtenerMesas();
+            List<Mesa> mesas = mesaDAO.obtenerMesas();
             return MesaAdapter.listaEntidadADTO(mesas);
 
         } catch (PersistenciaException ex) {

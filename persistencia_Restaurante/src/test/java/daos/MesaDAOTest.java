@@ -3,6 +3,7 @@ package daos;
 import entidades.Mesa;
 import enumerators.EstadoMesa;
 import excepciones.PersistenciaException;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,21 +20,27 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MesaDAOTest {
 
     private MesaDAO dao;
+    private List<Long> idsInsertados;
 
     @BeforeEach
     public void setup() throws PersistenciaException {
         dao = MesaDAO.getInstance();
-
-        List<Mesa> mesas = dao.obtenerMesas();
-        if (mesas != null && !mesas.isEmpty()) {
-            return;
-        }
+        idsInsertados = new ArrayList<>();
 
         for (int i = 1; i <= 20; i++) {
             Mesa m = new Mesa();
             m.setNumero(i);
             m.setEstado(EstadoMesa.DISPONIBLE);
+
             dao.registrarMesa(m);
+            idsInsertados.add(m.getId());
+        }
+    }
+
+    @AfterEach
+    public void limpiarDatos() throws Exception {
+        for (Long id : idsInsertados) {
+            dao.eliminarMesa(id);
         }
     }
 
@@ -44,6 +51,7 @@ public class MesaDAOTest {
         m.setEstado(EstadoMesa.DISPONIBLE);
 
         dao.registrarMesa(m);
+        idsInsertados.add(m.getId());
 
         assertNotNull(m.getId());
     }
@@ -59,6 +67,7 @@ public class MesaDAOTest {
         List<Mesa> mesas = dao.obtenerMesas();
 
         assertNotNull(mesas);
+        assertFalse(mesas.isEmpty());
     }
 
     @Test

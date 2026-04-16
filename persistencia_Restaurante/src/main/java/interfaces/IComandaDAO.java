@@ -66,12 +66,4 @@ public interface IComandaDAO {
      * @throws PersistenciaException Si ocurre un error.
      */
     public Long obtenerComandasDia() throws PersistenciaException;
-
-    /**
-     * Obtiene todas las mesas registradas.
-     *
-     * @return Cantidad de mesas registradas.
-     * @throws PersistenciaException Si ocurre un error.
-     */
-    public List<Mesa> obtenerMesas() throws PersistenciaException;
 }

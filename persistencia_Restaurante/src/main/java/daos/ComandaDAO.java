@@ -272,23 +272,4 @@ public class ComandaDAO implements IComandaDAO {
         }
     }
 
-    /**
-     * Obtiene todas las mesas registradas.
-     *
-     * @return lista de mesas
-     * @throws PersistenciaException si ocurre error
-     */
-    @Override
-    public List<Mesa> obtenerMesas() throws PersistenciaException {
-        EntityManager em = ConexionBD.crearConexion();
-
-        try {
-            return em.createQuery("SELECT m FROM Mesa m", Mesa.class)
-                    .getResultList();
-        } catch (Exception e) {
-            throw new PersistenciaException("Error al obtener mesas", e);
-        } finally {
-            em.close();
-        }
-    }
 }

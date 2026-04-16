@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import pantallas.moduloComandas.frmPedidos;
 
 /**
  * Panel visual que representa un producto dentro de una comanda.
@@ -26,20 +27,19 @@ public class panProducto extends javax.swing.JPanel {
 
     private final DetalleComandaDTO detalle;
     private final CoordinadorModuloComandas coordinador;
-    private ComandaDTO comanda;
+    private frmPedidos frame;
 
     /**
      * Constructor del panel producto.
      *
      * @param detalle detalle asociado
      * @param coordinador coordinador del módulo
-     * @param comanda comanda actual
      */
-    public panProducto(DetalleComandaDTO detalle, CoordinadorModuloComandas coordinador, ComandaDTO comanda) {
+    public panProducto(DetalleComandaDTO detalle, CoordinadorModuloComandas coordinador, frmPedidos frame) {
         initComponents();
         this.detalle = detalle;
         this.coordinador = coordinador;
-        this.comanda = comanda;
+        this.frame = frame;
 
         configurarPanel();
         cargarDatos();
@@ -67,6 +67,16 @@ public class panProducto extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(334, 163));
         setMinimumSize(new java.awt.Dimension(334, 163));
         setMaximumSize(new java.awt.Dimension(334, 163));
+    }
+
+    /**
+     * Obtiene la comanda actual
+     *
+     * @return comanda actual
+     * @throws NegocioException
+     */
+    private ComandaDTO obtenerComandaActual() throws NegocioException {
+        return coordinador.obtenerComanda(detalle.getIdComanda());
     }
 
     /**
@@ -278,90 +288,15 @@ public class panProducto extends javax.swing.JPanel {
 
     private void btnIncrementarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncrementarActionPerformed
         aumentarCantidad();
-
-        try {
-            ComandaDTO comandaActual = coordinador.obtenerComanda(comanda.getId());
-
-            for (DetalleComandaDTO d : comandaActual.getDetalles()) {
-                if (d.getId() != null && d.getId().equals(detalle.getId())) {
-                    d.setCantidad(d.getCantidad() + 1);
-                    break;
-                }
-            }
-
-            comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
-
-            coordinador.actualizarComanda(comandaActual);
-            this.comanda = comandaActual;
-
-        } catch (NegocioException ex) {
-            mostrarError(ex.getMessage());
-        }
-
     }//GEN-LAST:event_btnIncrementarActionPerformed
 
     private void btnDisminuirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisminuirActionPerformed
-        if (detalle.getCantidad() <= 1) {
-            return;
-        }
 
         disminuirCantidad();
-
-        try {
-            ComandaDTO comandaActual = coordinador.obtenerComanda(comanda.getId());
-
-            for (DetalleComandaDTO d : comandaActual.getDetalles()) {
-                if (d.getId() != null && d.getId().equals(detalle.getId())) {
-                    d.setCantidad(d.getCantidad() - 1);
-                    break;
-                }
-            }
-
-            comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
-
-            coordinador.actualizarComanda(comandaActual);
-            this.comanda = comandaActual;
-
-        } catch (NegocioException ex) {
-            mostrarError(ex.getMessage());
-        }
     }//GEN-LAST:event_btnDisminuirActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        try {
-            ComandaDTO comandaActual = coordinador.obtenerComanda(comanda.getId());
-
-            List<DetalleComandaDTO> detalles = comandaActual.getDetalles();
-
-            for (int i = 0; i < detalles.size(); i++) {
-                DetalleComandaDTO d = detalles.get(i);
-
-                if (d.getId() != null && d.getId().equals(detalle.getId())) {
-                    detalles.remove(i);
-                    break;
-                }
-            }
-
-            comandaActual.setTotal(calcularTotal(detalles));
-
-            coordinador.actualizarComanda(comandaActual);
-            this.comanda = comandaActual;
-
-            Container parent = this.getParent();
-
-            if (parent != null) {
-                parent.remove(this);
-                parent.revalidate();
-                parent.repaint();
-            } else {
-                System.out.println("El panel no tiene padre");
-            }
-
-            coordinador.refrescarComandas();
-
-        } catch (NegocioException ex) {
-            mostrarError(ex.getMessage());
-        }
+        frame.eliminarDetalleTemporal(detalle);
     }//GEN-LAST:event_btnCancelarActionPerformed
 
 
