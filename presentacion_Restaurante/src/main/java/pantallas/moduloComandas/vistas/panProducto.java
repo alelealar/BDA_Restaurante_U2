@@ -3,6 +3,7 @@ package pantallas.moduloComandas.vistas;
 import controlador.CoordinadorModuloComandas;
 import dtos.DetalleComandaDTO;
 import dtos.ProductoDTO;
+import dtos.ProductoIngredienteDTO;
 import excepciones.NegocioException;
 import java.awt.Image;
 import java.net.URL;
@@ -38,7 +39,6 @@ public class panProducto extends javax.swing.JPanel {
         this.detalle = detalle;
         this.coordinador = coordinador;
         this.frame = frame;
-
         configurarPanel();
         cargarDatos();
         actualizarBotonDisminuir();
@@ -106,11 +106,23 @@ public class panProducto extends javax.swing.JPanel {
      * Aumenta la cantidad del producto.
      */
     private void aumentarCantidad() {
-        detalle.setCantidad(detalle.getCantidad() + 1);
-        lblCantidad.setText(String.valueOf(detalle.getCantidad()));
-
-        coordinador.actualizarTotal(detalle.getPrecioUnitario());
-        actualizarBotonDisminuir();
+        try{
+            ProductoDTO producto = coordinador.obtenerProducto(detalle.getIdProducto());
+            int nuevaCantidad = detalle.getCantidad() + 1;
+            List<ProductoIngredienteDTO> ingredientes = producto.getIngredientes();
+            for(ProductoIngredienteDTO pi: ingredientes){
+                int requerido = pi.getCantidad() * nuevaCantidad;
+                if(pi.getIngrediente().getStockActual() < requerido){
+                    JOptionPane.showMessageDialog( this, "No hay suficiente stock para aumentar este producto", "Sin stock", JOptionPane.WARNING_MESSAGE ); return;
+                }
+            }
+            detalle.setCantidad(detalle.getCantidad() + 1);
+            lblCantidad.setText(String.valueOf(detalle.getCantidad()));
+            coordinador.actualizarTotal(detalle.getPrecioUnitario());
+            actualizarBotonDisminuir();
+        } catch (NegocioException ex) {
+            mostrarError(ex.getMessage());
+        }
     }
 
     /**
@@ -120,10 +132,8 @@ public class panProducto extends javax.swing.JPanel {
         if (detalle.getCantidad() <= 1) {
             return;
         }
-
         detalle.setCantidad(detalle.getCantidad() - 1);
         lblCantidad.setText(String.valueOf(detalle.getCantidad()));
-
         coordinador.actualizarTotal(-detalle.getPrecioUnitario());
         actualizarBotonDisminuir();
     }

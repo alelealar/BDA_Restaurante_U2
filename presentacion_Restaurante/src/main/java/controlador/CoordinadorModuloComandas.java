@@ -1,5 +1,4 @@
 package controlador;
-
 import dtos.ClienteDTO;
 import dtos.ComandaDTO;
 import dtos.MesaDTO;
@@ -21,7 +20,6 @@ import pantallas.moduloComandas.frmISMesero;
 import pantallas.moduloComandas.frmMesas;
 import pantallas.moduloComandas.frmPedidos;
 import pantallas.moduloComandas.vistas.frmResumen;
-
 /**
  * Clase coordinadora del módulo de comandas.
  *
@@ -31,57 +29,46 @@ import pantallas.moduloComandas.vistas.frmResumen;
  * @author Brian Kaleb Sandoval Rodríguez - 00000262741
  */
 public class CoordinadorModuloComandas {
-
     /**
      * Pantalla de inicio de sesión del mesero.
      */
     private frmISMesero isMesero;
-
     /**
      * Pantalla de mesas.
      */
     private frmMesas mesas;
-
     /**
      * Pantalla principal de comandas.
      */
     private frmComandas comandas;
-
     /**
      * Pantalla para registrar pedidos.
      */
     private frmPedidos pedidos;
-
     /**
      * Pantalla de resumen de comanda.
      */
     private frmResumen resumen;
-
     /**
      * Objeto de negocio para comandas.
      */
     private final IComandaBO comandaBO;
-
     /**
      * Objeto de negocio para meseros.
      */
     private final IMeseroBO meseroBO;
-
     /**
      * Objeto de negocio para mesas.
      */
     private final IMesaBO mesaBO;
-
     /**
      * Objeto de negocio para productos.
      */
     private final IProductoBO productoBO;
-
     /**
      * Coordinador principal del sistema.
      */
     private CoordinadorInterfaces coordinador;
-
     /**
      * Constructor que inicializa los objetos de negocio del módulo.
      */
@@ -91,7 +78,6 @@ public class CoordinadorModuloComandas {
         mesaBO = MesaBO.getInstance();
         productoBO = ProductoBO.getInstance();
     }
-
     /**
      * Establece el coordinador principal del sistema.
      *
@@ -100,7 +86,6 @@ public class CoordinadorModuloComandas {
     public void setCoordinador(CoordinadorInterfaces coordinador) {
         this.coordinador = coordinador;
     }
-
     /**
      * Regresa a la pantalla principal del sistema.
      */
@@ -109,33 +94,27 @@ public class CoordinadorModuloComandas {
             coordinador.regresarInicio();
         }
     }
-
     /**
      * Cierra todas las pantallas del módulo abiertas actualmente.
      */
     public void cerrarPantallas() {
-
         if (isMesero != null) {
             isMesero.dispose();
             isMesero = null;
         }
-
         if (mesas != null) {
             mesas.dispose();
             mesas = null;
         }
-
         if (comandas != null) {
             comandas.dispose();
             comandas = null;
         }
-
         if (pedidos != null) {
             pedidos.dispose();
             pedidos = null;
         }
     }
-
     /**
      * Muestra la pantalla de inicio de sesión del mesero.
      */
@@ -145,7 +124,6 @@ public class CoordinadorModuloComandas {
         }
         isMesero.setVisible(true);
     }
-
     /**
      * Muestra la pantalla para crear pedidos.
      *
@@ -157,15 +135,12 @@ public class CoordinadorModuloComandas {
             pedidos.dispose();
             pedidos = null;
         }
-
         if (comandas != null) {
             comandas.setVisible(false);
         }
-
         pedidos = new frmPedidos(this, mesa, comanda);
         pedidos.setVisible(true);
     }
-
     /**
      * Muestra la pantalla de comandas para una mesa específica.
      *
@@ -175,20 +150,15 @@ public class CoordinadorModuloComandas {
         if (comandas != null) {
             comandas.dispose();
         }
-
         if (pedidos != null) {
             pedidos.dispose();
         }
-
         comandas = new frmComandas(this, mesa);
-
         if (mesas != null) {
             mesas.setVisible(false);
         }
-
         comandas.setVisible(true);
     }
-
     /**
      * Muestra la pantalla de mesas.
      */
@@ -196,25 +166,20 @@ public class CoordinadorModuloComandas {
         if (mesas != null) {
             mesas.dispose();
         }
-
         if (comandas != null) {
             comandas.dispose();
             comandas = null;
         }
-
         if (pedidos != null) {
             pedidos.dispose();
             pedidos = null;
         }
-
         mesas = new frmMesas(this);
         mesas.setVisible(true);
-
         if (isMesero != null) {
             isMesero.dispose();
         }
     }
-
     /**
      * Abre el módulo de clientes para seleccionar uno en la comanda.
      */
@@ -222,12 +187,10 @@ public class CoordinadorModuloComandas {
         if (comandas != null) {
             comandas.setVisible(false);
         }
-
         if (coordinador != null) {
             coordinador.mostrarClientesParaComanda();
         }
     }
-
     /**
      * Recibe el cliente seleccionado para asociarlo a la comanda.
      *
@@ -239,7 +202,6 @@ public class CoordinadorModuloComandas {
             comandas.setVisible(true);
         }
     }
-
     /**
      * Muestra la ventana de resumen de la comanda.
      *
@@ -251,7 +213,6 @@ public class CoordinadorModuloComandas {
         }
         resumen.setVisible(true);
     }
-
     /**
      * Refresca la información mostrada en la pantalla de comandas.
      */
@@ -260,7 +221,6 @@ public class CoordinadorModuloComandas {
             comandas.agregarPedidos();
         }
     }
-
     /**
      * Registra una nueva comanda.
      *
@@ -271,7 +231,6 @@ public class CoordinadorModuloComandas {
     public ComandaDTO registrarComanda(ComandaDTO comanda) throws NegocioException {
         return comandaBO.guardarComanda(comanda);
     }
-
     /**
      * Actualiza una comanda existente.
      *
@@ -282,7 +241,6 @@ public class CoordinadorModuloComandas {
     public ComandaDTO actualizarComanda(ComandaDTO comandaDTO) throws NegocioException {
         return comandaBO.actualizarComanda(comandaDTO);
     }
-
     /**
      * Actualiza los registros de un cliente frecuente.
      *
@@ -292,7 +250,6 @@ public class CoordinadorModuloComandas {
     public void actualizarRegistrosClienteFrecuente(ComandaDTO comanda) throws NegocioException {
         comandaBO.actualizarClienteFrecuente(comanda);
     }
-
     /**
      * Elimina una comanda por su identificador.
      *
@@ -302,7 +259,6 @@ public class CoordinadorModuloComandas {
     public void eliminarComanda(Long idComanda) throws NegocioException {
         comandaBO.eliminarComanda(idComanda);
     }
-
     /**
      * Obtiene todas las comandas registradas.
      *
@@ -312,7 +268,6 @@ public class CoordinadorModuloComandas {
     public List<ComandaDTO> obtenerComandas() throws NegocioException {
         return comandaBO.obtenerComandas();
     }
-
     /**
      * Obtiene una comanda por su identificador.
      *
@@ -323,7 +278,6 @@ public class CoordinadorModuloComandas {
     public ComandaDTO obtenerComanda(Long id) throws NegocioException {
         return comandaBO.buscarComandaPorId(id);
     }
-
     /**
      * Valida si un mesero existe en el sistema.
      *
@@ -334,7 +288,6 @@ public class CoordinadorModuloComandas {
     public boolean validarMesero(String usuario) throws NegocioException {
         return meseroBO.existeMesero(usuario);
     }
-
     /**
      * Registra un nuevo mesero.
      *
@@ -344,7 +297,6 @@ public class CoordinadorModuloComandas {
     public void registrarMesero(String usuario) throws NegocioException {
         meseroBO.registrarMesero(usuario);
     }
-
     /**
      * Obtiene la lista de mesas registradas.
      *
@@ -354,7 +306,6 @@ public class CoordinadorModuloComandas {
     public List<MesaDTO> obtenerMesas() throws NegocioException {
         return mesaBO.obtenerMesas();
     }
-
     /**
      * Cambia el estado de una mesa.
      *
@@ -365,7 +316,6 @@ public class CoordinadorModuloComandas {
     public void cambiarEstadoMesa(Long idMesa, EstadoMesaDTO estado) throws NegocioException {
         mesaBO.cambiarEstadoMesa(idMesa, estado.name());
     }
-
     /**
      * Consulta todos los productos disponibles.
      *
@@ -375,7 +325,10 @@ public class CoordinadorModuloComandas {
     public List<ProductoDTO> consultarProductos() throws NegocioException {
         return productoBO.consultarTodosProductos();
     }
-
+    
+    public List<ProductoDTO> consultarProductosActivos() throws NegocioException {
+        return productoBO.consultarProductosActivos();
+    }
     /**
      * Obtiene un producto por su identificador.
      *
@@ -386,7 +339,6 @@ public class CoordinadorModuloComandas {
     public ProductoDTO obtenerProducto(Long idProducto) throws NegocioException {
         return productoBO.consultarProductoPorID(idProducto);
     }
-
     /**
      * Agrega un producto a la interfaz de pedidos.
      *
@@ -395,7 +347,6 @@ public class CoordinadorModuloComandas {
     public void agregarProductoInterfaz(ProductoDTO producto) {
         pedidos.agregarProductosComanda(producto);
     }
-
     /**
      * Actualiza el total mostrado en la interfaz de pedidos.
      *
@@ -404,7 +355,6 @@ public class CoordinadorModuloComandas {
     public void actualizarTotal(Double monto) {
         pedidos.actualizarTotal(monto);
     }
-
     /**
      * Consulta productos filtrados por nombre.
      *
@@ -415,7 +365,6 @@ public class CoordinadorModuloComandas {
     public List<ProductoDTO> consultarProductosFiltrados(String nombre) throws NegocioException {
         return coordinador.productosFiltrados(nombre);
     }
-
     /**
      * Actualiza el inventario de ingredientes.
      *

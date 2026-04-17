@@ -44,10 +44,7 @@ public class panProductoPedido extends javax.swing.JPanel {
      * @param comanda
      * @throws excepciones.NegocioException
      */
-    public panProductoPedido(DetalleComandaDTO detalle,
-            CoordinadorModuloComandas coordinador,
-            ComandaDTO comanda) throws NegocioException {
-
+    public panProductoPedido(DetalleComandaDTO detalle, CoordinadorModuloComandas coordinador, ComandaDTO comanda) throws NegocioException {
         initComponents();
 
         this.detalle = detalle;
@@ -103,49 +100,36 @@ public class panProductoPedido extends javax.swing.JPanel {
      * Lógica para editar el detalle.
      */
     private void editarDetalle(JDialog dialog, JSpinner spCantidad, JTextArea txtComentario) {
-
-        int cantidadAnterior = detalle.getCantidad();
-        int cantidadNueva = (Integer) spCantidad.getValue();
-
-        detalle.setCantidad(cantidadNueva);
-        detalle.setComentario(txtComentario.getText().trim());
-
         try {
+            int cantidadNueva = (Integer) spCantidad.getValue();
             ComandaDTO comandaActual = coordinador.obtenerComanda(detalle.getIdComanda());
-
-            actualizarDetalleEnLista(comandaActual);
-
-            comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
-
-            int diferencia = cantidadNueva - cantidadAnterior;
-
-            if (diferencia != 0) {
-                //Si la diferencia es mayor a 0 se resta, si es menor se suma.
-                TipoMovimiento movimiento = diferencia > 0 ? TipoMovimiento.SALIDA : TipoMovimiento.ENTRADA;
-
-                //obtenemos el valor absoluto de la diferencia para evitar negativos
-                int cantidadMovimiento = Math.abs(diferencia);
-
-                for (ProductoIngredienteDTO pi : producto.getIngredientes()) {
-
-                    int totalIngrediente = pi.getCantidad() * cantidadMovimiento;
-
-                    coordinador.actualizarIngredientes(pi.getIngrediente().getId(), totalIngrediente, movimiento);
+            for (DetalleComandaDTO d : comandaActual.getDetalles()) {
+                if (d.getId().equals(detalle.getId())) {
+                    d.setCantidad(cantidadNueva);
+                    d.setComentario(txtComentario.getText().trim());
+                    break;
                 }
             }
-
+            comandaActual.setTotal(calcularTotal(comandaActual.getDetalles()));
             coordinador.actualizarComanda(comandaActual);
             coordinador.refrescarComandas();
-
+            actualizarTexto();
         } catch (NegocioException ex) {
             mostrarError(ex.getMessage());
             dialog.dispose();
             return;
         }
-
         dialog.dispose();
         JOptionPane.showMessageDialog(this, "Producto actualizado correctamente");
-        actualizarTexto();
+    }
+    
+    private int obtenerCantidadDesdeComanda(Long idDetalle, ComandaDTO comanda) {
+        for (DetalleComandaDTO d : comanda.getDetalles()) {
+            if (d.getId() != null && d.getId().equals(idDetalle)) {
+                return d.getCantidad();
+            }
+        }
+        return 0;
     }
 
     /**
@@ -226,7 +210,7 @@ public class panProductoPedido extends javax.swing.JPanel {
      */
     private void actualizarDetalleEnLista(ComandaDTO comanda) {
         for (DetalleComandaDTO d : comanda.getDetalles()) {
-            if (d.getId().equals(detalle.getId())) {
+            if (d.getId() != null && detalle.getId() != null && d.getId().equals(detalle.getId())) {
                 d.setCantidad(detalle.getCantidad());
                 d.setComentario(detalle.getComentario());
                 break;

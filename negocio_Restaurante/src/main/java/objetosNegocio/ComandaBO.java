@@ -282,17 +282,14 @@ public class ComandaBO implements IComandaBO {
 
     @Override
     public void actualizarClienteFrecuente(ComandaDTO comanda) throws NegocioException {
-
         try {
+            Comanda comandaRecuperada = comandaDAO.buscarComandaPorId(comanda.getId());
 
-            Comanda comandaAdaptada = ComandaAdapter.dtoAEntidad(comanda);
-            Comanda comandaRecuperada = comandaDAO.buscarComandaPorId(comandaAdaptada.getId());
-
-            if (!(comandaRecuperada.getEstadoComanda() == EstadoComanda.ENTREGADA)) {
+            if (comandaRecuperada.getEstadoComanda() != EstadoComanda.ENTREGADA) {
                 return;
             }
 
-            if (comanda.getCliente() == null) {
+            if (comandaRecuperada.getCliente() == null) {
                 return;
             }
 
@@ -301,25 +298,26 @@ public class ComandaBO implements IComandaBO {
             }
 
             ClienteFrecuente cliente = (ClienteFrecuente) comandaRecuperada.getCliente();
+            double total = comandaRecuperada.getTotal();
 
             cliente.setNumVisitas(cliente.getNumVisitas() + 1);
+            cliente.setTotalGastado(cliente.getTotalGastado() + total);
+            cliente.setPuntos((long) (cliente.getTotalGastado() / 20));
 
-            double nuevoTotal = cliente.getTotalGastado() + comanda.getTotal();
-            cliente.setTotalGastado(nuevoTotal);
+            clienteDAO.actualizarCliente(cliente);
 
-            cliente.setPuntos((long) (nuevoTotal / 20));
+            LOG.info(() -> "Cliente actualizado -> Puntos: " 
+                    + cliente.getPuntos() 
+                    + ", Visitas: " 
+                    + cliente.getNumVisitas() 
+                    + ", Total: " 
+                    + cliente.getTotalGastado());
 
-            try {
-                clienteDAO.actualizarCliente(cliente);
-            } catch (PersistenciaException ex) {
-                throw new NegocioException(ex.getMessage());
-            }
-
-            LOG.info(() -> "Cliente " + cliente.getPuntos() + "" + cliente.getNumVisitas() + "" + cliente.getTotalGastado());
         } catch (PersistenciaException ex) {
-            System.getLogger(ComandaBO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw new NegocioException("Error al actualizar cliente frecuente", ex);
         }
     }
+    
 
     /**
      * Valida datos mínimos para registrar.

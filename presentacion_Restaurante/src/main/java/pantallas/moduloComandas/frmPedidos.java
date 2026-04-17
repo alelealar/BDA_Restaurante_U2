@@ -70,7 +70,7 @@ public class frmPedidos extends javax.swing.JFrame {
      */
     private void cargarProductos() {
         try {
-            List<ProductoDTO> productos = coordinador.consultarProductos();
+            List<ProductoDTO> productos = coordinador.consultarProductosActivos();
 
             for (ProductoDTO producto : productos) {
                 panContenedorProductos.add(new panProductoMenu(producto, coordinador));
@@ -254,7 +254,6 @@ public class frmPedidos extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/logo_negro_pequenio.png"))); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Verdana", 1, 36)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Comandas");
 
         javax.swing.GroupLayout panEncabezadoLayout = new javax.swing.GroupLayout(panEncabezado);
@@ -513,6 +512,7 @@ public class frmPedidos extends javax.swing.JFrame {
         if (respuesta == JOptionPane.OK_OPTION) {
 
             try {
+                validarStockDisponible();
                 ComandaDTO actual = coordinador.obtenerComanda(comanda.getId());
                 actual.getDetalles().addAll(detallesTemporales);
 
@@ -581,7 +581,22 @@ public class frmPedidos extends javax.swing.JFrame {
             System.getLogger(frmPedidos.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_txtBuscadorKeyReleased
+    
+    private void validarStockDisponible() throws NegocioException {
+        for (DetalleComandaDTO d : detallesTemporales) {
+            ProductoDTO producto = coordinador.obtenerProducto(d.getIdProducto());
+            List<ProductoIngredienteDTO> ingredientes = producto.getIngredientes();
 
+            for (ProductoIngredienteDTO pi : ingredientes) {
+                int requerido = pi.getCantidad() * d.getCantidad();
+
+                if (pi.getIngrediente().getStockActual() < requerido) {
+                    throw new NegocioException("No hay suficiente stock para: " + producto.getNombre());
+                }
+            }
+        }
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtras;
