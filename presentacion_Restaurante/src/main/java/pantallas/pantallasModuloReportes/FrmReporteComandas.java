@@ -10,6 +10,7 @@ import controlador.Coordinador_ModuloReportes;
 import dtos.ReporteComandasDTO;
 import excepciones.NegocioException;
 import interfaces.IReportesBO;
+import java.awt.Color;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,8 +18,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -59,6 +61,7 @@ public class FrmReporteComandas extends javax.swing.JFrame {
     public FrmReporteComandas() {
         initComponents();
         this.setLocationRelativeTo(null);
+        diseñoTabla();
         cargarTabla();
         totalAcumulado.setText("-");
         btnFiltrar.setUI(new BasicButtonUI());
@@ -580,6 +583,12 @@ public class FrmReporteComandas extends javax.swing.JFrame {
             total += rc.getTotalVenta();
         }
         totalAcumulado.setText("$" + total);
+        // para centrar la tabla
+        DefaultTableCellRenderer renderCentrado = new DefaultTableCellRenderer();
+        renderCentrado.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < tblReportes.getColumnCount(); i++) {
+            tblReportes.getColumnModel().getColumn(i).setCellRenderer(renderCentrado);
+        }
     }
     
     /**
@@ -602,6 +611,12 @@ public class FrmReporteComandas extends javax.swing.JFrame {
             total += rc.getTotalVenta();
         }
         totalAcumulado.setText("$" + total);
+        // para centrar la tabla
+        DefaultTableCellRenderer renderCentrado = new DefaultTableCellRenderer();
+        renderCentrado.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < tblReportes.getColumnCount(); i++) {
+            tblReportes.getColumnModel().getColumn(i).setCellRenderer(renderCentrado);
+        }
     }
     
     /**
@@ -615,6 +630,18 @@ public class FrmReporteComandas extends javax.swing.JFrame {
         LocalDateTime fin = convertirFecha((Date) spinFechaFin.getValue());
         List<ReporteComandasDTO> lista = coordinador.obtenerReporteComandasFiltro(inicio, fin);
         cargarTablaFiltrada(lista);
+    }
+    
+    /**
+     * Establece el diseño de la tabla.
+     */
+    private void diseñoTabla(){
+        tblReportes.getColumnModel().getColumn(5).setPreferredWidth(200);
+        
+        jScrollPane1.getViewport().setBackground(Color.WHITE);
+        tblReportes.setShowHorizontalLines(true);
+        tblReportes.setShowVerticalLines(false);
+        tblReportes.setGridColor(new Color(230, 230, 230));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
