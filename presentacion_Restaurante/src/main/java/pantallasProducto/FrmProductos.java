@@ -9,10 +9,13 @@ import controlador.Coordinador_ModuloProductos;
 import dtos.ProductoDTO;
 import enumerators.EstadoProductoDTO;
 import enumerators.TipoProductoDTO;
+import java.awt.Color;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import notificaciones.TipoNotificacion;
@@ -62,6 +65,7 @@ public class FrmProductos extends javax.swing.JFrame {
         tipoBusqueda.addItem(null);
         tblProductos.setFillsViewportHeight(true);
         this.setLocationRelativeTo(null);
+        diseñoTabla();
         cargarTabla();
     }
 
@@ -237,6 +241,7 @@ public class FrmProductos extends javax.swing.JFrame {
         lblProReg.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         lblProReg.setText("Productos Registrados");
 
+        tblProductos.setFont(new java.awt.Font("Trebuchet MS", 0, 14)); // NOI18N
         tblProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -246,7 +251,7 @@ public class FrmProductos extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false
@@ -601,9 +606,16 @@ public class FrmProductos extends javax.swing.JFrame {
                 p.getNombre(),
                 p.getTipo(),
                 p.getDescripcion(),
-                p.getPrecio(),
+                "$" + p.getPrecio(),
                 p.getEstado()
             });
+        }
+        // centra la información en la tabla
+        DefaultTableCellRenderer renderCentrado = new DefaultTableCellRenderer();
+        renderCentrado.setHorizontalAlignment(SwingConstants.CENTER);
+
+        for (int i = 0; i < tblProductos.getColumnCount(); i++) {
+            tblProductos.getColumnModel().getColumn(i).setCellRenderer(renderCentrado);
         }
     }
     
@@ -621,9 +633,15 @@ public class FrmProductos extends javax.swing.JFrame {
                 p.getNombre(),
                 p.getTipo(),
                 p.getDescripcion(),
-                p.getPrecio(),
+                "$" + p.getPrecio(),
                 p.getEstado()
             });
+        }
+        DefaultTableCellRenderer renderCentrado = new DefaultTableCellRenderer();
+        renderCentrado.setHorizontalAlignment(SwingConstants.CENTER);
+
+        for (int i = 0; i < tblProductos.getColumnCount(); i++) {
+            tblProductos.getColumnModel().getColumn(i).setCellRenderer(renderCentrado);
         }
     }
     
@@ -640,6 +658,19 @@ public class FrmProductos extends javax.swing.JFrame {
         }
         List<ProductoDTO> lista = coordinador.buscarProductos(busqueda, tipo);
         cargarTablaFiltrada(lista);
+    }
+    
+    /**
+     * Ajusta el diseño de la tabla.
+     */
+    private void diseñoTabla(){
+        tblProductos.getColumnModel().getColumn(1).setPreferredWidth(150);
+        tblProductos.getColumnModel().getColumn(3).setPreferredWidth(200);
+        
+        jScrollPane1.getViewport().setBackground(Color.WHITE);
+        tblProductos.setShowHorizontalLines(true);
+        tblProductos.setShowVerticalLines(false);
+        tblProductos.setGridColor(new Color(230, 230, 230));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
