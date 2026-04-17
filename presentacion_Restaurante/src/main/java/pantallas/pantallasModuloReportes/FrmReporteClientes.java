@@ -48,7 +48,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     public FrmReporteClientes() {
         initComponents();
         this.setLocationRelativeTo(null);
-        cargarTabla();
+        actualizarTabla();
         diseñoTabla();
     }
 
@@ -505,44 +505,10 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAtrasMouseClicked
 
     private void actualizarTabla() {
-    try {
         List<ReporteClientesDTO> lista = coor.obtenerReporteClientesFiltro(filtroNombre, filtroVisitas);
         cargarTabla(lista);
-
-    } catch (Exception ex) {
-        ex.printStackTrace();
     }
-}
-    public void cargarTabla(){
-        DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
-        modelo.setRowCount(0);
-        try {
-             List<ReporteClientesDTO> lista = coor.obtenerClientes();
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-            for (ReporteClientesDTO rc : lista) {
-
-                Object fechaFormateada;
-
-                if (rc.getFechaUltimaComanda() == null) {
-                    fechaFormateada = "";
-                } else {
-                    fechaFormateada = rc.getFechaUltimaComanda().format(formatter);
-                }
-
-                modelo.addRow(new Object[] {
-                    rc.getNombres(),
-                    rc.getVisitas(),
-                    rc.getTotalGastado(),
-                    fechaFormateada,
-                    rc.getPuntosAcumulados()
-                });
-            }
-        } catch (NegocioException ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar clientes: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }  
-    }
+    
     
     public void cargarTabla(List<ReporteClientesDTO> lista) {
         DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();

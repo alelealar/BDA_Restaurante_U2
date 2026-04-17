@@ -85,23 +85,28 @@ public class ReportesDAO implements IReportesDAO{
         
         try{
             em.getTransaction().begin();
-            
+
             String JPQL = """
-                          SELECT NEW dtos.ReporteClientesDTO(
-                            CONCAT(CONCAT(CONCAT(c.nombres, ' '), c.apellidoPaterno), CONCAT(' ', c.apellidoMaterno)),  
-                            COUNT(co),
-                            COALESCE(SUM(co.total), 0),
-                            MAX(co.fechaHora),
-                            COALESCE(TREAT(c AS ClienteFrecuente).puntos, 0L)
-                          )
-                          FROM Cliente c
-                          LEFT JOIN c.comandas co
-                          GROUP BY c.id, c.nombres, c.apellidoPaterno, c.apellidoMaterno
-                          """;
-            
-            TypedQuery<ReporteClientesDTO> query = em.createQuery(JPQL,ReporteClientesDTO.class);
+                SELECT NEW dtos.ReporteClientesDTO(
+                    CONCAT(CONCAT(CONCAT(c.nombres, ' '), c.apellidoPaterno), CONCAT(' ', c.apellidoMaterno)),
+                    COUNT(co),
+                    COALESCE(SUM(co.total), 0),
+                    MAX(co.fechaHora),
+                    COALESCE(TREAT(c AS ClienteFrecuente).puntos, 0L)
+                )
+                FROM Cliente c
+                LEFT JOIN c.comandas co
+                WHERE co.estadoComanda <> :cancelada OR co.id IS NULL
+                GROUP BY c.id, c.nombres, c.apellidoPaterno, c.apellidoMaterno
+            """;
+
+            TypedQuery<ReporteClientesDTO> query = em.createQuery(JPQL, ReporteClientesDTO.class);
+            query.setParameter("cancelada", EstadoComanda.CANCELADA);
+
+            List<ReporteClientesDTO> resultado = query.getResultList();
+
             em.getTransaction().commit();
-            return query.getResultList();
+            return resultado;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -129,6 +134,7 @@ public class ReportesDAO implements IReportesDAO{
 
         Root<Cliente> cliente = query.from(Cliente.class);
         Join<Cliente, Comanda> comanda = cliente.join("comandas", JoinType.LEFT);
+        comanda.on(cb.notEqual(comanda.get("estadoComanda"), EstadoComanda.CANCELADA));
 
         query.select(cb.construct(
                         ReporteClientesDTO.class,
