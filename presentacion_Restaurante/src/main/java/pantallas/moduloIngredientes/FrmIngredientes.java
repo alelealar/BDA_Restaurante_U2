@@ -996,6 +996,8 @@ public class FrmIngredientes extends javax.swing.JFrame {
     }
     
     private void diseñoTabla(){
+        tblIngredientes.getColumnModel().getColumn(1).setPreferredWidth(200);
+        
         scroll_ing.getViewport().setBackground(Color.WHITE);
         tblIngredientes.setShowHorizontalLines(true);
         tblIngredientes.setShowVerticalLines(false);

@@ -9,6 +9,7 @@ import controlador.CoordinadorInterfaces;
 import controlador.Coordinador_ModuloReportes;
 import dtos.ReporteClientesDTO;
 import excepciones.NegocioException;
+import java.awt.Color;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -48,6 +49,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         cargarTabla();
+        diseñoTabla();
     }
 
     /**
@@ -252,6 +254,7 @@ public class FrmReporteClientes extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        tblClientes.setFont(new java.awt.Font("Trebuchet MS", 0, 14)); // NOI18N
         tblClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -542,30 +545,40 @@ public class FrmReporteClientes extends javax.swing.JFrame {
     }
     
     public void cargarTabla(List<ReporteClientesDTO> lista) {
-    DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
-    modelo.setRowCount(0);
+        DefaultTableModel modelo = (DefaultTableModel) tblClientes.getModel();
+        modelo.setRowCount(0);
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    for (ReporteClientesDTO rc : lista) {
+        for (ReporteClientesDTO rc : lista) {
 
-        Object fechaFormateada;
+            Object fechaFormateada;
 
-        if (rc.getFechaUltimaComanda() == null) {
-            fechaFormateada = "";
-        } else {
-            fechaFormateada = rc.getFechaUltimaComanda().format(formatter);
+            if (rc.getFechaUltimaComanda() == null) {
+                fechaFormateada = "";
+            } else {
+                fechaFormateada = rc.getFechaUltimaComanda().format(formatter);
+            }
+
+            modelo.addRow(new Object[] {
+                rc.getNombres(),
+                rc.getVisitas(),
+                rc.getTotalGastado(),
+                fechaFormateada,
+                rc.getPuntosAcumulados()
+            });
         }
-
-        modelo.addRow(new Object[] {
-            rc.getNombres(),
-            rc.getVisitas(),
-            rc.getTotalGastado(),
-            fechaFormateada,
-            rc.getPuntosAcumulados()
-        });
     }
-}
+    
+    private void diseñoTabla(){
+        tblClientes.getColumnModel().getColumn(0).setPreferredWidth(200);
+        
+        jScrollPane1.getViewport().setBackground(Color.WHITE);
+        tblClientes.setShowHorizontalLines(true);
+        tblClientes.setShowVerticalLines(false);
+        tblClientes.setGridColor(new Color(230, 230, 230));
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtras;
